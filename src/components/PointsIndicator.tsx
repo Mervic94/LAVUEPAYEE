@@ -1,0 +1,41 @@
+
+import React from 'react';
+import { BadgeDollarSign } from 'lucide-react';
+
+interface PointsIndicatorProps {
+  points: number;
+  size?: 'sm' | 'md' | 'lg';
+}
+
+const PointsIndicator: React.FC<PointsIndicatorProps> = ({ points, size = 'md' }) => {
+  // Format points with thousands separator
+  const formattedPoints = new Intl.NumberFormat('fr-FR').format(points);
+  
+  // Size classes
+  const sizeClasses = {
+    sm: 'text-xs px-2 py-1 gap-1',
+    md: 'text-sm px-3 py-1.5 gap-1.5',
+    lg: 'text-base px-4 py-2 gap-2'
+  };
+  
+  // Icon sizes
+  const iconSizes = {
+    sm: 'h-3.5 w-3.5',
+    md: 'h-4 w-4',
+    lg: 'h-5 w-5'
+  };
+  
+  return (
+    <div 
+      className={`flex items-center ${sizeClasses[size]} rounded-full 
+                  bg-secondary text-secondary-foreground font-medium 
+                  shadow-sm transition-all duration-300 hover:scale-105 
+                  animate-pulse-light`}
+    >
+      <BadgeDollarSign className={iconSizes[size]} />
+      <span>{formattedPoints} pts</span>
+    </div>
+  );
+};
+
+export default PointsIndicator;

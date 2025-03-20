@@ -1,12 +1,237 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import React from 'react';
+import { ArrowRight, DollarSign, Users, ShoppingBag, PlayCircle, BadgeDollarSign } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import Navbar from '@/components/Navbar';
+import Hero from '@/components/Hero';
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen">
+      <Navbar />
+      
+      {/* Hero Section */}
+      <Hero />
+      
+      {/* How It Works Section */}
+      <section id="how-it-works" className="py-20 bg-white">
+        <div className="container px-6 mx-auto max-w-7xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Comment ça marche</h2>
+            <p className="text-foreground/70 text-lg max-w-3xl mx-auto">
+              Suivez ces étapes simples pour commencer à gagner des points et recevoir des récompenses
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <div className="flex flex-col items-center text-center">
+              <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                <PlayCircle className="h-8 w-8 text-primary" />
+                <div className="absolute -right-1 -top-1 h-6 w-6 bg-primary rounded-full text-white flex items-center justify-center font-medium text-sm">1</div>
+              </div>
+              <h3 className="text-xl font-semibold mb-3">Regardez des publicités</h3>
+              <p className="text-foreground/70">
+                Choisissez parmi une variété de publicités et de contenu sponsorisé qui vous intéresse.
+              </p>
+            </div>
+            
+            <div className="flex flex-col items-center text-center">
+              <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                <BadgeDollarSign className="h-8 w-8 text-primary" />
+                <div className="absolute -right-1 -top-1 h-6 w-6 bg-primary rounded-full text-white flex items-center justify-center font-medium text-sm">2</div>
+              </div>
+              <h3 className="text-xl font-semibold mb-3">Gagnez des points</h3>
+              <p className="text-foreground/70">
+                Accumulez des points pour chaque publicité visionnée. Plus vous regardez, plus vous gagnez.
+              </p>
+            </div>
+            
+            <div className="flex flex-col items-center text-center">
+              <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+                <ShoppingBag className="h-8 w-8 text-primary" />
+                <div className="absolute -right-1 -top-1 h-6 w-6 bg-primary rounded-full text-white flex items-center justify-center font-medium text-sm">3</div>
+              </div>
+              <h3 className="text-xl font-semibold mb-3">Échangez vos récompenses</h3>
+              <p className="text-foreground/70">
+                Utilisez vos points pour obtenir des produits physiques ou convertissez-les en argent réel.
+              </p>
+            </div>
+          </div>
+          
+          <div className="mt-16 text-center">
+            <Button asChild size="lg" className="rounded-full">
+              <Link to="/dashboard">
+                Commencer maintenant
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+      
+      {/* Affiliation Section */}
+      <section className="py-20 bg-secondary/50">
+        <div className="container px-6 mx-auto max-w-7xl">
+          <div className="flex flex-col md:flex-row gap-10 items-center">
+            <div className="md:w-1/2">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-sm font-medium text-primary mb-6">
+                <Users className="h-4 w-4" />
+                Programme d'affiliation
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Multipliez vos gains avec notre programme d'affiliation
+              </h2>
+              <p className="text-foreground/70 text-lg mb-8">
+                Invitez vos amis, votre famille et vos relations à rejoindre la plateforme et gagnez des commissions sur leurs activités. Notre programme d'affiliation sur cinq niveaux vous permet de maximiser vos revenus.
+              </p>
+              
+              <div className="space-y-4 mb-8">
+                <div className="flex items-start gap-3">
+                  <div className="h-6 w-6 bg-primary/10 rounded-full flex items-center justify-center mt-0.5">
+                    <span className="text-primary font-medium text-sm">1</span>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold">Niveau 1: 10%</h4>
+                    <p className="text-foreground/70">Commission directe sur les points gagnés par vos affiliés.</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-3">
+                  <div className="h-6 w-6 bg-primary/10 rounded-full flex items-center justify-center mt-0.5">
+                    <span className="text-primary font-medium text-sm">2</span>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold">Niveaux 2-5: 2-5%</h4>
+                    <p className="text-foreground/70">Commissions supplémentaires sur les affiliés de vos affiliés.</p>
+                  </div>
+                </div>
+              </div>
+              
+              <Button asChild size="lg" className="rounded-full">
+                <Link to="/profile">
+                  Voir mon réseau d'affiliation
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+            
+            <div className="md:w-1/2">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent rounded-2xl -z-10 animate-pulse-light"></div>
+                <div className="glass-card rounded-2xl p-8 shadow-lg">
+                  <h3 className="text-2xl font-bold mb-6">Exemple de gains</h3>
+                  
+                  <div className="space-y-6">
+                    <div className="flex justify-between items-center border-b border-border pb-4">
+                      <div>
+                        <h4 className="font-medium">Niveau 1 (10 affiliés)</h4>
+                        <p className="text-sm text-foreground/70">10% de commission</p>
+                      </div>
+                      <div className="flex items-center gap-1 font-semibold text-lg">
+                        <BadgeDollarSign className="h-5 w-5 text-primary" />
+                        <span>1,500</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-between items-center border-b border-border pb-4">
+                      <div>
+                        <h4 className="font-medium">Niveau 2 (50 affiliés)</h4>
+                        <p className="text-sm text-foreground/70">5% de commission</p>
+                      </div>
+                      <div className="flex items-center gap-1 font-semibold text-lg">
+                        <BadgeDollarSign className="h-5 w-5 text-primary" />
+                        <span>3,750</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-between items-center border-b border-border pb-4">
+                      <div>
+                        <h4 className="font-medium">Niveaux 3-5</h4>
+                        <p className="text-sm text-foreground/70">2-3% de commission</p>
+                      </div>
+                      <div className="flex items-center gap-1 font-semibold text-lg">
+                        <BadgeDollarSign className="h-5 w-5 text-primary" />
+                        <span>5,250</span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex justify-between items-center pt-2">
+                      <div>
+                        <h4 className="font-semibold text-lg">Total mensuel</h4>
+                      </div>
+                      <div className="flex items-center gap-1 font-bold text-lg text-primary">
+                        <BadgeDollarSign className="h-5 w-5" />
+                        <span>10,500 pts</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      {/* Footer */}
+      <footer className="bg-white py-12 border-t">
+        <div className="container px-6 mx-auto max-w-7xl">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="h-8 w-8 bg-primary rounded-full flex items-center justify-center">
+                  <Award className="h-4 w-4 text-primary-foreground" />
+                </div>
+                <span className="font-semibold text-lg">RewardAds</span>
+              </div>
+              <p className="text-foreground/70">
+                La plateforme qui récompense votre attention et vous permet de gagner des points échangeables.
+              </p>
+            </div>
+            
+            <div>
+              <h4 className="font-semibold mb-4">Liens rapides</h4>
+              <ul className="space-y-2">
+                <li><Link to="/" className="text-foreground/70 hover:text-primary transition-colors">Accueil</Link></li>
+                <li><Link to="/dashboard" className="text-foreground/70 hover:text-primary transition-colors">Tableau de bord</Link></li>
+                <li><Link to="/marketplace" className="text-foreground/70 hover:text-primary transition-colors">Marketplace</Link></li>
+                <li><Link to="/profile" className="text-foreground/70 hover:text-primary transition-colors">Profil</Link></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="font-semibold mb-4">Aide</h4>
+              <ul className="space-y-2">
+                <li><Link to="/faq" className="text-foreground/70 hover:text-primary transition-colors">FAQ</Link></li>
+                <li><Link to="/contact" className="text-foreground/70 hover:text-primary transition-colors">Contact</Link></li>
+                <li><Link to="/terms" className="text-foreground/70 hover:text-primary transition-colors">Conditions d'utilisation</Link></li>
+                <li><Link to="/privacy" className="text-foreground/70 hover:text-primary transition-colors">Politique de confidentialité</Link></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="font-semibold mb-4">Restez connecté</h4>
+              <p className="text-foreground/70 mb-4">
+                Inscrivez-vous à notre newsletter pour recevoir les dernières nouvelles et mises à jour.
+              </p>
+              <div className="flex gap-2 mb-4">
+                <input 
+                  type="email" 
+                  placeholder="Votre email" 
+                  className="rounded-lg border border-border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+                <Button variant="default" size="sm">
+                  S'inscrire
+                </Button>
+              </div>
+            </div>
+          </div>
+          
+          <div className="pt-8 mt-8 border-t text-center text-foreground/60 text-sm">
+            © {new Date().getFullYear()} RewardAds. Tous droits réservés.
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
