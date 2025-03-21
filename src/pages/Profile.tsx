@@ -1,13 +1,16 @@
 
 import React, { useState } from 'react';
-import { BadgeDollarSign, Users, Clock, ChevronDown, ChevronUp, Check, Link as LinkIcon, Copy } from 'lucide-react';
+import { BadgeDollarSign, Users, Clock, ChevronDown, ChevronUp, Check, Link as LinkIcon, Copy, CreditCard } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import Navbar from '@/components/Navbar';
 import PointsIndicator from '@/components/PointsIndicator';
+import CashoutDialog from '@/components/CashoutDialog';
 
 const Profile = () => {
   const [expanded, setExpanded] = useState(false);
   const [copiedToClipboard, setCopiedToClipboard] = useState(false);
+  const [cashoutDialogOpen, setCashoutDialogOpen] = useState(false);
   
   // Mock user data
   const userData = {
@@ -94,12 +97,16 @@ const Profile = () => {
             
             {/* Quick Actions */}
             <div className="flex flex-col gap-3 w-full md:w-auto">
-              <button className="btn-primary w-full md:w-auto">
-                Modifier mon profil
-              </button>
-              <button className="btn-secondary w-full md:w-auto">
+              <Button
+                className="flex items-center gap-2"
+                onClick={() => setCashoutDialogOpen(true)}
+              >
+                <CreditCard className="h-4 w-4" />
+                Retirer mes points
+              </Button>
+              <Button variant="outline" className="w-full md:w-auto">
                 Paramètres du compte
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -294,13 +301,20 @@ const Profile = () => {
                 </div>
                 
                 <div className="pt-4 border-t">
-                  <button className="btn-primary">Enregistrer les modifications</button>
+                  <Button>Enregistrer les modifications</Button>
                 </div>
               </div>
             </div>
           </TabsContent>
         </Tabs>
       </main>
+      
+      {/* Cashout Dialog */}
+      <CashoutDialog
+        open={cashoutDialogOpen}
+        onOpenChange={setCashoutDialogOpen}
+        userPoints={userData.points}
+      />
     </div>
   );
 };

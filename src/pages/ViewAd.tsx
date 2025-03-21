@@ -1,13 +1,17 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Play, Pause, Clock, BadgeDollarSign, X, CheckCircle } from 'lucide-react';
+import { Play, Pause, Clock, BadgeDollarSign, X, CheckCircle, Shield } from 'lucide-react';
 import Navbar from '@/components/Navbar';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
 
 const ViewAd = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const videoRef = useRef<HTMLVideoElement>(null);
+  const { toast } = useToast();
   
   // States
   const [isPlaying, setIsPlaying] = useState(false);
@@ -15,7 +19,11 @@ const ViewAd = () => {
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [adWatched, setAdWatched] = useState(false);
+  const [showVerification, setShowVerification] = useState(false);
   const [points, setPoints] = useState(0);
+  const [verificationCode, setVerificationCode] = useState('');
+  const [userInputCode, setUserInputCode] = useState('');
+  const [verificationAttempts, setVerificationAttempts] = useState(0);
   
   // Mock ad data - In a real app, this would be fetched based on the ID
   const mockAd = {
@@ -26,6 +34,13 @@ const ViewAd = () => {
     thumbnail: 'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8Y2xvdGhpbmd8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=800&q=60',
     duration: 45,
     reward: 50
+  };
+  
+  // Generate verification code
+  const generateVerificationCode = () => {
+    const code = Math.floor(1000 + Math.random() * 9000).toString();
+    setVerificationCode(code);
+    return code;
   };
   
   // Format time as MM:SS
@@ -55,10 +70,12 @@ const ViewAd = () => {
       setCurrentTime(current);
       setProgress((current / videoDuration) * 100);
       
-      // Check if video has been watched at least 90%
-      if (current >= videoDuration * 0.9 && !adWatched) {
-        setAdWatched(true);
-        setPoints(mockAd.reward);
+      // Check if video has been watched at least 90% and show verification
+      if (current >= videoDuration * 0.9 && !showVerification && !adWatched) {
+        videoRef.current.pause();
+        setIsPlaying(false);
+        setShowVerification(true);
+        generateVerificationCode();
       }
     }
   };
@@ -81,6 +98,41 @@ const ViewAd = () => {
       videoRef.current.currentTime = newTime;
       setCurrentTime(newTime);
       setProgress(clickPosition * 100);
+    }
+  };
+  
+  // Handle verification submit
+  const handleVerificationSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (userInputCode === verificationCode) {
+      setAdWatched(true);
+      setShowVerification(false);
+      setPoints(mockAd.reward);
+      toast({
+        title: "Félicitations!",
+        description: `Vous avez gagné ${mockAd.reward} points!`,
+      });
+    } else {
+      setVerificationAttempts(prev => prev + 1);
+      
+      if (verificationAttempts >= 2) {
+        toast({
+          title: "Trop de tentatives incorrectes",
+          description: "Veuillez réessayer plus tard.",
+          variant: "destructive",
+        });
+        navigate('/dashboard');
+      } else {
+        toast({
+          title: "Code incorrect",
+          description: "Veuillez réessayer.",
+          variant: "destructive",
+        });
+        // Generate a new code after failed attempt
+        generateVerificationCode();
+        setUserInputCode('');
+      }
     }
   };
   
@@ -125,6 +177,57 @@ const ViewAd = () => {
             >
               <X className="h-5 w-5" />
             </button>
+            
+            {/* Verification overlay */}
+            {showVerification && (
+              <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-20 p-6">
+                <div className="glass-card bg-white/10 backdrop-blur-lg rounded-xl p-6 max-w-md w-full">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="h-12 w-12 bg-primary/20 rounded-full flex items-center justify-center">
+                      <Shield className="h-6 w-6 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold text-white">Vérification humaine</h3>
+                      <p className="text-white/70">Entrez le code ci-dessous pour confirmer que vous êtes humain</p>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-white/10 rounded-lg p-4 mb-4">
+                    <p className="text-4xl font-mono text-center tracking-widest text-white">{verificationCode}</p>
+                  </div>
+                  
+                  <form onSubmit={handleVerificationSubmit} className="space-y-4">
+                    <div>
+                      <label htmlFor="verificationCode" className="block text-sm font-medium text-white/70 mb-1">
+                        Code de vérification
+                      </label>
+                      <Input 
+                        id="verificationCode" 
+                        type="text" 
+                        maxLength={4}
+                        value={userInputCode}
+                        onChange={(e) => setUserInputCode(e.target.value)}
+                        placeholder="Entrez le code à 4 chiffres"
+                        className="bg-white/10 border-white/20 text-white placeholder:text-white/40"
+                      />
+                    </div>
+                    
+                    <div className="flex gap-3">
+                      <Button type="submit" className="flex-grow">
+                        Valider
+                      </Button>
+                      <Button variant="outline" type="button" onClick={returnToDashboard} className="bg-transparent border-white/30 text-white hover:bg-white/10">
+                        Annuler
+                      </Button>
+                    </div>
+                    
+                    <p className="text-sm text-white/50 text-center">
+                      Il vous reste {3 - verificationAttempts} tentative(s)
+                    </p>
+                  </form>
+                </div>
+              </div>
+            )}
             
             {/* Video Controls */}
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 flex flex-col">
@@ -194,12 +297,12 @@ const ViewAd = () => {
                   </div>
                 </div>
                 
-                <button 
-                  className="btn-primary w-full"
+                <Button 
                   onClick={returnToDashboard}
+                  className="w-full"
                 >
                   Retourner au tableau de bord
-                </button>
+                </Button>
               </div>
             ) : (
               <div className="glass-card rounded-lg p-4 bg-primary/5 border border-primary/20">
