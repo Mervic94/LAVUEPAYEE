@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ArrowRight, DollarSign, Users, ShoppingBag, PlayCircle, BadgeDollarSign } from 'lucide-react';
+import { ArrowRight, DollarSign, Users, ShoppingBag, PlayCircle, BadgeDollarSign, Award } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import Navbar from '@/components/Navbar';
