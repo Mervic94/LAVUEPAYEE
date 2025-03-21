@@ -104,8 +104,17 @@ const Login = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
       <div className="w-full max-w-md space-y-4">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-primary">Se connecter</h1>
+        <div className="text-center mb-6">
+          <div className="flex justify-center mb-4">
+            <div className="h-16 w-16 bg-green-600 rounded-full flex items-center justify-center">
+              <img 
+                src="/lovable-uploads/d82c55d8-0c83-4a02-82c0-67e854a84332.png" 
+                alt="LAVUEPAYEE"
+                className="h-12 w-12 object-contain"
+              />
+            </div>
+          </div>
+          <h1 className="text-4xl font-bold text-green-800">Se connecter</h1>
           <p className="text-muted-foreground mt-2">
             Connectez-vous pour accéder à votre compte
           </p>
@@ -168,12 +177,12 @@ const Login = () => {
                 )}
               />
 
-              <Button type="submit" className="w-full bg-primary" size="lg" disabled={loading}>
+              <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" size="lg" disabled={loading}>
                 {loading ? "Connexion en cours..." : "Se connecter"}
               </Button>
               
               <div className="flex justify-center">
-                <Link to="/reset-password" className="text-sm text-primary hover:underline">
+                <Link to="/reset-password" className="text-sm text-green-600 hover:underline">
                   Mot de passe oublié?
                 </Link>
               </div>
@@ -183,7 +192,7 @@ const Login = () => {
           <Separator className="my-6" />
           
           <div className="text-center">
-            <Button variant="outline" className="w-full border-2" asChild>
+            <Button variant="outline" className="w-full border-2 border-green-600 text-green-600 hover:bg-green-50" asChild>
               <Link to="/register">
                 Créer un nouveau compte
               </Link>
@@ -231,7 +240,7 @@ const Login = () => {
             </div>
             
             <Button 
-              className="w-full" 
+              className="w-full bg-green-600 hover:bg-green-700" 
               onClick={validateTwoFactorCode} 
               disabled={loading}
             >

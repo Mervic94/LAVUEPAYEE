@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BadgeDollarSign } from 'lucide-react';
+import { Coins } from 'lucide-react';
 
 interface PointsIndicatorProps {
   points: number;
@@ -10,6 +10,10 @@ interface PointsIndicatorProps {
 const PointsIndicator: React.FC<PointsIndicatorProps> = ({ points, size = 'md' }) => {
   // Format points with thousands separator
   const formattedPoints = new Intl.NumberFormat('fr-FR').format(points);
+  
+  // Calculate Vuecoin equivalent
+  const vuecoins = Math.floor(points / 700);
+  const formattedVuecoins = new Intl.NumberFormat('fr-FR').format(vuecoins);
   
   // Size classes
   const sizeClasses = {
@@ -28,12 +32,16 @@ const PointsIndicator: React.FC<PointsIndicatorProps> = ({ points, size = 'md' }
   return (
     <div 
       className={`flex items-center ${sizeClasses[size]} rounded-full 
-                  bg-secondary text-secondary-foreground font-medium 
-                  shadow-sm transition-all duration-300 hover:scale-105 
-                  animate-pulse-light`}
+                  bg-amber-400 text-green-900 font-medium 
+                  shadow-sm transition-all duration-300 hover:scale-105`}
+      title={`${formattedPoints} LVP = ${formattedVuecoins} Vc`}
     >
-      <BadgeDollarSign className={iconSizes[size]} />
-      <span>{formattedPoints} pts</span>
+      <img 
+        src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
+        alt="LVP" 
+        className={iconSizes[size]}
+      />
+      <span>{formattedPoints} LVP</span>
     </div>
   );
 };

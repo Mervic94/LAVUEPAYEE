@@ -16,24 +16,24 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 25% 15%;
 
-    --primary: 220 55% 45%;
-    --primary-foreground: 210 20% 98%;
+    --primary: 145 100% 25%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 25% 95%;
-    --secondary-foreground: 220 25% 15%;
+    --secondary: 45 100% 50%;
+    --secondary-foreground: 145 100% 25%;
 
     --muted: 220 25% 94%;
     --muted-foreground: 220 10% 45%;
 
-    --accent: 240 20% 92%;
-    --accent-foreground: 220 55% 45%;
+    --accent: 45 100% 50%;
+    --accent-foreground: 145 100% 25%;
 
     --destructive: 0 80% 50%;
     --destructive-foreground: 210 20% 98%;
 
     --border: 220 20% 88%;
     --input: 220 20% 88%;
-    --ring: 220 55% 45%;
+    --ring: 145 100% 25%;
 
     --radius: 0.5rem;
   }
@@ -48,24 +48,24 @@
     --popover: 220 25% 18%;
     --popover-foreground: 210 20% 98%;
  
-    --primary: 220 55% 60%;
-    --primary-foreground: 220 25% 15%;
+    --primary: 145 75% 30%;
+    --primary-foreground: 0 0% 100%;
  
-    --secondary: 220 25% 20%;
-    --secondary-foreground: 210 20% 98%;
+    --secondary: 45 100% 50%;
+    --secondary-foreground: 145 75% 30%;
  
     --muted: 220 25% 25%;
     --muted-foreground: 220 10% 70%;
  
-    --accent: 240 20% 25%;
-    --accent-foreground: 220 55% 60%;
+    --accent: 45 100% 50%;
+    --accent-foreground: 145 75% 30%;
  
     --destructive: 0 80% 55%;
     --destructive-foreground: 210 20% 98%;
  
     --border: 220 20% 30%;
     --input: 220 20% 30%;
-    --ring: 220 55% 60%;
+    --ring: 145 75% 30%;
   }
 }
 
@@ -99,5 +99,9 @@
   
   .card-hover {
     @apply transition-all duration-300 hover:shadow-md hover:translate-y-[-2px];
+  }
+  
+  .vuecoin {
+    @apply bg-amber-400 text-green-900 font-medium;
   }
 }

@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Users, ShoppingBag, Award, User } from 'lucide-react';
+import { Menu, X, Users, ShoppingBag, Eye, User } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import PointsIndicator from './PointsIndicator';
 
@@ -35,10 +35,14 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         <Link to="/" className="flex items-center gap-2">
-          <div className="h-8 w-8 bg-primary rounded-full flex items-center justify-center">
-            <Award className="h-4 w-4 text-primary-foreground" />
+          <div className="h-10 w-10 bg-green-600 rounded-full flex items-center justify-center">
+            <img 
+              src="/lovable-uploads/d82c55d8-0c83-4a02-82c0-67e854a84332.png" 
+              alt="LAVUEPAYEE" 
+              className="h-8 w-8 object-contain"
+            />
           </div>
-          <span className="font-semibold text-lg">RewardAds</span>
+          <span className="font-bold text-lg text-green-800">LAVUEPAYEE</span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -59,12 +63,20 @@ const Navbar = () => {
 
         <div className="hidden md:flex items-center gap-4">
           <PointsIndicator points={1250} />
+          <div className="flex items-center px-3 py-1.5 gap-1.5 rounded-full bg-green-100 text-green-800 font-medium">
+            <img 
+              src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
+              alt="Vuecoin" 
+              className="h-4 w-4"
+            />
+            <span>1 Vc</span>
+          </div>
           <Button asChild variant="ghost" size="icon" className="rounded-full">
             <Link to="/profile">
               <User className="h-5 w-5" />
             </Link>
           </Button>
-          <Button asChild variant="default" size="sm" className="rounded-full">
+          <Button asChild variant="default" size="sm" className="rounded-full bg-green-600 hover:bg-green-700">
             <Link to="/login">Se connecter</Link>
           </Button>
         </div>
@@ -86,7 +98,17 @@ const Navbar = () => {
         } md:hidden`}
       >
         <div className="flex flex-col gap-6 items-center">
-          <PointsIndicator points={1250} />
+          <div className="flex items-center gap-3">
+            <PointsIndicator points={1250} />
+            <div className="flex items-center px-3 py-1.5 gap-1.5 rounded-full bg-green-100 text-green-800 font-medium">
+              <img 
+                src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
+                alt="Vuecoin" 
+                className="h-4 w-4"
+              />
+              <span>1 Vc</span>
+            </div>
+          </div>
           
           <Link to="/" onClick={closeMenu} className="w-full">
             <div className={`py-3 px-4 rounded-lg transition-colors ${isActive('/') ? 'bg-primary/10 text-primary' : ''}`}>

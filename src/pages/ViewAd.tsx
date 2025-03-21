@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Play, Pause, Clock, BadgeDollarSign, X, CheckCircle, Shield } from 'lucide-react';
+import { Play, Pause, Clock, Eye, X, CheckCircle, Shield, Facebook, Instagram, Youtube } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,15 +26,50 @@ const ViewAd = () => {
   const [verificationAttempts, setVerificationAttempts] = useState(0);
   
   // Mock ad data - In a real app, this would be fetched based on the ID
-  const mockAd = {
-    id: '1',
-    title: 'Nouvelle collection de vêtements écologiques',
-    description: 'Découvrez notre nouvelle gamme de vêtements fabriqués à partir de matériaux recyclés. Notre engagement pour l\'environnement se reflète dans chaque pièce de notre collection, conçue pour durer et minimiser l\'impact sur la planète.',
-    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4', // Sample video
-    thumbnail: 'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8Y2xvdGhpbmd8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=800&q=60',
-    duration: 45,
-    reward: 50
-  };
+  const mockAds = [
+    {
+      id: '1',
+      title: 'Nouvelle collection de vêtements écologiques',
+      description: 'Découvrez notre nouvelle gamme de vêtements fabriqués à partir de matériaux recyclés. Notre engagement pour l\'environnement se reflète dans chaque pièce de notre collection, conçue pour durer et minimiser l\'impact sur la planète.',
+      videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+      thumbnail: 'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8Y2xvdGhpbmd8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=800&q=60',
+      duration: 45,
+      reward: 50,
+      provider: 'Facebook'
+    },
+    {
+      id: '2',
+      title: 'Promotion exclusive sur notre gamme de smartphones',
+      description: 'Profitez de remises exceptionnelles sur notre nouvelle gamme de smartphones. Des performances incroyables et un design élégant à prix réduit pour une durée limitée.',
+      videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+      thumbnail: 'https://images.unsplash.com/photo-1616348436168-de43ad0db179?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fHNtYXJ0cGhvbmV8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=800&q=60',
+      duration: 30,
+      reward: 35,
+      provider: 'Google Ads'
+    },
+    {
+      id: '3',
+      title: 'Découvrez notre nouvelle plateforme de streaming',
+      description: 'Des milliers de films et séries vous attendent sur notre plateforme. Profitez du premier mois gratuit et découvrez un catalogue varié pour toute la famille.',
+      videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+      thumbnail: 'https://images.unsplash.com/photo-1522869635100-187f6605241d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c3RyZWFtaW5nfGVufDB8fDB8fHww&auto=format&fit=crop&w=800&q=60',
+      duration: 55,
+      reward: 65,
+      provider: 'Youtube'
+    },
+    {
+      id: '4',
+      title: 'Offre spéciale voyage: -30% sur votre prochain séjour',
+      description: 'Planifiez vos vacances et bénéficiez de -30% sur votre prochain séjour dans l\'un de nos hôtels partenaires. Une occasion unique de découvrir des destinations de rêve à prix mini.',
+      videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+      thumbnail: 'https://images.unsplash.com/photo-1602002418816-5c0aeef426aa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHRyYXZlbHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60',
+      duration: 40,
+      reward: 45,
+      provider: 'Instagram'
+    }
+  ];
+  
+  const mockAd = mockAds.find(ad => ad.id === id) || mockAds[0];
   
   // Generate verification code
   const generateVerificationCode = () => {
@@ -111,7 +146,7 @@ const ViewAd = () => {
       setPoints(mockAd.reward);
       toast({
         title: "Félicitations!",
-        description: `Vous avez gagné ${mockAd.reward} points!`,
+        description: `Vous avez gagné ${mockAd.reward} LVP!`,
       });
     } else {
       setVerificationAttempts(prev => prev + 1);
@@ -153,6 +188,22 @@ const ViewAd = () => {
     }
   }, []);
 
+  // Get the appropriate provider icon
+  const getProviderIcon = () => {
+    switch (mockAd.provider) {
+      case 'Facebook':
+        return <Facebook className="h-5 w-5 text-blue-600" />;
+      case 'Instagram':
+        return <Instagram className="h-5 w-5 text-pink-600" />;
+      case 'Youtube':
+        return <Youtube className="h-5 w-5 text-red-600" />;
+      case 'Google Ads':
+        return <div className="flex h-5 w-5 items-center justify-center font-bold text-xs">G</div>;
+      default:
+        return <Eye className="h-5 w-5" />;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -183,8 +234,8 @@ const ViewAd = () => {
               <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-20 p-6">
                 <div className="glass-card bg-white/10 backdrop-blur-lg rounded-xl p-6 max-w-md w-full">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="h-12 w-12 bg-primary/20 rounded-full flex items-center justify-center">
-                      <Shield className="h-6 w-6 text-primary" />
+                    <div className="h-12 w-12 bg-green-600/20 rounded-full flex items-center justify-center">
+                      <Shield className="h-6 w-6 text-green-600" />
                     </div>
                     <div>
                       <h3 className="text-xl font-semibold text-white">Vérification humaine</h3>
@@ -213,7 +264,7 @@ const ViewAd = () => {
                     </div>
                     
                     <div className="flex gap-3">
-                      <Button type="submit" className="flex-grow">
+                      <Button type="submit" className="flex-grow bg-green-600 hover:bg-green-700">
                         Valider
                       </Button>
                       <Button variant="outline" type="button" onClick={returnToDashboard} className="bg-transparent border-white/30 text-white hover:bg-white/10">
@@ -237,7 +288,7 @@ const ViewAd = () => {
                 onClick={handleProgressClick}
               >
                 <div 
-                  className="h-full bg-primary rounded-full"
+                  className="h-full bg-green-600 rounded-full"
                   style={{ width: `${progress}%` }}
                 />
               </div>
@@ -271,9 +322,13 @@ const ViewAd = () => {
                     {adWatched ? (
                       <CheckCircle className="h-4 w-4" />
                     ) : (
-                      <BadgeDollarSign className="h-4 w-4" />
+                      <img 
+                        src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
+                        alt="LVP" 
+                        className="h-4 w-4"
+                      />
                     )}
-                    <span>{adWatched ? 'Points gagnés!' : `${mockAd.reward} points à gagner`}</span>
+                    <span>{adWatched ? 'Points gagnés!' : `${mockAd.reward} LVP à gagner`}</span>
                   </div>
                 </div>
               </div>
@@ -282,6 +337,13 @@ const ViewAd = () => {
           
           {/* Ad Information */}
           <div className="p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="h-8 w-8 bg-gray-100 rounded-full flex items-center justify-center">
+                {getProviderIcon()}
+              </div>
+              <span className="text-sm font-medium text-gray-600">Publicité {mockAd.provider}</span>
+            </div>
+            
             <h1 className="text-2xl font-bold mb-2">{mockAd.title}</h1>
             <p className="text-foreground/70 mb-6">{mockAd.description}</p>
             
@@ -293,21 +355,28 @@ const ViewAd = () => {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold">Félicitations!</h3>
-                    <p className="text-foreground/70">Vous avez gagné {points} points en regardant cette publicité.</p>
+                    <p className="text-foreground/70">
+                      Vous avez gagné {points} LVP en regardant cette publicité.
+                      {points >= 700 && (
+                        <span className="block mt-1 text-green-600 font-medium">
+                          Cela équivaut à {(points / 700).toFixed(2)} Vuecoins!
+                        </span>
+                      )}
+                    </p>
                   </div>
                 </div>
                 
                 <Button 
                   onClick={returnToDashboard}
-                  className="w-full"
+                  className="w-full bg-green-600 hover:bg-green-700"
                 >
                   Retourner au tableau de bord
                 </Button>
               </div>
             ) : (
-              <div className="glass-card rounded-lg p-4 bg-primary/5 border border-primary/20">
+              <div className="glass-card rounded-lg p-4 bg-green-600/5 border border-green-600/20">
                 <p className="text-center text-foreground/70">
-                  Regardez cette publicité jusqu'à la fin pour gagner {mockAd.reward} points.
+                  Regardez cette publicité jusqu'à la fin pour gagner {mockAd.reward} LVP.
                 </p>
               </div>
             )}
