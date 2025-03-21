@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Mail, KeyRound, User, Building, ArrowRight, InfoIcon } from "lucide-react";
+import { Mail, KeyRound, User, Building, Phone, Calendar, ArrowRight, InfoIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -18,26 +18,37 @@ import {
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { Separator } from "@/components/ui/separator";
 
 const registerSchema = z.object({
+  firstName: z.string().min(2, { message: "Prénom requis" }),
+  lastName: z.string().min(2, { message: "Nom de famille requis" }),
+  username: z.string().min(3, { message: "Nom d'utilisateur requis (min. 3 caractères)" })
+    .regex(/^[a-zA-Z0-9._-]+$/, { message: "Nom d'utilisateur invalide" }),
   email: z.string().email({ message: "Adresse email invalide" }),
+  phone: z.string().optional(),
   password: z
     .string()
     .min(8, { message: "Le mot de passe doit contenir au moins 8 caractères" })
     .regex(/[A-Z]/, { message: "Le mot de passe doit contenir au moins une majuscule" })
     .regex(/[0-9]/, { message: "Le mot de passe doit contenir au moins un chiffre" }),
-  confirmPassword: z.string(),
-  fullName: z.string().min(2, { message: "Veuillez entrer votre nom complet" }),
+  birthDay: z.string().min(1, { message: "Jour requis" }),
+  birthMonth: z.string().min(1, { message: "Mois requis" }),
+  birthYear: z.string().min(4, { message: "Année requise" }),
   accountType: z.enum(["consumer", "advertiser"], {
     required_error: "Veuillez sélectionner un type de compte",
   }),
   termsAccepted: z.boolean().refine(val => val === true, {
     message: "Vous devez accepter les conditions d'utilisation",
   }),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Les mots de passe ne correspondent pas",
-  path: ["confirmPassword"],
 });
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
@@ -46,14 +57,37 @@ const Register = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
+  const months = [
+    { value: "1", label: "Janvier" },
+    { value: "2", label: "Février" },
+    { value: "3", label: "Mars" },
+    { value: "4", label: "Avril" },
+    { value: "5", label: "Mai" },
+    { value: "6", label: "Juin" },
+    { value: "7", label: "Juillet" },
+    { value: "8", label: "Août" },
+    { value: "9", label: "Septembre" },
+    { value: "10", label: "Octobre" },
+    { value: "11", label: "Novembre" },
+    { value: "12", label: "Décembre" },
+  ];
+  const days = Array.from({ length: 31 }, (_, i) => i + 1);
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
+      firstName: "",
+      lastName: "",
+      username: "",
       email: "",
+      phone: "",
       password: "",
-      confirmPassword: "",
-      fullName: "",
+      birthDay: "",
+      birthMonth: "",
+      birthYear: "",
       accountType: "consumer",
       termsAccepted: false,
     },
@@ -87,29 +121,25 @@ const Register = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
-      <div className="w-full max-w-2xl space-y-8">
+      <div className="w-full max-w-2xl space-y-6">
         <div className="text-center">
-          <h1 className="text-3xl font-bold">Créer un compte</h1>
-          <p className="text-muted-foreground mt-2">
-            Rejoignez notre plateforme et commencez à gagner des récompenses
+          <h1 className="text-4xl font-bold text-primary">S'inscrire</h1>
+          <p className="text-muted-foreground mt-2 text-lg">
+            C'est rapide et facile.
           </p>
         </div>
 
-        <div className="glass-card p-6 rounded-lg">
+        <div className="glass-card p-6 rounded-lg shadow-md bg-card">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
-                  name="fullName"
+                  name="firstName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nom complet</FormLabel>
                       <FormControl>
-                        <div className="relative">
-                          <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                          <Input placeholder="Jean Dupont" className="pl-10" {...field} />
-                        </div>
+                        <Input placeholder="Prénom" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -118,57 +148,178 @@ const Register = () => {
 
                 <FormField
                   control={form.control}
-                  name="email"
+                  name="lastName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <div className="relative">
-                          <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                          <Input placeholder="vous@exemple.com" className="pl-10" {...field} />
-                        </div>
+                        <Input placeholder="Nom de famille" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+              </div>
 
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Mot de passe</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <KeyRound className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                          <Input type="password" placeholder="********" className="pl-10" {...field} />
-                        </div>
-                      </FormControl>
-                      <FormDescription className="text-xs">
-                        Au moins 8 caractères, une majuscule et un chiffre
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <div className="relative">
+                        <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input placeholder="Nom d'utilisateur" className="pl-10" {...field} />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                <FormField
-                  control={form.control}
-                  name="confirmPassword"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Confirmer le mot de passe</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <KeyRound className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                          <Input type="password" placeholder="********" className="pl-10" {...field} />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input placeholder="Email" className="pl-10" {...field} />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <div className="relative">
+                        <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input placeholder="Numéro de téléphone (optionnel)" className="pl-10" {...field} />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <div className="relative">
+                        <KeyRound className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input 
+                          type="password" 
+                          placeholder="Nouveau mot de passe" 
+                          className="pl-10"
+                          {...field} 
+                        />
+                      </div>
+                    </FormControl>
+                    <FormDescription className="text-xs">
+                      Au moins 8 caractères, une majuscule et un chiffre
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div>
+                <FormLabel className="block mb-2">Date de naissance</FormLabel>
+                <div className="grid grid-cols-3 gap-2">
+                  <FormField
+                    control={form.control}
+                    name="birthDay"
+                    render={({ field }) => (
+                      <FormItem>
+                        <Select 
+                          onValueChange={field.onChange} 
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Jour" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {days.map(day => (
+                              <SelectItem key={day} value={day.toString()}>
+                                {day}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="birthMonth"
+                    render={({ field }) => (
+                      <FormItem>
+                        <Select 
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Mois" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {months.map(month => (
+                              <SelectItem key={month.value} value={month.value}>
+                                {month.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="birthYear"
+                    render={({ field }) => (
+                      <FormItem>
+                        <Select 
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Année" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {years.map(year => (
+                              <SelectItem key={year} value={year.toString()}>
+                                {year}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <FormDescription className="text-xs mt-1">
+                  <Calendar className="inline-block h-3 w-3 mr-1" />
+                  Les autres utilisateurs ne verront pas votre âge
+                </FormDescription>
               </div>
 
               <FormField
@@ -183,7 +334,7 @@ const Register = () => {
                         value={field.value}
                         className="flex flex-col space-y-3 md:flex-row md:space-y-0 md:space-x-6"
                       >
-                        <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormItem className="flex items-center space-x-3 space-y-0 border p-3 rounded-md">
                           <FormControl>
                             <RadioGroupItem value="consumer" />
                           </FormControl>
@@ -192,7 +343,7 @@ const Register = () => {
                             Consommateur (gagner des points)
                           </FormLabel>
                         </FormItem>
-                        <FormItem className="flex items-center space-x-3 space-y-0">
+                        <FormItem className="flex items-center space-x-3 space-y-0 border p-3 rounded-md">
                           <FormControl>
                             <RadioGroupItem value="advertiser" />
                           </FormControl>
@@ -220,8 +371,8 @@ const Register = () => {
                       />
                     </FormControl>
                     <div className="space-y-1 leading-none">
-                      <FormLabel>
-                        J'accepte les <Link to="/terms" className="text-primary hover:underline">conditions d'utilisation</Link> et la <Link to="/privacy" className="text-primary hover:underline">politique de confidentialité</Link>
+                      <FormLabel className="text-sm font-normal">
+                        En cliquant sur S'inscrire, vous acceptez nos <Link to="/terms" className="text-primary hover:underline">Conditions</Link>, notre <Link to="/privacy" className="text-primary hover:underline">Politique de confidentialité</Link> et notre <Link to="/cookies" className="text-primary hover:underline">Politique d'utilisation des cookies</Link>.
                       </FormLabel>
                       <FormMessage />
                     </div>
@@ -229,17 +380,18 @@ const Register = () => {
                 )}
               />
 
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-lg" size="lg" disabled={loading}>
                 {loading ? "Inscription en cours..." : "S'inscrire"}
-                {!loading && <ArrowRight className="ml-2 h-4 w-4" />}
               </Button>
             </form>
           </Form>
 
-          <div className="mt-6 text-center">
+          <Separator className="my-6" />
+
+          <div className="text-center">
             <p className="text-sm text-muted-foreground">
               Vous avez déjà un compte?{" "}
-              <Link to="/login" className="text-primary hover:underline">
+              <Link to="/login" className="text-primary font-semibold hover:underline">
                 Se connecter
               </Link>
             </p>

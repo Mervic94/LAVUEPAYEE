@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Mail, KeyRound, ArrowRight, AlertCircle, Shield } from "lucide-react";
+import { Mail, KeyRound, ArrowRight, AlertCircle, Shield, User, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -18,10 +18,11 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
+import { Separator } from "@/components/ui/separator";
 
 const loginSchema = z.object({
-  email: z.string().email({ message: "Adresse email invalide" }),
-  password: z.string().min(8, { message: "Le mot de passe doit contenir au moins 8 caractères" }),
+  identifier: z.string().min(1, { message: "Email, téléphone ou nom d'utilisateur requis" }),
+  password: z.string().min(1, { message: "Mot de passe requis" }),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -37,7 +38,7 @@ const Login = () => {
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
+      identifier: "",
       password: "",
     },
   });
@@ -46,17 +47,28 @@ const Login = () => {
     setLoading(true);
     
     try {
-      // Simulate API call for login
+      // Simulation de l'identification du type d'identifiant
+      const identifier = data.identifier;
+      let identifierType = "username";
+      
+      if (identifier.includes("@")) {
+        identifierType = "email";
+      } else if (/^\d+$/.test(identifier)) {
+        identifierType = "phone";
+      }
+      
+      console.log(`Tentative de connexion avec ${identifierType}: ${identifier}`);
+      
+      // Simulation d'appel API pour la connexion
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // In a real app, the backend would determine if 2FA is required
-      // For demo purposes, we'll always show 2FA
+      // Dans une vraie app, le backend déterminerait si 2FA est requis
       setShowTwoFactorDialog(true);
     } catch (error) {
       toast({
         variant: "destructive",
         title: "Erreur de connexion",
-        description: "Email ou mot de passe incorrect",
+        description: "Identifiants incorrects",
       });
     } finally {
       setLoading(false);
@@ -72,10 +84,10 @@ const Login = () => {
     setLoading(true);
     
     try {
-      // Simulate API call to validate 2FA code
+      // Simulation d'appel API pour valider le code 2FA
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Clear dialog and navigate to dashboard on success
+      // Effacer le dialogue et naviguer vers le dashboard en cas de succès
       setShowTwoFactorDialog(false);
       toast({
         title: "Connexion réussie",
@@ -91,30 +103,41 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md space-y-8">
+      <div className="w-full max-w-md space-y-4">
         <div className="text-center">
-          <h1 className="text-3xl font-bold">Connexion</h1>
+          <h1 className="text-4xl font-bold text-primary">Se connecter</h1>
           <p className="text-muted-foreground mt-2">
             Connectez-vous pour accéder à votre compte
           </p>
         </div>
 
-        <div className="glass-card p-6 rounded-lg">
+        <div className="glass-card p-6 rounded-lg shadow-md bg-card">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
               <FormField
                 control={form.control}
-                name="email"
+                name="identifier"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>Email, téléphone ou nom d'utilisateur</FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <div className="absolute left-3 top-3 h-4 w-4 text-muted-foreground">
+                          {field.value.includes('@') ? (
+                            <Mail className="h-4 w-4" />
+                          ) : field.value && /^\d+$/.test(field.value) ? (
+                            <Phone className="h-4 w-4" />
+                          ) : (
+                            <User className="h-4 w-4" />
+                          )}
+                        </div>
                         <Input 
-                          placeholder="vous@exemple.com" 
+                          placeholder="Email, téléphone ou nom d'utilisateur" 
                           className="pl-10" 
                           {...field}
+                          onChange={(e) => {
+                            field.onChange(e);
+                          }}
                         />
                       </div>
                     </FormControl>
@@ -134,7 +157,7 @@ const Login = () => {
                         <KeyRound className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                         <Input 
                           type="password" 
-                          placeholder="********" 
+                          placeholder="Votre mot de passe" 
                           className="pl-10"
                           {...field}
                         />
@@ -145,26 +168,26 @@ const Login = () => {
                 )}
               />
 
-              <div className="flex justify-between items-center">
+              <Button type="submit" className="w-full bg-primary" size="lg" disabled={loading}>
+                {loading ? "Connexion en cours..." : "Se connecter"}
+              </Button>
+              
+              <div className="flex justify-center">
                 <Link to="/reset-password" className="text-sm text-primary hover:underline">
                   Mot de passe oublié?
                 </Link>
               </div>
-
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Connexion en cours..." : "Se connecter"}
-                {!loading && <ArrowRight className="ml-2 h-4 w-4" />}
-              </Button>
             </form>
           </Form>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-muted-foreground">
-              Vous n'avez pas de compte?{" "}
-              <Link to="/register" className="text-primary hover:underline">
-                Créer un compte
+          <Separator className="my-6" />
+          
+          <div className="text-center">
+            <Button variant="outline" className="w-full border-2" asChild>
+              <Link to="/register">
+                Créer un nouveau compte
               </Link>
-            </p>
+            </Button>
           </div>
         </div>
       </div>
