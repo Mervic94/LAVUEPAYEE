@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Play, Pause, Clock, Eye, X, CheckCircle, Shield, Facebook, Instagram, Youtube } from 'lucide-react';
+import { Play, Pause, Clock, Eye, X, CheckCircle, Shield, Facebook, Instagram, Youtube, BadgeDollarSign } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -35,7 +35,8 @@ const ViewAd = () => {
       thumbnail: 'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8Y2xvdGhpbmd8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=800&q=60',
       duration: 45,
       reward: 50,
-      provider: 'Facebook'
+      provider: 'Facebook',
+      adType: 'banner'
     },
     {
       id: '2',
@@ -45,7 +46,8 @@ const ViewAd = () => {
       thumbnail: 'https://images.unsplash.com/photo-1616348436168-de43ad0db179?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fHNtYXJ0cGhvbmV8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=800&q=60',
       duration: 30,
       reward: 35,
-      provider: 'Google Ads'
+      provider: 'Google Ads',
+      adType: 'interstitial'
     },
     {
       id: '3',
@@ -55,7 +57,8 @@ const ViewAd = () => {
       thumbnail: 'https://images.unsplash.com/photo-1522869635100-187f6605241d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c3RyZWFtaW5nfGVufDB8fDB8fHww&auto=format&fit=crop&w=800&q=60',
       duration: 55,
       reward: 65,
-      provider: 'Youtube'
+      provider: 'Youtube',
+      adType: 'video'
     },
     {
       id: '4',
@@ -65,11 +68,54 @@ const ViewAd = () => {
       thumbnail: 'https://images.unsplash.com/photo-1602002418816-5c0aeef426aa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHRyYXZlbHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60',
       duration: 40,
       reward: 45,
-      provider: 'Instagram'
+      provider: 'Instagram',
+      adType: 'native'
     }
   ];
   
   const mockAd = mockAds.find(ad => ad.id === id) || mockAds[0];
+  
+  // Calculate reward based on ad type, duration and provider
+  const calculateReward = () => {
+    let baseReward = mockAd.reward;
+    
+    // Adjust based on ad type
+    switch (mockAd.adType) {
+      case 'interstitial':
+        baseReward *= 1.2; // 20% more for interstitial ads
+        break;
+      case 'video':
+        baseReward *= 1.5; // 50% more for video ads
+        break;
+      case 'native':
+        baseReward *= 1.3; // 30% more for native ads
+        break;
+      default:
+        break;
+    }
+    
+    // Adjust based on duration
+    if (mockAd.duration > 50) {
+      baseReward *= 1.2; // 20% more for longer ads
+    } else if (mockAd.duration < 20) {
+      baseReward *= 0.8; // 20% less for very short ads
+    }
+    
+    // Adjust based on provider
+    switch (mockAd.provider) {
+      case 'Facebook':
+      case 'Instagram':
+        baseReward *= 1.1; // 10% more for social media ads
+        break;
+      case 'Youtube':
+        baseReward *= 1.2; // 20% more for YouTube ads
+        break;
+      default:
+        break;
+    }
+    
+    return Math.round(baseReward);
+  };
   
   // Generate verification code
   const generateVerificationCode = () => {
@@ -122,18 +168,14 @@ const ViewAd = () => {
     }
   };
   
-  // Handle clicking on progress bar
+  // Handle clicking on progress bar - Disabled to prevent skipping
   const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (videoRef.current) {
-      const progressBar = e.currentTarget;
-      const rect = progressBar.getBoundingClientRect();
-      const clickPosition = (e.clientX - rect.left) / rect.width;
-      
-      const newTime = clickPosition * videoRef.current.duration;
-      videoRef.current.currentTime = newTime;
-      setCurrentTime(newTime);
-      setProgress(clickPosition * 100);
-    }
+    // No operation - skipping is disabled
+    toast({
+      title: "Contrôle de lecture désactivé",
+      description: "Vous devez regarder la publicité en entier pour gagner des LVP.",
+      variant: "destructive",
+    });
   };
   
   // Handle verification submit
@@ -141,12 +183,13 @@ const ViewAd = () => {
     e.preventDefault();
     
     if (userInputCode === verificationCode) {
+      const calculatedReward = calculateReward();
       setAdWatched(true);
       setShowVerification(false);
-      setPoints(mockAd.reward);
+      setPoints(calculatedReward);
       toast({
         title: "Félicitations!",
-        description: `Vous avez gagné ${mockAd.reward} LVP!`,
+        description: `Vous avez gagné ${calculatedReward} LVP!`,
       });
     } else {
       setVerificationAttempts(prev => prev + 1);
@@ -204,6 +247,22 @@ const ViewAd = () => {
     }
   };
 
+  // Get advertisement type label
+  const getAdTypeLabel = () => {
+    switch (mockAd.adType) {
+      case 'banner':
+        return 'Bannière';
+      case 'interstitial':
+        return 'Interstitielle';
+      case 'video':
+        return 'Vidéo';
+      case 'native':
+        return 'Native';
+      default:
+        return 'Bannière';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -219,6 +278,8 @@ const ViewAd = () => {
               className="w-full h-full object-cover"
               onTimeUpdate={handleTimeUpdate}
               onLoadedMetadata={handleLoadedMetadata}
+              controlsList="nodownload nofullscreen noremoteplayback"
+              disablePictureInPicture
             />
             
             {/* Close button */}
@@ -284,7 +345,7 @@ const ViewAd = () => {
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 flex flex-col">
               {/* Progress bar */}
               <div 
-                className="w-full h-1.5 bg-white/30 rounded-full mb-4 cursor-pointer"
+                className="w-full h-1.5 bg-white/30 rounded-full mb-4 cursor-not-allowed"
                 onClick={handleProgressClick}
               >
                 <div 
@@ -322,13 +383,9 @@ const ViewAd = () => {
                     {adWatched ? (
                       <CheckCircle className="h-4 w-4" />
                     ) : (
-                      <img 
-                        src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
-                        alt="LVP" 
-                        className="h-4 w-4"
-                      />
+                      <BadgeDollarSign className="h-4 w-4" />
                     )}
-                    <span>{adWatched ? 'Points gagnés!' : `${mockAd.reward} LVP à gagner`}</span>
+                    <span>{adWatched ? 'Points gagnés!' : `${calculateReward()} LVP à gagner`}</span>
                   </div>
                 </div>
               </div>
@@ -337,11 +394,16 @@ const ViewAd = () => {
           
           {/* Ad Information */}
           <div className="p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="h-8 w-8 bg-gray-100 rounded-full flex items-center justify-center">
-                {getProviderIcon()}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 bg-gray-100 rounded-full flex items-center justify-center">
+                  {getProviderIcon()}
+                </div>
+                <span className="text-sm font-medium text-gray-600">Publicité {mockAd.provider}</span>
               </div>
-              <span className="text-sm font-medium text-gray-600">Publicité {mockAd.provider}</span>
+              <div className="text-sm font-medium px-3 py-1 bg-primary/10 text-primary rounded-full">
+                {getAdTypeLabel()}
+              </div>
             </div>
             
             <h1 className="text-2xl font-bold mb-2">{mockAd.title}</h1>
@@ -376,7 +438,10 @@ const ViewAd = () => {
             ) : (
               <div className="glass-card rounded-lg p-4 bg-green-600/5 border border-green-600/20">
                 <p className="text-center text-foreground/70">
-                  Regardez cette publicité jusqu'à la fin pour gagner {mockAd.reward} LVP.
+                  Regardez cette publicité jusqu'à la fin pour gagner {calculateReward()} LVP.
+                  <span className="block mt-1 text-xs text-foreground/50">
+                    Le déplacement dans la vidéo n'est pas autorisé pour garantir l'intégrité du visionnage
+                  </span>
                 </p>
               </div>
             )}

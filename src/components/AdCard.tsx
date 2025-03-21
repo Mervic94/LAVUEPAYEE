@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Play, Clock, BadgeDollarSign } from 'lucide-react';
+import { Play, Clock, BadgeDollarSign, Tag } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
@@ -11,6 +11,8 @@ interface AdCardProps {
   thumbnail: string;
   duration: number; // in seconds
   reward: number; // points
+  adType?: 'banner' | 'interstitial' | 'video' | 'native';
+  provider?: string;
 }
 
 const AdCard: React.FC<AdCardProps> = ({
@@ -19,13 +21,60 @@ const AdCard: React.FC<AdCardProps> = ({
   description,
   thumbnail,
   duration,
-  reward
+  reward,
+  adType = 'banner',
+  provider = 'LAVUEPAYEE'
 }) => {
   // Format duration as MM:SS
   const formatDuration = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
+
+  // Get ad type label
+  const getAdTypeLabel = () => {
+    switch (adType) {
+      case 'banner':
+        return 'Bannière';
+      case 'interstitial':
+        return 'Interstitielle';
+      case 'video':
+        return 'Vidéo';
+      case 'native':
+        return 'Native';
+      default:
+        return 'Bannière';
+    }
+  };
+
+  // Calculate actual reward based on ad type and duration
+  const calculateReward = () => {
+    let baseReward = reward;
+    
+    // Adjust based on ad type
+    switch (adType) {
+      case 'interstitial':
+        baseReward *= 1.2; // 20% more for interstitial ads
+        break;
+      case 'video':
+        baseReward *= 1.5; // 50% more for video ads
+        break;
+      case 'native':
+        baseReward *= 1.3; // 30% more for native ads
+        break;
+      default:
+        break;
+    }
+    
+    // Adjust based on duration
+    if (duration > 50) {
+      baseReward *= 1.2; // 20% more for longer ads
+    } else if (duration < 20) {
+      baseReward *= 0.8; // 20% less for very short ads
+    }
+    
+    return Math.round(baseReward);
   };
 
   return (
@@ -46,7 +95,11 @@ const AdCard: React.FC<AdCardProps> = ({
             </span>
             <span className="flex items-center gap-1 text-xs bg-primary/90 text-white px-2 py-1 rounded-full backdrop-blur-xs">
               <BadgeDollarSign className="h-3 w-3" />
-              {reward} pts
+              {calculateReward()} pts
+            </span>
+            <span className="flex items-center gap-1 text-xs bg-amber-400/90 text-green-900 px-2 py-1 rounded-full backdrop-blur-xs">
+              <Tag className="h-3 w-3" />
+              {getAdTypeLabel()}
             </span>
           </div>
         </div>
@@ -54,7 +107,10 @@ const AdCard: React.FC<AdCardProps> = ({
       
       {/* Content */}
       <div className="p-4">
-        <h3 className="font-medium text-lg mb-2 line-clamp-1">{title}</h3>
+        <div className="flex justify-between items-start mb-2">
+          <h3 className="font-medium text-lg line-clamp-1">{title}</h3>
+          <span className="text-xs text-gray-500">{provider}</span>
+        </div>
         <p className="text-foreground/70 text-sm mb-4 line-clamp-2">{description}</p>
         
         <Button asChild variant="default" size="sm" className="w-full group-hover:bg-primary transition-colors">

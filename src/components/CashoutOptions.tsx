@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { CreditCard, Building, Wallet, AlertCircle } from 'lucide-react';
+import { CreditCard, Building, Wallet, AlertCircle, Smartphone } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface CashoutMethod {
@@ -47,6 +47,42 @@ const CashoutOptions: React.FC<CashoutOptionsProps> = ({ userPoints, onSelectMet
       conversionRate: 0.01, // 1 point = 0.01€
       processingTime: '3-5 jours ouvrés',
       fees: 'Gratuit (minimum 25€)'
+    },
+    {
+      id: 'mtn-benin',
+      name: 'MTN Bénin',
+      icon: <Smartphone className="h-6 w-6 text-primary" />,
+      minPoints: 300,
+      conversionRate: 0.01, // 1 point = 0.01€
+      processingTime: 'Instantané',
+      fees: '1% du montant retiré'
+    },
+    {
+      id: 'moov-africa',
+      name: 'Moov Africa Bénin',
+      icon: <Smartphone className="h-6 w-6 text-primary" />,
+      minPoints: 300,
+      conversionRate: 0.01, // 1 point = 0.01€
+      processingTime: 'Instantané',
+      fees: '1% du montant retiré'
+    },
+    {
+      id: 'fedapay',
+      name: 'FedaPay',
+      icon: <Wallet className="h-6 w-6 text-primary" />,
+      minPoints: 400,
+      conversionRate: 0.01, // 1 point = 0.01€
+      processingTime: '24 heures',
+      fees: '1.5% du montant retiré'
+    },
+    {
+      id: 'kikiapay',
+      name: 'KikiaPay',
+      icon: <Wallet className="h-6 w-6 text-primary" />,
+      minPoints: 400,
+      conversionRate: 0.01, // 1 point = 0.01€
+      processingTime: '24 heures',
+      fees: '1.5% du montant retiré'
     }
   ];
 
