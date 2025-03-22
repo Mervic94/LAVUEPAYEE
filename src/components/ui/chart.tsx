@@ -137,10 +137,10 @@ export const PieChart: React.FC<ChartProps> = ({ data, options, className }) => 
     value: dataset.data[index]
   }));
 
-  // Use the backgroundColor array for the pie slices
+  // Fix: Ensure we have strings for fill props, not string arrays
   const colors = Array.isArray(dataset.backgroundColor) 
     ? dataset.backgroundColor 
-    : data.labels.map(() => dataset.backgroundColor);
+    : data.labels.map(() => dataset.backgroundColor || '#8884d8'); // Provide a default color
 
   return (
     <div className={className}>
@@ -157,7 +157,12 @@ export const PieChart: React.FC<ChartProps> = ({ data, options, className }) => 
             dataKey="value"
           >
             {transformedData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+              <Cell 
+                key={`cell-${index}`} 
+                fill={typeof colors[index % colors.length] === 'string' 
+                  ? colors[index % colors.length] as string 
+                  : '#8884d8'} 
+              />
             ))}
           </Pie>
           {options?.plugins?.legend?.display !== false && <Legend />}
