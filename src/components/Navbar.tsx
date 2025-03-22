@@ -38,9 +38,26 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Close mobile menu on location change
+  useEffect(() => {
+    setIsOpen(false);
+  }, [location]);
+
   const isActive = (path: string) => location.pathname === path;
 
   const closeMenu = () => setIsOpen(false);
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
 
   return (
     <nav 
@@ -50,11 +67,11 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         <Link to="/" className="flex items-center gap-2">
-          <div className="h-10 w-10 bg-green-600 rounded-full flex items-center justify-center overflow-hidden">
+          <div className="h-10 w-10 rounded-full flex items-center justify-center overflow-hidden">
             <img 
               src="/lovable-uploads/d82c55d8-0c83-4a02-82c0-67e854a84332.png" 
               alt="LAVUEPAYEE" 
-              className="h-8 w-8 object-contain"
+              className="h-10 w-10 object-contain"
             />
           </div>
           <span className="font-bold text-lg text-green-800">LAVUEPAYEE</span>
@@ -100,7 +117,7 @@ const Navbar = () => {
             <img 
               src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
               alt="Vuecoin" 
-              className="h-4 w-4"
+              className="h-4 w-4 object-contain"
             />
             <span>1 Vc</span>
           </div>
@@ -133,7 +150,7 @@ const Navbar = () => {
       <div 
         className={`fixed inset-0 bg-white/95 backdrop-blur-md flex flex-col z-40 pt-20 px-6 transition-all duration-300 ease-in-out transform ${
           isOpen ? 'translate-y-0' : '-translate-y-full'
-        } md:hidden`}
+        } md:hidden overflow-y-auto`}
       >
         <div className="flex flex-col gap-6 items-center">
           <div className="flex items-center gap-3">
@@ -142,7 +159,7 @@ const Navbar = () => {
               <img 
                 src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
                 alt="Vuecoin" 
-                className="h-4 w-4"
+                className="h-4 w-4 object-contain"
               />
               <span>1 Vc</span>
             </div>

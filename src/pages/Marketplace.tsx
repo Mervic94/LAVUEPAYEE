@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Search, Filter, ArrowUpRight, BadgeDollarSign } from 'lucide-react';
+import { Search, Filter, ArrowUpRight } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import ProductCard from '@/components/ProductCard';
 import PointsIndicator from '@/components/PointsIndicator';
@@ -161,7 +161,13 @@ const Marketplace = () => {
           <div className="flex flex-col md:flex-row gap-10 items-center">
             <div className="md:w-1/2">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full text-sm font-medium text-primary mb-6">
-                <BadgeDollarSign className="h-4 w-4" />
+                <div className="h-4 w-4 rounded-full flex items-center justify-center overflow-hidden">
+                  <img 
+                    src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
+                    alt="LVC" 
+                    className="w-full h-full object-contain"
+                  />
+                </div>
                 Conversion de points
               </div>
               <h2 className="text-2xl md:text-3xl font-bold mb-6">
@@ -174,12 +180,12 @@ const Marketplace = () => {
               <div className="flex items-center gap-3 mb-8">
                 <div className="glass-card rounded-xl p-4 flex-grow text-center">
                   <p className="text-foreground/60 text-sm mb-1">Taux de conversion</p>
-                  <p className="text-xl font-semibold">10 000 pts = 10€</p>
+                  <p className="text-xl font-semibold">10 000 LVC = 10€</p>
                 </div>
                 
                 <div className="glass-card rounded-xl p-4 flex-grow text-center">
                   <p className="text-foreground/60 text-sm mb-1">Minimum</p>
-                  <p className="text-xl font-semibold">10 000 points</p>
+                  <p className="text-xl font-semibold">10 000 LVC</p>
                 </div>
               </div>
               
@@ -204,7 +210,13 @@ const Marketplace = () => {
                       className="w-full pl-4 pr-16 py-3 rounded-lg border border-border bg-white focus:outline-none focus:ring-2 focus:ring-primary text-lg"
                     />
                     <div className="absolute inset-y-0 right-4 flex items-center">
-                      <BadgeDollarSign className="h-5 w-5 text-foreground/40" />
+                      <div className="h-5 w-5 rounded-full flex items-center justify-center overflow-hidden">
+                        <img 
+                          src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
+                          alt="LVC" 
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -212,7 +224,7 @@ const Marketplace = () => {
                 <div className="border-t border-border pt-6">
                   <div className="flex justify-between items-center mb-4">
                     <p className="text-foreground/70">Taux de conversion</p>
-                    <p className="font-medium">1 000 pts = 1€</p>
+                    <p className="font-medium">1 000 LVC = 1€</p>
                   </div>
                   
                   <div className="flex justify-between items-center mb-4">
@@ -227,7 +239,16 @@ const Marketplace = () => {
                   
                   <div className="flex justify-between items-center pt-4 border-t">
                     <p className="font-semibold text-lg">Montant estimé</p>
-                    <p className="font-bold text-xl text-primary">10,00 €</p>
+                    <div className="flex items-center">
+                      <div className="h-5 w-5 rounded-full flex items-center justify-center overflow-hidden mr-1">
+                        <img 
+                          src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
+                          alt="Vc" 
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                      <p className="font-bold text-xl text-primary">10,00</p>
+                    </div>
                   </div>
                 </div>
               </div>

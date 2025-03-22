@@ -33,16 +33,16 @@ const PointsIndicator: React.FC<PointsIndicatorProps> = ({ points, size = 'md' }
       className={`flex items-center ${sizeClasses[size]} rounded-full 
                   bg-amber-400 text-green-900 font-medium 
                   shadow-sm transition-all duration-300 hover:scale-105`}
-      title={`${formattedPoints} LVP = ${formattedVuecoins} Vc`}
+      title={`${formattedPoints} LVC = ${formattedVuecoins} Vc`}
     >
-      <div className={`${iconSizes[size]} rounded-full bg-green-600 flex items-center justify-center overflow-hidden`}>
+      <div className={`${iconSizes[size]} rounded-full flex items-center justify-center overflow-hidden`}>
         <img 
           src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
-          alt="LVP" 
-          className="w-full h-full object-contain p-0.5"
+          alt="LVC" 
+          className="w-full h-full object-contain"
         />
       </div>
-      <span>{formattedPoints} LVP</span>
+      <span>{formattedPoints} LVC</span>
     </div>
   );
 };

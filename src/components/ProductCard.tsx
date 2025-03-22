@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BadgeDollarSign, ShoppingCart } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface ProductCardProps {
@@ -33,8 +33,14 @@ const ProductCard: React.FC<ProductCardProps> = ({
         />
         <div className="absolute top-3 right-3">
           <span className="flex items-center gap-1 text-xs font-medium bg-primary text-white px-2 py-1 rounded-full">
-            <BadgeDollarSign className="h-3 w-3" />
-            {formattedPrice} pts
+            <div className="h-3 w-3 rounded-full flex items-center justify-center overflow-hidden">
+              <img 
+                src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
+                alt="LVC" 
+                className="w-full h-full object-contain"
+              />
+            </div>
+            {formattedPrice} LVC
           </span>
         </div>
       </div>

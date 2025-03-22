@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -8,7 +7,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { BarChart, LineChart, PieChart } from "@/components/ui/chart";
-import { UploadCloud, BarChart2, TrendingUp, Users, DollarSign, Clock } from 'lucide-react';
+import { UploadCloud, BarChart2, TrendingUp, Users, Clock, History, Flag } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
+import LightbulbIcon from './icons/LightbulbIcon';
 
 interface AdvertiserDashboardProps {
   className?: string;
@@ -19,8 +20,9 @@ const AdvertiserDashboard: React.FC<AdvertiserDashboardProps> = ({ className }) 
   const [adDescription, setAdDescription] = useState('');
   const [adType, setAdType] = useState('banner');
   const [adBudget, setAdBudget] = useState('1000');
+  const [selectedCampaign, setSelectedCampaign] = useState<string | null>(null);
+  const isMobile = useIsMobile();
   
-  // Mock data for charts
   const impressionsData = {
     labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
     datasets: [
@@ -40,14 +42,14 @@ const AdvertiserDashboard: React.FC<AdvertiserDashboardProps> = ({ className }) 
         label: 'Taux',
         data: [5000, 1500, 300],
         backgroundColor: [
-          'rgba(255, 99, 132, 0.5)',
-          'rgba(54, 162, 235, 0.5)',
-          'rgba(75, 192, 192, 0.5)',
+          'rgba(155, 135, 245, 0.7)',
+          'rgba(14, 165, 233, 0.7)',
+          'rgba(217, 70, 239, 0.7)'
         ],
         borderColor: [
-          'rgb(255, 99, 132)',
-          'rgb(54, 162, 235)',
-          'rgb(75, 192, 192)',
+          'rgb(155, 135, 245)',
+          'rgb(14, 165, 233)',
+          'rgb(217, 70, 239)',
         ],
         borderWidth: 1,
       },
@@ -60,25 +62,114 @@ const AdvertiserDashboard: React.FC<AdvertiserDashboardProps> = ({ className }) 
       {
         label: 'Audience',
         data: [15, 30, 25, 20, 10],
-        backgroundColor: 'rgba(75, 192, 192, 0.5)',
-        borderColor: 'rgb(75, 192, 192)',
+        backgroundColor: [
+          'rgba(249, 115, 22, 0.7)',
+          'rgba(14, 165, 233, 0.7)',
+          'rgba(139, 92, 246, 0.7)',
+          'rgba(217, 70, 239, 0.7)',
+          'rgba(142, 145, 150, 0.7)'
+        ],
+        borderColor: [
+          'rgb(249, 115, 22)',
+          'rgb(14, 165, 233)',
+          'rgb(139, 92, 246)',
+          'rgb(217, 70, 239)',
+          'rgb(142, 145, 150)',
+        ],
         borderWidth: 1,
       },
     ],
   };
+
+  const campaignSuggestions = [
+    {
+      id: 1,
+      title: "Optimisez pour les 25-34 ans",
+      description: "Ce groupe démographique a montré le meilleur taux de conversion pour vos publicités précédentes.",
+      improvement: "+15% de conversions potentielles"
+    },
+    {
+      id: 2,
+      title: "Augmentez votre budget le vendredi",
+      description: "Vos impressions sont les plus élevées en fin de semaine, augmentez votre budget pour maximiser l'impact.",
+      improvement: "+22% de visibilité estimée"
+    },
+    {
+      id: 3,
+      title: "Utilisez plus de vidéos interstitielles",
+      description: "Les publicités vidéo ont un taux d'engagement 3x supérieur à vos bannières actuelles.",
+      improvement: "+30% d'engagement estimé"
+    }
+  ];
+
+  const campaignHistory = [
+    {
+      id: "camp-001",
+      name: "Promotion estivale 2023",
+      type: "Vidéo",
+      dateRange: "01/06/2023 - 31/08/2023",
+      impressions: 42500,
+      clicks: 3800,
+      conversions: 720,
+      budget: "15000 LVC",
+      status: "completed",
+      performance: [
+        { date: "Juin", impressions: 12000, clicks: 1100, conversions: 210 },
+        { date: "Juillet", impressions: 15500, clicks: 1400, conversions: 260 },
+        { date: "Août", impressions: 15000, clicks: 1300, conversions: 250 }
+      ]
+    },
+    {
+      id: "camp-002",
+      name: "Lancement nouvelle application",
+      type: "Native",
+      dateRange: "15/09/2023 - 15/10/2023",
+      impressions: 28700,
+      clicks: 3200,
+      conversions: 650,
+      budget: "12000 LVC",
+      status: "completed",
+      performance: [
+        { date: "Sem 1-2", impressions: 14000, clicks: 1600, conversions: 320 },
+        { date: "Sem 3-4", impressions: 14700, clicks: 1600, conversions: 330 }
+      ]
+    },
+    {
+      id: "camp-003",
+      name: "Offres de fin d'année",
+      type: "Bannière",
+      dateRange: "01/12/2023 - 31/12/2023",
+      impressions: 35600,
+      clicks: 2800,
+      conversions: 560,
+      budget: "13500 LVC",
+      status: "completed",
+      performance: [
+        { date: "Sem 1", impressions: 8500, clicks: 650, conversions: 130 },
+        { date: "Sem 2", impressions: 9000, clicks: 700, conversions: 140 },
+        { date: "Sem 3", impressions: 9500, clicks: 750, conversions: 150 },
+        { date: "Sem 4", impressions: 8600, clicks: 700, conversions: 140 }
+      ]
+    }
+  ];
   
   const handleAdSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log('Ad submitted:', { adTitle, adDescription, adType, adBudget });
     // Reset form or show success message
   };
+
+  const handleCampaignSelect = (id: string) => {
+    setSelectedCampaign(id === selectedCampaign ? null : id);
+  };
   
   return (
     <div className={`glass-card rounded-xl overflow-hidden ${className}`}>
       <Tabs defaultValue="analytics" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
           <TabsTrigger value="campaigns">Campagnes</TabsTrigger>
+          <TabsTrigger value="history">Historique</TabsTrigger>
           <TabsTrigger value="new-ad">Nouvelle Publicité</TabsTrigger>
         </TabsList>
         
@@ -121,12 +212,18 @@ const AdvertiserDashboard: React.FC<AdvertiserDashboardProps> = ({ className }) 
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg flex items-center">
-                  <DollarSign className="h-4 w-4 mr-2 text-primary" />
+                  <div className="h-4 w-4 mr-2 rounded-full flex items-center justify-center overflow-hidden">
+                    <img 
+                      src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
+                      alt="LVC" 
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
                   Budget Dépensé
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">12,420 LVP</div>
+                <div className="text-3xl font-bold">12,420 LVC</div>
                 <p className="text-xs text-foreground/60 flex items-center mt-1">
                   <Clock className="h-3 w-3 mr-1" />
                   Mis à jour il y a 3 heures
@@ -134,6 +231,29 @@ const AdvertiserDashboard: React.FC<AdvertiserDashboardProps> = ({ className }) 
               </CardContent>
             </Card>
           </div>
+
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <LightbulbIcon className="h-5 w-5 text-amber-500" />
+                Suggestions d'optimisation
+              </CardTitle>
+              <CardDescription>
+                Basées sur l'analyse de vos campagnes précédentes
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {campaignSuggestions.map(suggestion => (
+                  <div key={suggestion.id} className="p-4 rounded-lg border bg-secondary/10 hover:bg-secondary/20 transition-colors">
+                    <h3 className="font-medium text-primary mb-2">{suggestion.title}</h3>
+                    <p className="text-sm text-foreground/70 mb-2">{suggestion.description}</p>
+                    <p className="text-sm font-medium text-green-600">{suggestion.improvement}</p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
@@ -247,132 +367,5 @@ const AdvertiserDashboard: React.FC<AdvertiserDashboardProps> = ({ className }) 
               <div>Statut</div>
             </div>
             
-            {/* Mock campaign data */}
-            {[
-              { id: 1, name: "Promotion estivale", type: "Vidéo", impressions: 12430, budget: "5000 LVP", status: "active" },
-              { id: 2, name: "Nouveaux produits", type: "Bannière", impressions: 8211, budget: "3500 LVP", status: "active" },
-              { id: 3, name: "Offre spéciale", type: "Interstitielle", impressions: 4192, budget: "2000 LVP", status: "completed" },
-              { id: 4, name: "Lancement application", type: "Native", impressions: 9845, budget: "7500 LVP", status: "active" },
-              { id: 5, name: "Soldes d'hiver", type: "Bannière", impressions: 0, budget: "4000 LVP", status: "inactive" },
-            ].map((campaign) => (
-              <div key={campaign.id} className="grid grid-cols-6 gap-4 p-4 border-t border-border hover:bg-secondary/10 cursor-pointer">
-                <div className="col-span-2 font-medium">{campaign.name}</div>
-                <div>{campaign.type}</div>
-                <div>{campaign.impressions.toLocaleString('fr-FR')}</div>
-                <div>{campaign.budget}</div>
-                <div>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    campaign.status === 'active' ? 'bg-green-100 text-green-800' :
-                    campaign.status === 'inactive' ? 'bg-gray-100 text-gray-800' :
-                    'bg-blue-100 text-blue-800'
-                  }`}>
-                    {campaign.status === 'active' ? 'Active' :
-                     campaign.status === 'inactive' ? 'Inactive' :
-                     'Terminée'}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="new-ad" className="p-4">
-          <h2 className="text-2xl font-bold mb-4">Créer une nouvelle publicité</h2>
-          
-          <form onSubmit={handleAdSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="ad-title">Titre de la publicité</Label>
-                  <Input 
-                    id="ad-title" 
-                    placeholder="Entrez un titre accrocheur" 
-                    value={adTitle}
-                    onChange={(e) => setAdTitle(e.target.value)}
-                    required
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="ad-description">Description</Label>
-                  <Textarea 
-                    id="ad-description" 
-                    placeholder="Décrivez votre publicité" 
-                    value={adDescription}
-                    onChange={(e) => setAdDescription(e.target.value)}
-                    rows={4}
-                    required
-                  />
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="ad-type">Type de publicité</Label>
-                    <Select 
-                      value={adType} 
-                      onValueChange={setAdType}
-                    >
-                      <SelectTrigger id="ad-type">
-                        <SelectValue placeholder="Sélectionner un type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="banner">Bannière</SelectItem>
-                        <SelectItem value="video">Vidéo</SelectItem>
-                        <SelectItem value="interstitial">Interstitielle</SelectItem>
-                        <SelectItem value="native">Native</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div>
-                    <Label htmlFor="ad-budget">Budget (LVP)</Label>
-                    <Input 
-                      id="ad-budget" 
-                      type="number" 
-                      min="500" 
-                      placeholder="Budget" 
-                      value={adBudget}
-                      onChange={(e) => setAdBudget(e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
-              </div>
-              
-              <div className="space-y-4">
-                <Label>Contenu média</Label>
-                <div className="border-2 border-dashed border-border rounded-lg p-12 text-center hover:bg-secondary/10 transition-colors cursor-pointer">
-                  <UploadCloud className="h-12 w-12 mx-auto text-foreground/40 mb-4" />
-                  <h3 className="text-lg font-medium mb-2">Glissez-déposez vos fichiers ici</h3>
-                  <p className="text-sm text-foreground/60 mb-4">PNG, JPG, GIF, MP4, AVI jusqu'à 10MB</p>
-                  <Button variant="outline" type="button">
-                    Sélectionner un fichier
-                  </Button>
-                </div>
-                
-                <div>
-                  <Label htmlFor="ad-targeting">Ciblage</Label>
-                  <Select defaultValue="all">
-                    <SelectTrigger id="ad-targeting">
-                      <SelectValue placeholder="Audience cible" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Tous les utilisateurs</SelectItem>
-                      <SelectItem value="new">Nouveaux utilisateurs</SelectItem>
-                      <SelectItem value="returning">Utilisateurs existants</SelectItem>
-                      <SelectItem value="affiliates">Affiliés</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
-            
-            <Button type="submit" className="w-full md:w-auto">Créer la publicité</Button>
-          </form>
-        </TabsContent>
-      </Tabs>
-    </div>
-  );
-};
+            {
 
-export default AdvertiserDashboard;
