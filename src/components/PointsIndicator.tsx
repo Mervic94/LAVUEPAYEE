@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { BadgeDollarSign } from 'lucide-react';
 
 interface PointsIndicatorProps {
   points: number;
@@ -36,7 +35,13 @@ const PointsIndicator: React.FC<PointsIndicatorProps> = ({ points, size = 'md' }
                   shadow-sm transition-all duration-300 hover:scale-105`}
       title={`${formattedPoints} LVP = ${formattedVuecoins} Vc`}
     >
-      <BadgeDollarSign className={`${iconSizes[size]} text-green-900`} />
+      <div className={`${iconSizes[size]} rounded-full bg-green-600 flex items-center justify-center overflow-hidden`}>
+        <img 
+          src="/lovable-uploads/d82c55d8-0c83-4a02-82c0-67e854a84332.png" 
+          alt="LVP" 
+          className="w-full h-full object-contain p-0.5"
+        />
+      </div>
       <span>{formattedPoints} LVP</span>
     </div>
   );

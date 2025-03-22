@@ -1,7 +1,22 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Users, ShoppingBag, Eye, User } from 'lucide-react';
+import { 
+  Menu, 
+  X, 
+  Users, 
+  ShoppingBag, 
+  Eye, 
+  User,
+  MessageCircle,
+  Star,
+  HelpCircle,
+  Facebook,
+  Instagram,
+  Send,
+  Phone,
+  Twitter
+} from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import PointsIndicator from './PointsIndicator';
 
@@ -35,7 +50,7 @@ const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         <Link to="/" className="flex items-center gap-2">
-          <div className="h-10 w-10 bg-green-600 rounded-full flex items-center justify-center">
+          <div className="h-10 w-10 bg-green-600 rounded-full flex items-center justify-center overflow-hidden">
             <img 
               src="/lovable-uploads/d82c55d8-0c83-4a02-82c0-67e854a84332.png" 
               alt="LAVUEPAYEE" 
@@ -56,12 +71,30 @@ const Navbar = () => {
           <Link to="/marketplace" className={`nav-link ${isActive('/marketplace') ? 'text-primary after:scale-x-100' : ''}`}>
             Marketplace
           </Link>
-          <Link to="/profile" className={`nav-link ${isActive('/profile') ? 'text-primary after:scale-x-100' : ''}`}>
-            Profil
+          <Link to="/tasks" className={`nav-link ${isActive('/tasks') ? 'text-primary after:scale-x-100' : ''}`}>
+            Tâches
+          </Link>
+          <Link to="/messages" className={`nav-link ${isActive('/messages') ? 'text-primary after:scale-x-100' : ''}`}>
+            Messages
+          </Link>
+          <Link to="/faq" className={`nav-link ${isActive('/faq') ? 'text-primary after:scale-x-100' : ''}`}>
+            FAQ
           </Link>
         </div>
 
         <div className="hidden md:flex items-center gap-4">
+          <div className="flex items-center gap-3 mr-2">
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-blue-600 transition-colors">
+              <Facebook size={16} />
+            </a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-pink-600 transition-colors">
+              <Instagram size={16} />
+            </a>
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-blue-400 transition-colors">
+              <Twitter size={16} />
+            </a>
+          </div>
+          
           <PointsIndicator points={1250} />
           <div className="flex items-center px-3 py-1.5 gap-1.5 rounded-full bg-green-100 text-green-800 font-medium">
             <img 
@@ -71,6 +104,11 @@ const Navbar = () => {
             />
             <span>1 Vc</span>
           </div>
+          <Button asChild variant="ghost" size="icon" className="rounded-full">
+            <Link to="/messages">
+              <MessageCircle className="h-5 w-5" />
+            </Link>
+          </Button>
           <Button asChild variant="ghost" size="icon" className="rounded-full">
             <Link to="/profile">
               <User className="h-5 w-5" />
@@ -128,11 +166,47 @@ const Navbar = () => {
             </div>
           </Link>
           
+          <Link to="/tasks" onClick={closeMenu} className="w-full">
+            <div className={`py-3 px-4 rounded-lg transition-colors ${isActive('/tasks') ? 'bg-primary/10 text-primary' : ''}`}>
+              Tâches
+            </div>
+          </Link>
+          
+          <Link to="/messages" onClick={closeMenu} className="w-full">
+            <div className={`py-3 px-4 rounded-lg transition-colors ${isActive('/messages') ? 'bg-primary/10 text-primary' : ''}`}>
+              Messages
+            </div>
+          </Link>
+          
           <Link to="/profile" onClick={closeMenu} className="w-full">
             <div className={`py-3 px-4 rounded-lg transition-colors ${isActive('/profile') ? 'bg-primary/10 text-primary' : ''}`}>
               Profil
             </div>
           </Link>
+          
+          <Link to="/faq" onClick={closeMenu} className="w-full">
+            <div className={`py-3 px-4 rounded-lg transition-colors ${isActive('/faq') ? 'bg-primary/10 text-primary' : ''}`}>
+              FAQ
+            </div>
+          </Link>
+          
+          <div className="flex items-center gap-4 mt-4">
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-blue-600 transition-colors">
+              <Facebook size={20} />
+            </a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-pink-600 transition-colors">
+              <Instagram size={20} />
+            </a>
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-blue-400 transition-colors">
+              <Twitter size={20} />
+            </a>
+            <a href="https://wa.me/message/XXXXX" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-green-600 transition-colors">
+              <Phone size={20} />
+            </a>
+            <a href="https://m.me/lavuepayee" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-blue-500 transition-colors">
+              <Send size={20} />
+            </a>
+          </div>
           
           <Button asChild className="w-full mt-4" variant="default">
             <Link to="/login" onClick={closeMenu}>

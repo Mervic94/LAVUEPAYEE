@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Play, Clock, BadgeDollarSign, Tag } from 'lucide-react';
+import { Play, Clock, Tag } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
@@ -94,7 +94,13 @@ const AdCard: React.FC<AdCardProps> = ({
               {formatDuration(duration)}
             </span>
             <span className="flex items-center gap-1 text-xs bg-primary/90 text-white px-2 py-1 rounded-full backdrop-blur-xs">
-              <BadgeDollarSign className="h-3 w-3" />
+              <div className="h-3 w-3 rounded-full bg-green-600 flex items-center justify-center overflow-hidden">
+                <img 
+                  src="/lovable-uploads/d82c55d8-0c83-4a02-82c0-67e854a84332.png" 
+                  alt="LVP" 
+                  className="w-full h-full object-contain p-0.5"
+                />
+              </div>
               {calculateReward()} pts
             </span>
             <span className="flex items-center gap-1 text-xs bg-amber-400/90 text-green-900 px-2 py-1 rounded-full backdrop-blur-xs">
