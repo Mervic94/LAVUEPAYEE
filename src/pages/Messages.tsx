@@ -1,10 +1,11 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, Send, User, PlusCircle, Phone, Video, Info } from 'lucide-react';
+import { toast } from '@/components/ui/use-toast';
 
 // Mock data for conversations
 const mockConversations = [
@@ -154,11 +155,26 @@ const Messages = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedConversation, setSelectedConversation] = useState(mockConversations[1]);
   const [newMessage, setNewMessage] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    const userAuth = localStorage.getItem('userAuth');
+    if (!userAuth) {
+      toast({
+        title: "Accès refusé",
+        description: "Vous devez être connecté pour accéder à la messagerie",
+        variant: "destructive"
+      });
+      navigate('/login');
+    } else {
+      setIsAuthenticated(true);
+    }
+  }, [navigate]);
   
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (newMessage.trim()) {
-      // In a real app, you would send this to an API
       console.log('Sending message:', newMessage);
       setNewMessage('');
     }
@@ -170,6 +186,10 @@ const Messages = () => {
       )
     : mockConversations;
   
+  if (!isAuthenticated) {
+    return null;
+  }
+  
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -178,7 +198,6 @@ const Messages = () => {
         <h1 className="text-3xl font-bold mb-8">Messages</h1>
         
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 h-[70vh]">
-          {/* Conversations sidebar */}
           <div className="md:col-span-1 glass-card rounded-xl overflow-hidden flex flex-col h-full">
             <div className="p-4 border-b">
               <div className="relative">
@@ -252,10 +271,8 @@ const Messages = () => {
             </div>
           </div>
           
-          {/* Chat area */}
           {selectedConversation ? (
             <div className="md:col-span-2 lg:col-span-3 glass-card rounded-xl overflow-hidden flex flex-col h-full">
-              {/* Chat header */}
               <div className="p-4 border-b flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Avatar>
@@ -293,7 +310,6 @@ const Messages = () => {
                 </div>
               </div>
               
-              {/* Messages */}
               <div className="flex-grow overflow-y-auto p-4 space-y-4">
                 {mockMessages.map((message) => (
                   <div 
@@ -324,7 +340,6 @@ const Messages = () => {
                 ))}
               </div>
               
-              {/* Message input */}
               <form onSubmit={handleSendMessage} className="p-4 border-t flex gap-2">
                 <Input
                   type="text"

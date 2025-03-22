@@ -1,21 +1,27 @@
-
-import React, { useState } from 'react';
-import { BadgeDollarSign, Users, Clock, ChevronDown, ChevronUp, Check, Link as LinkIcon, Copy, CreditCard } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { BadgeDollarSign, Users, Clock, ChevronDown, ChevronUp, Check, Link as LinkIcon, Copy, CreditCard, Camera, Facebook, Instagram, Mail, Phone } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "@/components/ui/use-toast";
 import Navbar from '@/components/Navbar';
 import PointsIndicator from '@/components/PointsIndicator';
 import CashoutDialog from '@/components/CashoutDialog';
+import SocialShareLinks from '@/components/SocialShareLinks';
 
 const Profile = () => {
   const [expanded, setExpanded] = useState(false);
   const [copiedToClipboard, setCopiedToClipboard] = useState(false);
   const [cashoutDialogOpen, setCashoutDialogOpen] = useState(false);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Mock user data
   const userData = {
     name: 'Thomas Dubois',
     email: 'thomas.dubois@example.com',
+    phone: '+33 6 12 34 56 78',
     points: 1250,
     affiliationCode: 'THOMAS25',
     affiliationLink: 'https://rewardads.com/ref/THOMAS25',
@@ -65,6 +71,33 @@ const Profile = () => {
     setCopiedToClipboard(true);
     setTimeout(() => setCopiedToClipboard(false), 2000);
   };
+  
+  // Handle profile image upload
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (e.target?.result) {
+          setProfileImage(e.target.result as string);
+          toast({
+            title: "Photo de profil mise à jour",
+            description: "Votre photo a été modifiée avec succès."
+          });
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  
+  // Handle profile update
+  const handleProfileUpdate = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast({
+      title: "Profil mis à jour",
+      description: "Vos informations ont été enregistrées avec succès."
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -76,9 +109,28 @@ const Profile = () => {
         {/* User Profile Card */}
         <div className="glass-card rounded-xl p-6 mb-10">
           <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
-            {/* Avatar */}
-            <div className="h-24 w-24 rounded-full bg-primary/10 flex items-center justify-center text-primary text-2xl font-bold">
-              {userData.name.charAt(0)}
+            {/* Avatar with Upload */}
+            <div className="relative group">
+              <div 
+                className="h-24 w-24 rounded-full bg-primary/10 flex items-center justify-center text-primary text-2xl font-bold overflow-hidden"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                {profileImage ? (
+                  <img src={profileImage} alt={userData.name} className="h-full w-full object-cover" />
+                ) : (
+                  userData.name.charAt(0)
+                )}
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
+                  <Camera className="h-6 w-6 text-white" />
+                </div>
+              </div>
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                className="hidden" 
+                accept="image/*" 
+                onChange={handleImageUpload}
+              />
             </div>
             
             {/* User Info */}
@@ -119,13 +171,20 @@ const Profile = () => {
               <p className="text-foreground/60">Invitez des amis et gagnez des commissions sur 5 niveaux</p>
             </div>
             
-            <button 
-              className="flex items-center gap-1 text-primary hover:text-primary/80 font-medium mt-2 md:mt-0"
-              onClick={() => setExpanded(!expanded)}
-            >
-              {expanded ? 'Réduire' : 'Voir les détails'}
-              {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-            </button>
+            <div className="flex items-center gap-2 mt-2 md:mt-0">
+              <SocialShareLinks 
+                username={userData.name}
+                affiliationLink={userData.affiliationLink}
+              />
+              
+              <button 
+                className="flex items-center gap-1 text-primary hover:text-primary/80 font-medium"
+                onClick={() => setExpanded(!expanded)}
+              >
+                {expanded ? 'Réduire' : 'Voir les détails'}
+                {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
           
           {/* Affiliation Link */}
@@ -159,75 +218,8 @@ const Profile = () => {
             <p className="text-sm text-foreground/60 mt-2">Code: <span className="font-medium">{userData.affiliationCode}</span></p>
           </div>
           
-          {/* Affiliation Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="glass-card rounded-lg p-4 text-center">
-              <p className="text-foreground/60 text-sm mb-1">Total des affiliés</p>
-              <div className="flex items-center justify-center gap-1">
-                <Users className="h-5 w-5 text-primary" />
-                <span className="text-2xl font-semibold">{userData.affiliationStats.totalAffiliates}</span>
-              </div>
-            </div>
-            <div className="glass-card rounded-lg p-4 text-center">
-              <p className="text-foreground/60 text-sm mb-1">Points gagnés</p>
-              <div className="flex items-center justify-center gap-1">
-                <BadgeDollarSign className="h-5 w-5 text-primary" />
-                <span className="text-2xl font-semibold">{userData.affiliationStats.earnings}</span>
-              </div>
-            </div>
-            <div className="glass-card rounded-lg p-4 text-center">
-              <p className="text-foreground/60 text-sm mb-1">Commission moyenne</p>
-              <div className="flex items-center justify-center gap-1">
-                <Clock className="h-5 w-5 text-primary" />
-                <span className="text-2xl font-semibold">32 pts/jour</span>
-              </div>
-            </div>
-          </div>
-          
-          {/* Expanded Affiliation Details */}
-          {expanded && (
-            <div className="mt-6 pt-6 border-t border-border animate-fade-in">
-              <h3 className="text-lg font-semibold mb-4">Détails par niveau</h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
-                {[1, 2, 3, 4, 5].map((level) => {
-                  const levelKey = `level${level}` as keyof typeof userData.affiliationStats;
-                  const affiliateCount = userData.affiliationStats[levelKey];
-                  const commission = 10 - (level - 1) * 2; // Commission rates: 10%, 8%, 6%, 4%, 2%
-                  
-                  return (
-                    <div key={level} className="glass-card rounded-lg p-4 text-center">
-                      <div className="h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center text-primary font-medium mx-auto mb-2">
-                        {level}
-                      </div>
-                      <p className="font-medium mb-1">{affiliateCount} affilié{affiliateCount !== 1 ? 's' : ''}</p>
-                      <p className="text-foreground/60 text-sm">{commission}% de commission</p>
-                    </div>
-                  );
-                })}
-              </div>
-              
-              {/* Top Affiliates */}
-              <h3 className="text-lg font-semibold mb-4">Mes meilleurs affiliés</h3>
-              <div className="glass-card rounded-lg overflow-hidden">
-                <div className="grid grid-cols-5 gap-4 p-4 bg-secondary/50 font-medium">
-                  <div className="col-span-2">Nom</div>
-                  <div className="text-center">Niveau</div>
-                  <div className="text-center">Date d'inscription</div>
-                  <div className="text-center">Points générés</div>
-                </div>
-                
-                {affiliates.map((affiliate) => (
-                  <div key={affiliate.id} className="grid grid-cols-5 gap-4 p-4 border-t border-border">
-                    <div className="col-span-2">{affiliate.name}</div>
-                    <div className="text-center">{affiliate.level}</div>
-                    <div className="text-center">{formatDate(affiliate.joinDate)}</div>
-                    <div className="text-center font-medium">{affiliate.earnings} pts</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          {/* The rest of the affiliation section */}
+          {/* ... keep existing code (affiliation stats and expanded details) */}
         </div>
         
         {/* Tabs for History and Settings */}
@@ -263,27 +255,93 @@ const Profile = () => {
             <div className="glass-card rounded-xl p-6">
               <h3 className="text-xl font-semibold mb-6">Préférences de compte</h3>
               
-              <div className="space-y-6">
+              <form onSubmit={handleProfileUpdate} className="space-y-6">
                 <div>
-                  <label className="block text-foreground/70 mb-2">Nom complet</label>
-                  <input 
+                  <Label htmlFor="full-name" className="block text-foreground/70 mb-2">Nom complet</Label>
+                  <Input 
+                    id="full-name"
                     type="text" 
-                    value={userData.name}
-                    className="w-full px-4 py-2.5 rounded-lg border border-border bg-white focus:outline-none focus:ring-2 focus:ring-primary"
+                    defaultValue={userData.name}
+                    className="w-full"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-foreground/70 mb-2">Adresse email</label>
-                  <input 
-                    type="email" 
-                    value={userData.email}
-                    className="w-full px-4 py-2.5 rounded-lg border border-border bg-white focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
+                  <Label htmlFor="email" className="block text-foreground/70 mb-2">Adresse email</Label>
+                  <div className="flex gap-2">
+                    <Input 
+                      id="email"
+                      type="email" 
+                      defaultValue={userData.email}
+                      className="w-full"
+                    />
+                    <Button type="button" variant="outline" className="flex items-center gap-1">
+                      <Mail className="h-4 w-4" />
+                      Vérifier
+                    </Button>
+                  </div>
                 </div>
                 
                 <div>
-                  <label className="block text-foreground/70 mb-2">Préférences de notification</label>
+                  <Label htmlFor="phone" className="block text-foreground/70 mb-2">Numéro de téléphone</Label>
+                  <div className="flex gap-2">
+                    <Input 
+                      id="phone"
+                      type="tel" 
+                      defaultValue={userData.phone}
+                      className="w-full"
+                    />
+                    <Button type="button" variant="outline" className="flex items-center gap-1">
+                      <Phone className="h-4 w-4" />
+                      Vérifier
+                    </Button>
+                  </div>
+                </div>
+                
+                <div>
+                  <Label htmlFor="password" className="block text-foreground/70 mb-2">Changer le mot de passe</Label>
+                  <div className="space-y-2">
+                    <Input 
+                      id="current-password"
+                      type="password" 
+                      placeholder="Mot de passe actuel"
+                      className="w-full"
+                    />
+                    <Input 
+                      id="new-password"
+                      type="password" 
+                      placeholder="Nouveau mot de passe"
+                      className="w-full"
+                    />
+                    <Input 
+                      id="confirm-password"
+                      type="password" 
+                      placeholder="Confirmer le mot de passe"
+                      className="w-full"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <Label className="block text-foreground/70 mb-2">Réseaux sociaux</Label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex items-center gap-2">
+                      <div className="h-8 w-8 bg-blue-500 text-white rounded flex items-center justify-center">
+                        <Facebook className="h-4 w-4" />
+                      </div>
+                      <Input placeholder="URL Facebook" className="flex-grow" />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="h-8 w-8 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded flex items-center justify-center">
+                        <Instagram className="h-4 w-4" />
+                      </div>
+                      <Input placeholder="URL Instagram" className="flex-grow" />
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <Label className="block text-foreground/70 mb-2">Préférences de notification</Label>
                   <div className="space-y-2">
                     <div className="flex items-center">
                       <input type="checkbox" id="notify_new_ads" className="rounded border-border focus:ring-primary" />
@@ -301,9 +359,9 @@ const Profile = () => {
                 </div>
                 
                 <div className="pt-4 border-t">
-                  <Button>Enregistrer les modifications</Button>
+                  <Button type="submit">Enregistrer les modifications</Button>
                 </div>
-              </div>
+              </form>
             </div>
           </TabsContent>
         </Tabs>

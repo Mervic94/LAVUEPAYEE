@@ -20,6 +20,7 @@ import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import Cookies from "./pages/Cookies";
 import FAQ from "./pages/FAQ";
+import AdvertiserDashboard from "./components/AdvertiserDashboard";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,7 @@ const App = () => (
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/messages" element={<Messages />} />
           <Route path="/tasks" element={<Tasks />} />
+          <Route path="/advertiser" element={<AdvertiserDashboard />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/cookies" element={<Cookies />} />

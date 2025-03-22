@@ -37,7 +37,7 @@ const PointsIndicator: React.FC<PointsIndicatorProps> = ({ points, size = 'md' }
     >
       <div className={`${iconSizes[size]} rounded-full bg-green-600 flex items-center justify-center overflow-hidden`}>
         <img 
-          src="/lovable-uploads/d82c55d8-0c83-4a02-82c0-67e854a84332.png" 
+          src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
           alt="LVP" 
           className="w-full h-full object-contain p-0.5"
         />
