@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/contexts/AuthContext";
 
 const registerSchema = z.object({
   firstName: z.string().min(2, { message: "Prénom requis" }),
@@ -56,7 +57,7 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 const Register = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
+  const { signUp, user } = useAuth();
   
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
@@ -76,6 +77,13 @@ const Register = () => {
   ];
   const days = Array.from({ length: 31 }, (_, i) => i + 1);
 
+  // Rediriger si l'utilisateur est déjà connecté
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
+
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -94,29 +102,19 @@ const Register = () => {
   });
 
   const onSubmit = async (data: RegisterFormValues) => {
-    setLoading(true);
+    const dateOfBirth = `${data.birthYear}-${data.birthMonth.padStart(2, '0')}-${data.birthDay.padStart(2, '0')}`;
     
-    try {
-      // Simulate API call for registration
-      console.log("Registration data:", data);
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      toast({
-        title: "Inscription réussie!",
-        description: "Un email de confirmation a été envoyé à votre adresse.",
-      });
-      
-      // Redirect to email verification page
-      navigate("/verify-email");
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Erreur d'inscription",
-        description: "Une erreur est survenue lors de l'inscription. Veuillez réessayer.",
-      });
-    } finally {
-      setLoading(false);
-    }
+    // Préparer les données de l'utilisateur pour le profil
+    const userData = {
+      username: data.username,
+      first_name: data.firstName,
+      last_name: data.lastName,
+      phone: data.phone,
+      date_of_birth: dateOfBirth,
+      account_type: data.accountType,
+    };
+    
+    await signUp(data.email, data.password, userData);
   };
 
   return (
@@ -380,8 +378,8 @@ const Register = () => {
                 )}
               />
 
-              <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-lg" size="lg" disabled={loading}>
-                {loading ? "Inscription en cours..." : "S'inscrire"}
+              <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-lg" size="lg" disabled={form.formState.isSubmitting}>
+                {form.formState.isSubmitting ? "Inscription en cours..." : "S'inscrire"}
               </Button>
             </form>
           </Form>

@@ -1,6 +1,6 @@
 
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -16,6 +16,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 const requestResetSchema = z.object({
   email: z.string().email({ message: "Adresse email invalide" }),
@@ -41,7 +43,16 @@ const ResetPassword = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [stage, setStage] = useState<"request" | "reset">("request");
-  const [resetCode, setResetCode] = useState("");
+  const { resetPassword } = useAuth();
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    // Vérifier si nous avons un token de réinitialisation dans l'URL
+    const hasResetToken = searchParams.get('token_hash') && searchParams.get('type') === 'recovery';
+    if (hasResetToken) {
+      setStage("reset");
+    }
+  }, [searchParams]);
 
   const requestForm = useForm<RequestResetFormValues>({
     resolver: zodResolver(requestResetSchema),
@@ -62,21 +73,21 @@ const ResetPassword = () => {
     setLoading(true);
     
     try {
-      // Simulate API call to request password reset
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      
+      if (error) throw error;
       
       toast({
         title: "Email envoyé",
         description: "Les instructions de réinitialisation ont été envoyées à votre adresse email",
       });
-      
-      // Move to verification stage
-      setStage("reset");
-    } catch (error) {
+    } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Erreur",
-        description: "Une erreur est survenue. Veuillez réessayer",
+        description: error.message || "Une erreur est survenue. Veuillez réessayer",
       });
     } finally {
       setLoading(false);
@@ -84,33 +95,36 @@ const ResetPassword = () => {
   };
 
   const onResetSubmit = async (data: ResetPasswordFormValues) => {
-    if (resetCode.length !== 6) {
-      toast({
-        variant: "destructive",
-        title: "Code invalide",
-        description: "Veuillez entrer un code à 6 chiffres",
-      });
-      return;
-    }
-    
     setLoading(true);
     
     try {
-      // Simulate API call to reset password
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Si nous avons un token dans l'URL, c'est une réinitialisation via lien
+      const token_hash = searchParams.get('token_hash');
+      const type = searchParams.get('type');
       
-      toast({
-        title: "Mot de passe réinitialisé",
-        description: "Votre mot de passe a été modifié avec succès",
-      });
-      
-      // Redirect to login
-      navigate("/login");
-    } catch (error) {
+      if (token_hash && type === 'recovery') {
+        const { error } = await supabase.auth.verifyOtp({
+          token_hash,
+          type: 'recovery',
+          new_password: data.password
+        });
+        
+        if (error) throw error;
+        
+        toast({
+          title: "Mot de passe réinitialisé",
+          description: "Votre mot de passe a été modifié avec succès",
+        });
+        
+        navigate("/login");
+      } else {
+        throw new Error("Lien de réinitialisation invalide ou expiré");
+      }
+    } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Échec de réinitialisation",
-        description: "Code de vérification incorrect ou expiré",
+        description: error.message || "Une erreur est survenue. Veuillez réessayer",
       });
     } finally {
       setLoading(false);
@@ -129,7 +143,7 @@ const ResetPassword = () => {
           <p className="text-muted-foreground mt-2">
             {stage === "request"
               ? "Entrez votre adresse email pour recevoir un lien de réinitialisation"
-              : "Veuillez entrer le code reçu par email et votre nouveau mot de passe"}
+              : "Veuillez entrer votre nouveau mot de passe"}
           </p>
         </div>
 
@@ -167,21 +181,6 @@ const ResetPassword = () => {
           ) : (
             <Form {...resetForm}>
               <form onSubmit={resetForm.handleSubmit(onResetSubmit)} className="space-y-5">
-                <div className="space-y-2">
-                  <FormLabel htmlFor="code">Code de vérification</FormLabel>
-                  <Input
-                    id="code"
-                    placeholder="123456"
-                    value={resetCode}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/[^0-9]/g, '');
-                      if (value.length <= 6) {
-                        setResetCode(value);
-                      }
-                    }}
-                  />
-                </div>
-
                 <FormField
                   control={resetForm.control}
                   name="password"
@@ -231,15 +230,17 @@ const ResetPassword = () => {
                   {!loading && <ArrowRight className="ml-2 h-4 w-4" />}
                 </Button>
                 
-                <Button 
-                  type="button" 
-                  variant="ghost" 
-                  className="w-full" 
-                  onClick={() => setStage("request")}
-                >
-                  <ArrowLeft className="mr-2 h-4 w-4" />
-                  Retour
-                </Button>
+                {!searchParams.get('token_hash') && (
+                  <Button 
+                    type="button" 
+                    variant="ghost" 
+                    className="w-full" 
+                    onClick={() => setStage("request")}
+                  >
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Retour
+                  </Button>
+                )}
               </form>
             </Form>
           )}

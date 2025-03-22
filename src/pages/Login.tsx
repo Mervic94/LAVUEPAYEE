@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -19,9 +19,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/contexts/AuthContext";
 
 const loginSchema = z.object({
-  identifier: z.string().min(1, { message: "Email, téléphone ou nom d'utilisateur requis" }),
+  email: z.string().email({ message: "Email invalide" }),
   password: z.string().min(1, { message: "Mot de passe requis" }),
 });
 
@@ -30,49 +31,28 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 const Login = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
+  const { signIn, user } = useAuth();
   const [showTwoFactorDialog, setShowTwoFactorDialog] = useState(false);
   const [twoFactorCode, setTwoFactorCode] = useState("");
   const [twoFactorError, setTwoFactorError] = useState("");
 
+  // Rediriger si l'utilisateur est déjà connecté
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
+
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      identifier: "",
+      email: "",
       password: "",
     },
   });
 
   const onSubmit = async (data: LoginFormValues) => {
-    setLoading(true);
-    
-    try {
-      // Simulation de l'identification du type d'identifiant
-      const identifier = data.identifier;
-      let identifierType = "username";
-      
-      if (identifier.includes("@")) {
-        identifierType = "email";
-      } else if (/^\d+$/.test(identifier)) {
-        identifierType = "phone";
-      }
-      
-      console.log(`Tentative de connexion avec ${identifierType}: ${identifier}`);
-      
-      // Simulation d'appel API pour la connexion
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Dans une vraie app, le backend déterminerait si 2FA est requis
-      setShowTwoFactorDialog(true);
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Erreur de connexion",
-        description: "Identifiants incorrects",
-      });
-    } finally {
-      setLoading(false);
-    }
+    await signIn(data.email, data.password);
   };
 
   const validateTwoFactorCode = async () => {
@@ -81,24 +61,14 @@ const Login = () => {
       return;
     }
     
-    setLoading(true);
-    
-    try {
-      // Simulation d'appel API pour valider le code 2FA
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Effacer le dialogue et naviguer vers le dashboard en cas de succès
-      setShowTwoFactorDialog(false);
-      toast({
-        title: "Connexion réussie",
-        description: "Bienvenue sur votre dashboard",
-      });
-      navigate("/dashboard");
-    } catch (error) {
-      setTwoFactorError("Code incorrect. Veuillez réessayer.");
-    } finally {
-      setLoading(false);
-    }
+    // Note: Dans cette version, nous n'utilisons pas réellement la 2FA
+    // C'est juste pour la démonstration
+    setShowTwoFactorDialog(false);
+    toast({
+      title: "Connexion réussie",
+      description: "Bienvenue sur votre dashboard",
+    });
+    navigate("/dashboard");
   };
 
   return (
@@ -125,28 +95,17 @@ const Login = () => {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
               <FormField
                 control={form.control}
-                name="identifier"
+                name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email, téléphone ou nom d'utilisateur</FormLabel>
+                    <FormLabel>Email</FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <div className="absolute left-3 top-3 h-4 w-4 text-muted-foreground">
-                          {field.value.includes('@') ? (
-                            <Mail className="h-4 w-4" />
-                          ) : field.value && /^\d+$/.test(field.value) ? (
-                            <Phone className="h-4 w-4" />
-                          ) : (
-                            <User className="h-4 w-4" />
-                          )}
-                        </div>
+                        <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                         <Input 
-                          placeholder="Email, téléphone ou nom d'utilisateur" 
+                          placeholder="votre@email.com" 
                           className="pl-10" 
                           {...field}
-                          onChange={(e) => {
-                            field.onChange(e);
-                          }}
                         />
                       </div>
                     </FormControl>
@@ -177,8 +136,8 @@ const Login = () => {
                 )}
               />
 
-              <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" size="lg" disabled={loading}>
-                {loading ? "Connexion en cours..." : "Se connecter"}
+              <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" size="lg" disabled={form.formState.isSubmitting}>
+                {form.formState.isSubmitting ? "Connexion en cours..." : "Se connecter"}
               </Button>
               
               <div className="flex justify-center">
@@ -242,9 +201,9 @@ const Login = () => {
             <Button 
               className="w-full bg-green-600 hover:bg-green-700" 
               onClick={validateTwoFactorCode} 
-              disabled={loading}
+              disabled={form.formState.isSubmitting}
             >
-              {loading ? "Vérification en cours..." : "Vérifier"}
+              {form.formState.isSubmitting ? "Vérification en cours..." : "Vérifier"}
             </Button>
           </div>
         </DialogContent>

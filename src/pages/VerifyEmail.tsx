@@ -1,10 +1,11 @@
 
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Mail, Check, ArrowRight } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const VerifyEmail = () => {
   const { toast } = useToast();
@@ -13,6 +14,40 @@ const VerifyEmail = () => {
   const [countdown, setCountdown] = useState(30);
   const [loading, setLoading] = useState(false);
   const [canResend, setCanResend] = useState(false);
+  const [searchParams] = useSearchParams();
+  
+  // Vérifier si nous avons reçu un token dans l'URL (retour du lien de confirmation)
+  useEffect(() => {
+    const handleEmailConfirmation = async () => {
+      const token_hash = searchParams.get('token_hash');
+      const type = searchParams.get('type');
+      
+      if (token_hash && type === 'email_confirmation') {
+        setLoading(true);
+        const { error } = await supabase.auth.verifyOtp({ 
+          token_hash, 
+          type: 'email_confirmation' 
+        });
+        
+        if (error) {
+          toast({
+            variant: "destructive",
+            title: "Erreur de vérification",
+            description: error.message,
+          });
+        } else {
+          toast({
+            title: "Email vérifié avec succès",
+            description: "Vous pouvez maintenant vous connecter à votre compte",
+          });
+          navigate('/login');
+        }
+        setLoading(false);
+      }
+    };
+    
+    handleEmailConfirmation();
+  }, [searchParams, toast, navigate]);
 
   useEffect(() => {
     if (countdown > 0 && !canResend) {
@@ -38,7 +73,8 @@ const VerifyEmail = () => {
     setLoading(true);
     
     try {
-      // Simulate API call to verify code
+      // Avec Supabase, nous utilisons généralement des liens plutôt que des codes, 
+      // mais nous gardons cette UI au cas où une autre méthode de vérification serait implémentée
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       toast({
@@ -48,11 +84,11 @@ const VerifyEmail = () => {
       
       // Redirect to login
       navigate("/login");
-    } catch (error) {
+    } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Échec de vérification",
-        description: "Code de vérification incorrect",
+        description: error.message || "Code de vérification incorrect",
       });
     } finally {
       setLoading(false);
@@ -63,21 +99,25 @@ const VerifyEmail = () => {
     setLoading(true);
     
     try {
-      // Simulate API call to resend code
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: localStorage.getItem('pendingEmail') || '',
+      });
+      
+      if (error) throw error;
       
       toast({
-        title: "Code envoyé",
-        description: "Un nouveau code de vérification a été envoyé à votre email",
+        title: "Email envoyé",
+        description: "Un nouveau lien de vérification a été envoyé à votre email",
       });
       
       setCountdown(30);
       setCanResend(false);
-    } catch (error) {
+    } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Échec d'envoi",
-        description: "Erreur lors de l'envoi du code. Veuillez réessayer",
+        description: error.message || "Erreur lors de l'envoi du code. Veuillez réessayer",
       });
     } finally {
       setLoading(false);
@@ -91,61 +131,31 @@ const VerifyEmail = () => {
           <Mail className="mx-auto h-12 w-12 text-primary" />
           <h1 className="text-2xl font-bold mt-4">Vérifiez votre adresse email</h1>
           <p className="text-muted-foreground mt-2">
-            Nous avons envoyé un code de vérification à votre adresse email.
-            Veuillez l'entrer ci-dessous pour activer votre compte.
+            Nous avons envoyé un lien de vérification à votre adresse email.
+            Veuillez vérifier votre boîte de réception et cliquer sur le lien pour activer votre compte.
           </p>
         </div>
 
         <div className="glass-card p-6 rounded-lg">
-          <form onSubmit={handleVerify} className="space-y-6">
-            <div className="space-y-2">
-              <label htmlFor="code" className="block text-sm font-medium">
-                Code de vérification
-              </label>
-              <Input
-                id="code"
-                type="text"
-                placeholder="123456"
-                value={verificationCode}
-                onChange={(e) => {
-                  const value = e.target.value.replace(/[^0-9]/g, '');
-                  if (value.length <= 6) {
-                    setVerificationCode(value);
-                  }
-                }}
-                className="text-center text-lg tracking-wider"
-              />
-            </div>
-
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={loading || verificationCode.length !== 6}
-            >
-              {loading ? "Vérification..." : "Vérifier mon email"}
-              {!loading && <Check className="ml-2 h-4 w-4" />}
-            </Button>
+          <div className="text-center space-y-4">
+            <p className="text-sm">
+              Si vous n'avez pas reçu l'email de vérification, vous pouvez demander à le recevoir à nouveau :
+            </p>
             
-            <div className="text-center">
+            {canResend ? (
+              <Button
+                onClick={handleResendCode}
+                className="w-full"
+                disabled={loading}
+              >
+                Renvoyer l'email de vérification
+              </Button>
+            ) : (
               <p className="text-sm text-muted-foreground">
-                Vous n'avez pas reçu de code?
+                Renvoyer l'email ({countdown}s)
               </p>
-              {canResend ? (
-                <button
-                  type="button"
-                  onClick={handleResendCode}
-                  className="text-primary text-sm hover:underline mt-1"
-                  disabled={loading}
-                >
-                  Renvoyer le code
-                </button>
-              ) : (
-                <p className="text-sm text-muted-foreground mt-1">
-                  Renvoyer le code ({countdown}s)
-                </p>
-              )}
-            </div>
-          </form>
+            )}
+          </div>
         </div>
 
         <div className="text-center">
