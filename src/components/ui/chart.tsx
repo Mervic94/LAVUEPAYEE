@@ -1,5 +1,6 @@
 import * as React from "react"
 import * as RechartsPrimitive from "recharts"
+import { BarChart as RechartsBarChart, LineChart as RechartsLineChart, PieChart as RechartsPieChart, ResponsiveContainer, CartesianGrid, XAxis, YAxis, Legend, Tooltip, Bar, Line, Pie, Cell } from "recharts";
 
 import { cn } from "@/lib/utils"
 
@@ -314,7 +315,87 @@ const ChartLegendContent = React.forwardRef<
 )
 ChartLegendContent.displayName = "ChartLegend"
 
-// Helper to extract item config from a payload.
+interface ChartProps {
+  data: any;
+  options?: any;
+  className?: string;
+}
+
+const BarChart: React.FC<ChartProps> = ({ data, options = {}, className }) => {
+  return (
+    <ResponsiveContainer width="100%" height="100%" className={className}>
+      <RechartsBarChart data={data.datasets[0].data.map((value: any, index: number) => ({
+        name: data.labels[index],
+        value,
+      }))}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="name" />
+        <YAxis />
+        <Tooltip />
+        <Legend />
+        <Bar 
+          dataKey="value" 
+          fill={data.datasets[0].backgroundColor[0] || "#8884d8"} 
+          name={data.datasets[0].label} 
+        />
+      </RechartsBarChart>
+    </ResponsiveContainer>
+  );
+};
+
+const LineChart: React.FC<ChartProps> = ({ data, options = {}, className }) => {
+  return (
+    <ResponsiveContainer width="100%" height="100%" className={className}>
+      <RechartsLineChart data={data.labels.map((label: string, index: number) => ({
+        name: label,
+        value: data.datasets[0].data[index],
+      }))}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="name" />
+        <YAxis />
+        <Tooltip />
+        <Legend />
+        <Line 
+          type="monotone" 
+          dataKey="value" 
+          stroke={data.datasets[0].borderColor || "#8884d8"} 
+          name={data.datasets[0].label}
+          activeDot={{ r: 8 }} 
+        />
+      </RechartsLineChart>
+    </ResponsiveContainer>
+  );
+};
+
+const PieChart: React.FC<ChartProps> = ({ data, options = {}, className }) => {
+  return (
+    <ResponsiveContainer width="100%" height="100%" className={className}>
+      <RechartsPieChart>
+        <Pie
+          data={data.labels.map((label: string, index: number) => ({
+            name: label,
+            value: data.datasets[0].data[index],
+          }))}
+          cx="50%"
+          cy="50%"
+          labelLine={false}
+          outerRadius={80}
+          fill="#8884d8"
+          dataKey="value"
+          nameKey="name"
+          label={(entry) => entry.name}
+        >
+          {data.labels.map((_: any, index: number) => (
+            <Cell key={`cell-${index}`} fill={data.datasets[0].backgroundColor[index] || `#${Math.floor(Math.random()*16777215).toString(16)}`} />
+          ))}
+        </Pie>
+        <Tooltip />
+        <Legend />
+      </RechartsPieChart>
+    </ResponsiveContainer>
+  );
+};
+
 function getPayloadConfigFromPayload(
   config: ChartConfig,
   payload: unknown,
@@ -360,4 +441,7 @@ export {
   ChartLegend,
   ChartLegendContent,
   ChartStyle,
+  BarChart,
+  LineChart,
+  PieChart
 }
