@@ -11,16 +11,13 @@ const LightbulbIcon: React.FC<LightbulbIconProps> = ({ className = "h-6 w-6" }) 
       xmlns="http://www.w3.org/2000/svg" 
       className={className}
       viewBox="0 0 24 24" 
-      fill="none"
-      stroke="currentColor" 
+      fill="currentColor"
+      stroke="none"
       strokeWidth="2" 
       strokeLinecap="round" 
       strokeLinejoin="round"
     >
-      <path d="M9 18h6" />
-      <path d="M10 22h4" />
-      <path d="M12 2v2" />
-      <path d="M12 6a6 6 0 0 1 5 9 2 2 0 0 1-2 2H9a2 2 0 0 1-2-2 6 6 0 0 1 5-9Z" />
+      <path d="M9 21h6m-3-3v2M12 3a6 6 0 00-6 6c0 2.6 2 5 3 6h6c1-1 3-3.4 3-6a6 6 0 00-6-6zM9.5 14.5h5" />
     </svg>
   );
 };

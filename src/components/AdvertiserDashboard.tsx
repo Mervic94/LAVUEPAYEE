@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -367,5 +368,242 @@ const AdvertiserDashboard: React.FC<AdvertiserDashboardProps> = ({ className }) 
               <div>Statut</div>
             </div>
             
-            {
+            <div className="divide-y">
+              {campaignHistory.map((campaign) => (
+                <div 
+                  key={campaign.id}
+                  className="grid grid-cols-6 gap-4 p-4 hover:bg-secondary/10 transition-colors cursor-pointer"
+                  onClick={() => handleCampaignSelect(campaign.id)}
+                >
+                  <div className="col-span-2 font-medium">{campaign.name}</div>
+                  <div>{campaign.type}</div>
+                  <div>{new Intl.NumberFormat('fr-FR').format(campaign.impressions)}</div>
+                  <div>{campaign.budget}</div>
+                  <div>
+                    <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      Terminée
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="history" className="space-y-4 p-4">
+          <h2 className="text-2xl font-bold mb-4">Historique des campagnes</h2>
+          
+          <div className="space-y-6">
+            {campaignHistory.map((campaign) => (
+              <Card key={campaign.id} className={`overflow-hidden transition-all duration-300 ${selectedCampaign === campaign.id ? 'ring-2 ring-primary' : ''}`}>
+                <CardHeader className="cursor-pointer" onClick={() => handleCampaignSelect(campaign.id)}>
+                  <CardTitle>{campaign.name}</CardTitle>
+                  <CardDescription className="flex flex-wrap gap-x-4 gap-y-2">
+                    <span className="flex items-center gap-1">
+                      <History className="h-4 w-4 text-foreground/60" />
+                      {campaign.dateRange}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <BarChart2 className="h-4 w-4 text-foreground/60" />
+                      {new Intl.NumberFormat('fr-FR').format(campaign.impressions)} impressions
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <div className="h-4 w-4 rounded-full flex items-center justify-center overflow-hidden">
+                        <img 
+                          src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
+                          alt="LVC" 
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
+                      {campaign.budget}
+                    </span>
+                  </CardDescription>
+                </CardHeader>
+                
+                {selectedCampaign === campaign.id && (
+                  <CardContent>
+                    <h4 className="font-medium mb-3">Détails de performance</h4>
+                    <div className="overflow-x-auto">
+                      <table className="w-full min-w-[600px] border-collapse">
+                        <thead>
+                          <tr className="border-b border-border">
+                            <th className="text-left py-2 px-3">Période</th>
+                            <th className="text-right py-2 px-3">Impressions</th>
+                            <th className="text-right py-2 px-3">Clics</th>
+                            <th className="text-right py-2 px-3">Conversions</th>
+                            <th className="text-right py-2 px-3">Taux de clic</th>
+                            <th className="text-right py-2 px-3">Taux de conversion</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {campaign.performance.map((period, index) => {
+                            const ctr = ((period.clicks / period.impressions) * 100).toFixed(2);
+                            const convRate = ((period.conversions / period.clicks) * 100).toFixed(2);
+                            
+                            return (
+                              <tr key={index} className="border-b border-border/50 hover:bg-secondary/5">
+                                <td className="py-2 px-3">{period.date}</td>
+                                <td className="text-right py-2 px-3">{new Intl.NumberFormat('fr-FR').format(period.impressions)}</td>
+                                <td className="text-right py-2 px-3">{new Intl.NumberFormat('fr-FR').format(period.clicks)}</td>
+                                <td className="text-right py-2 px-3">{new Intl.NumberFormat('fr-FR').format(period.conversions)}</td>
+                                <td className="text-right py-2 px-3">{ctr}%</td>
+                                <td className="text-right py-2 px-3">{convRate}%</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </CardContent>
+                )}
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="new-ad" className="p-4">
+          <h2 className="text-2xl font-bold mb-6">Créer une nouvelle publicité</h2>
+          
+          <form onSubmit={handleAdSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="ad-title">Titre de la publicité</Label>
+                  <Input 
+                    id="ad-title"
+                    value={adTitle}
+                    onChange={(e) => setAdTitle(e.target.value)}
+                    placeholder="Entrez un titre accrocheur"
+                    className="mt-1"
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="ad-description">Description</Label>
+                  <Textarea 
+                    id="ad-description"
+                    value={adDescription}
+                    onChange={(e) => setAdDescription(e.target.value)}
+                    placeholder="Décrivez votre produit ou service"
+                    className="mt-1 h-32"
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="ad-type">Type de publicité</Label>
+                  <Select 
+                    value={adType}
+                    onValueChange={setAdType}
+                  >
+                    <SelectTrigger id="ad-type" className="mt-1">
+                      <SelectValue placeholder="Sélectionnez un type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="banner">Bannière</SelectItem>
+                      <SelectItem value="video">Vidéo</SelectItem>
+                      <SelectItem value="interstitial">Interstitielle</SelectItem>
+                      <SelectItem value="native">Native</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <Label htmlFor="ad-budget">Budget (LVC)</Label>
+                  <Input 
+                    id="ad-budget"
+                    type="number"
+                    value={adBudget}
+                    onChange={(e) => setAdBudget(e.target.value)}
+                    placeholder="Entrez votre budget"
+                    className="mt-1"
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <Label>Télécharger vos médias</Label>
+                  <div className="mt-1 border-2 border-dashed border-foreground/20 rounded-lg p-8 text-center">
+                    <UploadCloud className="h-8 w-8 mx-auto text-foreground/60" />
+                    <p className="mt-2 text-sm text-foreground/70">
+                      Glissez-déposez vos fichiers ici ou cliquez pour parcourir
+                    </p>
+                    <Button variant="outline" size="sm" className="mt-4">
+                      Parcourir les fichiers
+                    </Button>
+                  </div>
+                </div>
+                
+                <div>
+                  <Label>Ciblage</Label>
+                  <div className="mt-1 p-4 rounded-lg border border-foreground/20">
+                    <div className="space-y-3">
+                      <div>
+                        <Label htmlFor="age-target" className="text-sm">Âge</Label>
+                        <Select defaultValue="all">
+                          <SelectTrigger id="age-target" className="mt-1">
+                            <SelectValue placeholder="Sélectionnez une tranche d'âge" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">Tous les âges</SelectItem>
+                            <SelectItem value="18-24">18-24 ans</SelectItem>
+                            <SelectItem value="25-34">25-34 ans</SelectItem>
+                            <SelectItem value="35-44">35-44 ans</SelectItem>
+                            <SelectItem value="45-54">45-54 ans</SelectItem>
+                            <SelectItem value="55+">55 ans et plus</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="gender-target" className="text-sm">Genre</Label>
+                        <Select defaultValue="all">
+                          <SelectTrigger id="gender-target" className="mt-1">
+                            <SelectValue placeholder="Sélectionnez un genre" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">Tous</SelectItem>
+                            <SelectItem value="male">Homme</SelectItem>
+                            <SelectItem value="female">Femme</SelectItem>
+                            <SelectItem value="other">Autre</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      <div>
+                        <Label htmlFor="location-target" className="text-sm">Localisation</Label>
+                        <Select defaultValue="all">
+                          <SelectTrigger id="location-target" className="mt-1">
+                            <SelectValue placeholder="Sélectionnez une localisation" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">Toute la France</SelectItem>
+                            <SelectItem value="paris">Paris et région parisienne</SelectItem>
+                            <SelectItem value="lyon">Lyon et sa périphérie</SelectItem>
+                            <SelectItem value="marseille">Marseille et sa périphérie</SelectItem>
+                            <SelectItem value="custom">Personnalisé...</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex justify-end gap-3">
+              <Button variant="outline" type="button">
+                Enregistrer le brouillon
+              </Button>
+              <Button type="submit">
+                Créer la publicité
+              </Button>
+            </div>
+          </form>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+};
 
+export default AdvertiserDashboard;
