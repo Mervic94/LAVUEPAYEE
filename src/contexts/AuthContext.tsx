@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -28,7 +27,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const { toast } = useToast();
 
   useEffect(() => {
-    // Configurer le listener pour les changements d'état d'authentification
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, currentSession) => {
         setSession(currentSession);
@@ -49,7 +47,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     );
 
-    // Vérifier s'il existe déjà une session
     supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
@@ -61,7 +58,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, [toast]);
 
-  // Function to sign in with email
   const signIn = async (email: string, password: string) => {
     try {
       setIsLoading(true);
@@ -81,7 +77,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Function to sign in with phone number
   const signInWithPhone = async (phone: string, password: string) => {
     try {
       setIsLoading(true);
@@ -101,12 +96,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Function to sign in with username
   const signInWithUsername = async (username: string, password: string) => {
     try {
       setIsLoading(true);
       
-      // First, we need to find the user's email or phone by their username
       const { data: profiles, error: profileError } = await supabase
         .from('profiles')
         .select('id')
@@ -117,7 +110,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw new Error("Nom d'utilisateur non trouvé");
       }
 
-      // Get user's email or phone from auth schema
       const { data, error: userError } = await supabase
         .from('profiles')
         .select('id, username')
@@ -128,36 +120,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw new Error("Utilisateur non trouvé");
       }
       
-      // Try to get the user from auth.users via the public API
-      const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers({
-        filters: {
-          id: profiles.id
-        }
-      });
+      const { data: authUser, error: authError } = await supabase.auth.admin.getUserById(profiles.id);
       
-      if (authError || !authUsers || authUsers.users.length === 0) {
+      if (authError || !authUser || !authUser.user) {
         throw new Error("Informations d'identification utilisateur non trouvées");
       }
       
-      const authUser = authUsers.users[0];
-      
-      // Determine if we should sign in with email or phone
-      let signInCredentials: {email?: string, phone?: string, password: string} = {
-        password
-      };
-      
-      if (authUser.email) {
-        signInCredentials.email = authUser.email;
-      } else if (authUser.phone) {
-        signInCredentials.phone = authUser.phone;
+      if (authUser.user.email) {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: authUser.user.email,
+          password
+        });
+        
+        if (error) throw error;
+      } else if (authUser.user.phone) {
+        const { error } = await supabase.auth.signInWithPassword({
+          phone: authUser.user.phone,
+          password
+        });
+        
+        if (error) throw error;
       } else {
         throw new Error("Aucune méthode de connexion disponible pour cet utilisateur");
       }
-      
-      // Now sign in with the appropriate credentials
-      const { error } = await supabase.auth.signInWithPassword(signInCredentials);
-      
-      if (error) throw error;
       
       navigate('/dashboard');
     } catch (error: any) {
@@ -171,7 +156,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Function to sign up with email
   const signUp = async (email: string, password: string, userData: any) => {
     try {
       setIsLoading(true);
@@ -202,12 +186,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Function to sign up with phone
   const signUpWithPhone = async (phone: string, password: string, userData: any) => {
     try {
       setIsLoading(true);
       
-      // For phone sign up, we need to initiate the sign up process which sends an OTP
       const { error } = await supabase.auth.signUp({
         phone,
         password,
@@ -223,7 +205,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         description: "Un code de vérification a été envoyé à votre numéro de téléphone.",
       });
       
-      // Store the phone in localStorage for use in the verification page
       localStorage.setItem('pendingPhone', phone);
       
       navigate('/verify-phone');
