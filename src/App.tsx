@@ -23,6 +23,7 @@ import { AuthProvider } from '@/contexts/AuthContext'
 import ProtectedRoute from '@/components/ProtectedRoute'
 
 import './App.css'
+import './styles/phone-input.css'
 
 function App() {
   return (
