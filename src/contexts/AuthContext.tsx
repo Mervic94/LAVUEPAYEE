@@ -117,28 +117,45 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw new Error("Nom d'utilisateur non trouvé");
       }
 
-      // Get the user from auth schema using the profile id
-      const { data: authData, error: authError } = await supabase.auth.admin.getUserById(
-        profiles.id
-      );
-      
-      if (authError || !authData.user) {
+      // Get user's email or phone from auth schema
+      const { data, error: userError } = await supabase
+        .from('profiles')
+        .select('id, username')
+        .eq('id', profiles.id)
+        .single();
+
+      if (userError || !data) {
         throw new Error("Utilisateur non trouvé");
       }
       
-      let signInWith = {};
+      // Try to get the user from auth.users via the public API
+      const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers({
+        filters: {
+          id: profiles.id
+        }
+      });
+      
+      if (authError || !authUsers || authUsers.users.length === 0) {
+        throw new Error("Informations d'identification utilisateur non trouvées");
+      }
+      
+      const authUser = authUsers.users[0];
       
       // Determine if we should sign in with email or phone
-      if (authData.user.email) {
-        signInWith = { email: authData.user.email, password };
-      } else if (authData.user.phone) {
-        signInWith = { phone: authData.user.phone, password };
+      let signInCredentials: {email?: string, phone?: string, password: string} = {
+        password
+      };
+      
+      if (authUser.email) {
+        signInCredentials.email = authUser.email;
+      } else if (authUser.phone) {
+        signInCredentials.phone = authUser.phone;
       } else {
         throw new Error("Aucune méthode de connexion disponible pour cet utilisateur");
       }
       
-      // Now sign in
-      const { error } = await supabase.auth.signInWithPassword(signInWith);
+      // Now sign in with the appropriate credentials
+      const { error } = await supabase.auth.signInWithPassword(signInCredentials);
       
       if (error) throw error;
       
