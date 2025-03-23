@@ -26,7 +26,7 @@ const CashoutOptions: React.FC<CashoutOptionsProps> = ({ userPoints, onSelectMet
       name: 'Virement bancaire',
       icon: <Building className="h-6 w-6 text-primary" />,
       minPoints: 1000,
-      conversionRate: 0.01, // 1 point = 0.01€
+      conversionRate: 0.00143, // 700 points = 1€ (1/700)
       processingTime: '2-3 jours ouvrés',
       fees: 'Gratuit (minimum 10€)'
     },
@@ -35,7 +35,7 @@ const CashoutOptions: React.FC<CashoutOptionsProps> = ({ userPoints, onSelectMet
       name: 'PayPal',
       icon: <Wallet className="h-6 w-6 text-primary" />,
       minPoints: 500,
-      conversionRate: 0.01, // 1 point = 0.01€
+      conversionRate: 0.00143, // 700 points = 1€
       processingTime: '24 heures',
       fees: '2% du montant retiré'
     },
@@ -44,7 +44,7 @@ const CashoutOptions: React.FC<CashoutOptionsProps> = ({ userPoints, onSelectMet
       name: 'Carte bancaire',
       icon: <CreditCard className="h-6 w-6 text-primary" />,
       minPoints: 2500,
-      conversionRate: 0.01, // 1 point = 0.01€
+      conversionRate: 0.00143, // 700 points = 1€
       processingTime: '3-5 jours ouvrés',
       fees: 'Gratuit (minimum 25€)'
     },
@@ -53,7 +53,7 @@ const CashoutOptions: React.FC<CashoutOptionsProps> = ({ userPoints, onSelectMet
       name: 'MTN Bénin',
       icon: <Smartphone className="h-6 w-6 text-primary" />,
       minPoints: 300,
-      conversionRate: 0.01, // 1 point = 0.01€
+      conversionRate: 0.00143, // 700 points = 1€
       processingTime: 'Instantané',
       fees: '1% du montant retiré'
     },
@@ -62,7 +62,7 @@ const CashoutOptions: React.FC<CashoutOptionsProps> = ({ userPoints, onSelectMet
       name: 'Moov Africa Bénin',
       icon: <Smartphone className="h-6 w-6 text-primary" />,
       minPoints: 300,
-      conversionRate: 0.01, // 1 point = 0.01€
+      conversionRate: 0.00143, // 700 points = 1€
       processingTime: 'Instantané',
       fees: '1% du montant retiré'
     },
@@ -71,7 +71,7 @@ const CashoutOptions: React.FC<CashoutOptionsProps> = ({ userPoints, onSelectMet
       name: 'FedaPay',
       icon: <Wallet className="h-6 w-6 text-primary" />,
       minPoints: 400,
-      conversionRate: 0.01, // 1 point = 0.01€
+      conversionRate: 0.00143, // 700 points = 1€
       processingTime: '24 heures',
       fees: '1.5% du montant retiré'
     },
@@ -80,7 +80,7 @@ const CashoutOptions: React.FC<CashoutOptionsProps> = ({ userPoints, onSelectMet
       name: 'KikiaPay',
       icon: <Wallet className="h-6 w-6 text-primary" />,
       minPoints: 400,
-      conversionRate: 0.01, // 1 point = 0.01€
+      conversionRate: 0.00143, // 700 points = 1€
       processingTime: '24 heures',
       fees: '1.5% du montant retiré'
     }
@@ -91,7 +91,7 @@ const CashoutOptions: React.FC<CashoutOptionsProps> = ({ userPoints, onSelectMet
       <Alert variant="default" className="bg-primary/5 border-primary/20">
         <AlertCircle className="h-4 w-4 text-primary" />
         <AlertDescription>
-          Vous avez actuellement <span className="font-bold">{userPoints} points</span> disponibles pour un retrait.
+          Vous avez actuellement <span className="font-bold">{userPoints} points LVP</span> disponibles pour un retrait.
         </AlertDescription>
       </Alert>
 
@@ -117,7 +117,7 @@ const CashoutOptions: React.FC<CashoutOptionsProps> = ({ userPoints, onSelectMet
                 <div>
                   <h3 className="font-medium text-lg">{method.name}</h3>
                   <p className="text-sm text-foreground/60">
-                    Minimum: {method.minPoints} points
+                    Minimum: {method.minPoints} LVP
                   </p>
                 </div>
               </div>

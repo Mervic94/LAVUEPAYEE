@@ -164,7 +164,7 @@ const Marketplace = () => {
                 <div className="h-4 w-4 rounded-full flex items-center justify-center overflow-hidden">
                   <img 
                     src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
-                    alt="LVC" 
+                    alt="LVP" 
                     className="w-full h-full object-contain"
                   />
                 </div>
@@ -180,12 +180,12 @@ const Marketplace = () => {
               <div className="flex items-center gap-3 mb-8">
                 <div className="glass-card rounded-xl p-4 flex-grow text-center">
                   <p className="text-foreground/60 text-sm mb-1">Taux de conversion</p>
-                  <p className="text-xl font-semibold">10 000 LVC = 10€</p>
+                  <p className="text-xl font-semibold">700 LVP = 1 Vc</p>
                 </div>
                 
                 <div className="glass-card rounded-xl p-4 flex-grow text-center">
                   <p className="text-foreground/60 text-sm mb-1">Minimum</p>
-                  <p className="text-xl font-semibold">10 000 LVC</p>
+                  <p className="text-xl font-semibold">10 000 LVP</p>
                 </div>
               </div>
               
@@ -213,7 +213,7 @@ const Marketplace = () => {
                       <div className="h-5 w-5 rounded-full flex items-center justify-center overflow-hidden">
                         <img 
                           src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
-                          alt="LVC" 
+                          alt="LVP" 
                           className="w-full h-full object-contain"
                         />
                       </div>
@@ -224,7 +224,7 @@ const Marketplace = () => {
                 <div className="border-t border-border pt-6">
                   <div className="flex justify-between items-center mb-4">
                     <p className="text-foreground/70">Taux de conversion</p>
-                    <p className="font-medium">1 000 LVC = 1€</p>
+                    <p className="font-medium">700 LVP = 1 Vc</p>
                   </div>
                   
                   <div className="flex justify-between items-center mb-4">
@@ -247,7 +247,7 @@ const Marketplace = () => {
                           className="w-full h-full object-contain"
                         />
                       </div>
-                      <p className="font-bold text-xl text-primary">10,00</p>
+                      <p className="font-bold text-xl text-primary">14,28</p>
                     </div>
                   </div>
                 </div>

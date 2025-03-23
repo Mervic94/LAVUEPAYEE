@@ -1,9 +1,10 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowUpRight, TrendingUp, Calendar, Clock, BadgeDollarSign, Users } from 'lucide-react';
+import { ArrowUpRight, TrendingUp, Calendar, Clock, Users } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import AdCard from '@/components/AdCard';
+import PointsIndicator from '@/components/PointsIndicator';
 
 // Mock data for ads
 const mockAds = [
@@ -67,7 +68,15 @@ const Dashboard = () => {
       value: '1,250', 
       change: '+125 aujourd\'hui', 
       positive: true,
-      icon: BadgeDollarSign
+      icon: () => (
+        <div className="h-5 w-5 flex items-center justify-center">
+          <img 
+            src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
+            alt="LVP" 
+            className="w-full h-full object-contain"
+          />
+        </div>
+      )
     },
     { 
       title: 'Publicités visionnées', 
@@ -113,7 +122,10 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <div className="h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center">
-                  <stat.icon className="h-5 w-5 text-primary" />
+                  {typeof stat.icon === 'function' 
+                    ? <stat.icon />
+                    : <stat.icon className="h-5 w-5 text-primary" />
+                  }
                 </div>
               </div>
             </div>
@@ -155,7 +167,7 @@ const Dashboard = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {mockAds.slice(3, 6).map((ad) => (
-              <AdCard key={ad.id} {...ad} />
+              <AdCard key={ad.id} {...ad} adType={index => ['popup', 'audio', 'native'][index % 3]} />
             ))}
           </div>
         </div>

@@ -11,7 +11,7 @@ interface AdCardProps {
   thumbnail: string;
   duration: number; // in seconds
   reward: number; // points
-  adType?: 'banner' | 'interstitial' | 'video' | 'native';
+  adType?: 'banner' | 'interstitial' | 'video' | 'native' | 'popup' | 'audio';
   provider?: string;
 }
 
@@ -43,6 +43,10 @@ const AdCard: React.FC<AdCardProps> = ({
         return 'Vidéo';
       case 'native':
         return 'Native';
+      case 'popup':
+        return 'Popup';
+      case 'audio':
+        return 'Audio';
       default:
         return 'Bannière';
     }
@@ -62,6 +66,12 @@ const AdCard: React.FC<AdCardProps> = ({
         break;
       case 'native':
         baseReward *= 1.3; // 30% more for native ads
+        break;
+      case 'popup':
+        baseReward *= 1.4; // 40% more for popup ads
+        break;
+      case 'audio':
+        baseReward *= 1.2; // 20% more for audio ads
         break;
       default:
         break;
@@ -94,14 +104,14 @@ const AdCard: React.FC<AdCardProps> = ({
               {formatDuration(duration)}
             </span>
             <span className="flex items-center gap-1 text-xs bg-primary/90 text-white px-2 py-1 rounded-full backdrop-blur-xs">
-              <div className="h-3 w-3 rounded-full bg-green-600 flex items-center justify-center overflow-hidden">
+              <div className="h-3 w-3 rounded-full flex items-center justify-center overflow-hidden">
                 <img 
-                  src="/lovable-uploads/d82c55d8-0c83-4a02-82c0-67e854a84332.png" 
+                  src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
                   alt="LVP" 
-                  className="w-full h-full object-contain p-0.5"
+                  className="w-full h-full object-contain"
                 />
               </div>
-              {calculateReward()} pts
+              {calculateReward()} LVP
             </span>
             <span className="flex items-center gap-1 text-xs bg-amber-400/90 text-green-900 px-2 py-1 rounded-full backdrop-blur-xs">
               <Tag className="h-3 w-3" />

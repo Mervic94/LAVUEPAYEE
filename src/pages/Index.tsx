@@ -1,6 +1,6 @@
 
 import React, { useRef } from 'react';
-import { ArrowRight, Users, ShoppingBag, PlayCircle, Award } from 'lucide-react';
+import { ArrowRight, Users, ShoppingBag, PlayCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
@@ -44,7 +44,7 @@ const Index = () => {
                 <img 
                   src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
                   alt="Points" 
-                  className="h-8 w-8 text-primary bg-transparent"
+                  className="h-8 w-8 text-primary"
                 />
                 <div className="absolute -right-1 -top-1 h-6 w-6 bg-primary rounded-full text-white flex items-center justify-center font-medium text-sm">2</div>
               </div>
@@ -160,8 +160,8 @@ const Index = () => {
                       <div className="flex items-center gap-1 font-semibold text-lg">
                         <img 
                           src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
-                          alt="LVC" 
-                          className="h-5 w-5 bg-transparent" 
+                          alt="LVP" 
+                          className="h-5 w-5" 
                         />
                         <span>1,500</span>
                       </div>
@@ -175,8 +175,8 @@ const Index = () => {
                       <div className="flex items-center gap-1 font-semibold text-lg">
                         <img 
                           src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
-                          alt="LVC" 
-                          className="h-5 w-5 bg-transparent" 
+                          alt="LVP" 
+                          className="h-5 w-5" 
                         />
                         <span>3,750</span>
                       </div>
@@ -190,8 +190,8 @@ const Index = () => {
                       <div className="flex items-center gap-1 font-semibold text-lg">
                         <img 
                           src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
-                          alt="LVC" 
-                          className="h-5 w-5 bg-transparent" 
+                          alt="LVP" 
+                          className="h-5 w-5" 
                         />
                         <span>5,250</span>
                       </div>
@@ -204,8 +204,8 @@ const Index = () => {
                       <div className="flex items-center gap-1 font-bold text-lg text-primary">
                         <img 
                           src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
-                          alt="LVC" 
-                          className="h-5 w-5 bg-transparent" 
+                          alt="LVP" 
+                          className="h-5 w-5" 
                         />
                         <span>10,500 pts</span>
                       </div>
