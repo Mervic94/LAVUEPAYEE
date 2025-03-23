@@ -37,7 +37,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               <img 
                 src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
                 alt="LVC" 
-                className="w-full h-full object-contain"
+                className="w-full h-full object-contain bg-transparent"
               />
             </div>
             {formattedPrice} LVC

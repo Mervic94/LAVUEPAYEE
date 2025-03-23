@@ -1,12 +1,15 @@
 
-import React from 'react';
-import { ArrowRight, DollarSign, Users, ShoppingBag, PlayCircle, BadgeDollarSign, Award } from 'lucide-react';
+import React, { useRef } from 'react';
+import { ArrowRight, Users, ShoppingBag, PlayCircle, Award } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
 
 const Index = () => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
   return (
     <div className="min-h-screen">
       <Navbar />
@@ -38,7 +41,11 @@ const Index = () => {
             
             <div className="flex flex-col items-center text-center">
               <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
-                <BadgeDollarSign className="h-8 w-8 text-primary" />
+                <img 
+                  src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
+                  alt="Points" 
+                  className="h-8 w-8 text-primary bg-transparent"
+                />
                 <div className="absolute -right-1 -top-1 h-6 w-6 bg-primary rounded-full text-white flex items-center justify-center font-medium text-sm">2</div>
               </div>
               <h3 className="text-xl font-semibold mb-3">Gagnez des points</h3>
@@ -59,9 +66,31 @@ const Index = () => {
             </div>
           </div>
           
-          <div className="mt-16 text-center">
+          <div className="mt-16 text-center flex flex-col md:flex-row justify-center gap-4">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="lg" className="rounded-full">
+                  <PlayCircle className="mr-2 h-5 w-5" />
+                  Regarder la vidéo de présentation
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-3xl p-0 overflow-hidden">
+                <div className="aspect-video w-full">
+                  <video 
+                    ref={videoRef} 
+                    controls 
+                    className="w-full h-full object-cover"
+                    poster="/lovable-uploads/d82c55d8-0c83-4a02-82c0-67e854a84332.png"
+                  >
+                    <source src="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" type="video/mp4" />
+                    Votre navigateur ne supporte pas la lecture de vidéos.
+                  </video>
+                </div>
+              </DialogContent>
+            </Dialog>
+
             <Button asChild size="lg" className="rounded-full">
-              <Link to="/dashboard">
+              <Link to="/register">
                 Commencer maintenant
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
@@ -109,7 +138,7 @@ const Index = () => {
               </div>
               
               <Button asChild size="lg" className="rounded-full">
-                <Link to="/profile">
+                <Link to="/login">
                   Voir mon réseau d'affiliation
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
@@ -129,7 +158,11 @@ const Index = () => {
                         <p className="text-sm text-foreground/70">10% de commission</p>
                       </div>
                       <div className="flex items-center gap-1 font-semibold text-lg">
-                        <BadgeDollarSign className="h-5 w-5 text-primary" />
+                        <img 
+                          src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
+                          alt="LVC" 
+                          className="h-5 w-5 bg-transparent" 
+                        />
                         <span>1,500</span>
                       </div>
                     </div>
@@ -140,7 +173,11 @@ const Index = () => {
                         <p className="text-sm text-foreground/70">5% de commission</p>
                       </div>
                       <div className="flex items-center gap-1 font-semibold text-lg">
-                        <BadgeDollarSign className="h-5 w-5 text-primary" />
+                        <img 
+                          src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
+                          alt="LVC" 
+                          className="h-5 w-5 bg-transparent" 
+                        />
                         <span>3,750</span>
                       </div>
                     </div>
@@ -151,7 +188,11 @@ const Index = () => {
                         <p className="text-sm text-foreground/70">2-3% de commission</p>
                       </div>
                       <div className="flex items-center gap-1 font-semibold text-lg">
-                        <BadgeDollarSign className="h-5 w-5 text-primary" />
+                        <img 
+                          src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
+                          alt="LVC" 
+                          className="h-5 w-5 bg-transparent" 
+                        />
                         <span>5,250</span>
                       </div>
                     </div>
@@ -161,7 +202,11 @@ const Index = () => {
                         <h4 className="font-semibold text-lg">Total mensuel</h4>
                       </div>
                       <div className="flex items-center gap-1 font-bold text-lg text-primary">
-                        <BadgeDollarSign className="h-5 w-5" />
+                        <img 
+                          src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
+                          alt="LVC" 
+                          className="h-5 w-5 bg-transparent" 
+                        />
                         <span>10,500 pts</span>
                       </div>
                     </div>
@@ -179,10 +224,14 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <div className="h-8 w-8 bg-primary rounded-full flex items-center justify-center">
-                  <Award className="h-4 w-4 text-primary-foreground" />
+                <div className="h-8 w-8 rounded-full flex items-center justify-center">
+                  <img 
+                    src="/lovable-uploads/d82c55d8-0c83-4a02-82c0-67e854a84332.png" 
+                    alt="LAVUEPAYEE"
+                    className="h-full w-full object-contain"
+                  />
                 </div>
-                <span className="font-semibold text-lg">RewardAds</span>
+                <span className="font-semibold text-lg">LAVUEPAYEE</span>
               </div>
               <p className="text-foreground/70">
                 La plateforme qui récompense votre attention et vous permet de gagner des points échangeables.
@@ -228,7 +277,7 @@ const Index = () => {
           </div>
           
           <div className="pt-8 mt-8 border-t text-center text-foreground/60 text-sm">
-            © {new Date().getFullYear()} RewardAds. Tous droits réservés.
+            © {new Date().getFullYear()} LAVUEPAYEE. Tous droits réservés.
           </div>
         </div>
       </footer>

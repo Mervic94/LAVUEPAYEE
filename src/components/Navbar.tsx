@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Menu, 
   X, 
@@ -15,15 +15,19 @@ import {
   Instagram,
   Send,
   Phone,
-  Twitter
+  Twitter,
+  LogOut
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import PointsIndicator from './PointsIndicator';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, signOut } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -59,6 +63,11 @@ const Navbar = () => {
     };
   }, [isOpen]);
 
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/');
+  };
+
   return (
     <nav 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 py-3 ${
@@ -82,18 +91,31 @@ const Navbar = () => {
           <Link to="/" className={`nav-link ${isActive('/') ? 'text-primary after:scale-x-100' : ''}`}>
             Accueil
           </Link>
-          <Link to="/dashboard" className={`nav-link ${isActive('/dashboard') ? 'text-primary after:scale-x-100' : ''}`}>
-            Tableau de bord
-          </Link>
-          <Link to="/marketplace" className={`nav-link ${isActive('/marketplace') ? 'text-primary after:scale-x-100' : ''}`}>
-            Marketplace
-          </Link>
-          <Link to="/tasks" className={`nav-link ${isActive('/tasks') ? 'text-primary after:scale-x-100' : ''}`}>
-            Tâches
-          </Link>
-          <Link to="/messages" className={`nav-link ${isActive('/messages') ? 'text-primary after:scale-x-100' : ''}`}>
-            Messages
-          </Link>
+          {user ? (
+            <>
+              <Link to="/dashboard" className={`nav-link ${isActive('/dashboard') ? 'text-primary after:scale-x-100' : ''}`}>
+                Tableau de bord
+              </Link>
+              <Link to="/marketplace" className={`nav-link ${isActive('/marketplace') ? 'text-primary after:scale-x-100' : ''}`}>
+                Marketplace
+              </Link>
+              <Link to="/tasks" className={`nav-link ${isActive('/tasks') ? 'text-primary after:scale-x-100' : ''}`}>
+                Tâches
+              </Link>
+              <Link to="/messages" className={`nav-link ${isActive('/messages') ? 'text-primary after:scale-x-100' : ''}`}>
+                Messages
+              </Link>
+            </>
+          ) : (
+            <>
+              <a href="#how-it-works" className={`nav-link`}>
+                Comment ça marche
+              </a>
+              <Link to="/marketplace" className={`nav-link ${isActive('/marketplace') ? 'text-primary after:scale-x-100' : ''}`}>
+                Marketplace
+              </Link>
+            </>
+          )}
           <Link to="/faq" className={`nav-link ${isActive('/faq') ? 'text-primary after:scale-x-100' : ''}`}>
             FAQ
           </Link>
@@ -112,28 +134,39 @@ const Navbar = () => {
             </a>
           </div>
           
-          <PointsIndicator points={1250} />
-          <div className="flex items-center px-3 py-1.5 gap-1.5 rounded-full bg-green-100 text-green-800 font-medium">
-            <img 
-              src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
-              alt="Vuecoin" 
-              className="h-4 w-4 object-contain"
-            />
-            <span>1 Vc</span>
-          </div>
-          <Button asChild variant="ghost" size="icon" className="rounded-full">
-            <Link to="/messages">
-              <MessageCircle className="h-5 w-5" />
-            </Link>
-          </Button>
-          <Button asChild variant="ghost" size="icon" className="rounded-full">
-            <Link to="/profile">
-              <User className="h-5 w-5" />
-            </Link>
-          </Button>
-          <Button asChild variant="default" size="sm" className="rounded-full bg-green-600 hover:bg-green-700">
-            <Link to="/login">Se connecter</Link>
-          </Button>
+          {user && (
+            <>
+              <PointsIndicator points={1250} />
+              <div className="flex items-center px-3 py-1.5 gap-1.5 rounded-full bg-green-100 text-green-800 font-medium">
+                <img 
+                  src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
+                  alt="Vuecoin" 
+                  className="h-4 w-4 object-contain bg-transparent"
+                />
+                <span>1 Vc</span>
+              </div>
+              <Button asChild variant="ghost" size="icon" className="rounded-full">
+                <Link to="/messages">
+                  <MessageCircle className="h-5 w-5" />
+                </Link>
+              </Button>
+              <Button asChild variant="ghost" size="icon" className="rounded-full">
+                <Link to="/profile">
+                  <User className="h-5 w-5" />
+                </Link>
+              </Button>
+              <Button variant="outline" size="sm" className="rounded-full" onClick={handleLogout}>
+                <LogOut className="h-4 w-4 mr-2" />
+                Déconnexion
+              </Button>
+            </>
+          )}
+          
+          {!user && (
+            <Button asChild variant="default" size="sm" className="rounded-full bg-green-600 hover:bg-green-700">
+              <Link to="/login">Se connecter</Link>
+            </Button>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -153,17 +186,19 @@ const Navbar = () => {
         } md:hidden overflow-y-auto`}
       >
         <div className="flex flex-col gap-6 items-center">
-          <div className="flex items-center gap-3">
-            <PointsIndicator points={1250} />
-            <div className="flex items-center px-3 py-1.5 gap-1.5 rounded-full bg-green-100 text-green-800 font-medium">
-              <img 
-                src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
-                alt="Vuecoin" 
-                className="h-4 w-4 object-contain"
-              />
-              <span>1 Vc</span>
+          {user && (
+            <div className="flex items-center gap-3">
+              <PointsIndicator points={1250} />
+              <div className="flex items-center px-3 py-1.5 gap-1.5 rounded-full bg-green-100 text-green-800 font-medium">
+                <img 
+                  src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
+                  alt="Vuecoin" 
+                  className="h-4 w-4 object-contain bg-transparent"
+                />
+                <span>1 Vc</span>
+              </div>
             </div>
-          </div>
+          )}
           
           <Link to="/" onClick={closeMenu} className="w-full">
             <div className={`py-3 px-4 rounded-lg transition-colors ${isActive('/') ? 'bg-primary/10 text-primary' : ''}`}>
@@ -171,35 +206,45 @@ const Navbar = () => {
             </div>
           </Link>
           
-          <Link to="/dashboard" onClick={closeMenu} className="w-full">
-            <div className={`py-3 px-4 rounded-lg transition-colors ${isActive('/dashboard') ? 'bg-primary/10 text-primary' : ''}`}>
-              Tableau de bord
-            </div>
-          </Link>
-          
-          <Link to="/marketplace" onClick={closeMenu} className="w-full">
-            <div className={`py-3 px-4 rounded-lg transition-colors ${isActive('/marketplace') ? 'bg-primary/10 text-primary' : ''}`}>
-              Marketplace
-            </div>
-          </Link>
-          
-          <Link to="/tasks" onClick={closeMenu} className="w-full">
-            <div className={`py-3 px-4 rounded-lg transition-colors ${isActive('/tasks') ? 'bg-primary/10 text-primary' : ''}`}>
-              Tâches
-            </div>
-          </Link>
-          
-          <Link to="/messages" onClick={closeMenu} className="w-full">
-            <div className={`py-3 px-4 rounded-lg transition-colors ${isActive('/messages') ? 'bg-primary/10 text-primary' : ''}`}>
-              Messages
-            </div>
-          </Link>
-          
-          <Link to="/profile" onClick={closeMenu} className="w-full">
-            <div className={`py-3 px-4 rounded-lg transition-colors ${isActive('/profile') ? 'bg-primary/10 text-primary' : ''}`}>
-              Profil
-            </div>
-          </Link>
+          {user ? (
+            <>
+              <Link to="/dashboard" onClick={closeMenu} className="w-full">
+                <div className={`py-3 px-4 rounded-lg transition-colors ${isActive('/dashboard') ? 'bg-primary/10 text-primary' : ''}`}>
+                  Tableau de bord
+                </div>
+              </Link>
+              
+              <Link to="/marketplace" onClick={closeMenu} className="w-full">
+                <div className={`py-3 px-4 rounded-lg transition-colors ${isActive('/marketplace') ? 'bg-primary/10 text-primary' : ''}`}>
+                  Marketplace
+                </div>
+              </Link>
+              
+              <Link to="/tasks" onClick={closeMenu} className="w-full">
+                <div className={`py-3 px-4 rounded-lg transition-colors ${isActive('/tasks') ? 'bg-primary/10 text-primary' : ''}`}>
+                  Tâches
+                </div>
+              </Link>
+              
+              <Link to="/messages" onClick={closeMenu} className="w-full">
+                <div className={`py-3 px-4 rounded-lg transition-colors ${isActive('/messages') ? 'bg-primary/10 text-primary' : ''}`}>
+                  Messages
+                </div>
+              </Link>
+              
+              <Link to="/profile" onClick={closeMenu} className="w-full">
+                <div className={`py-3 px-4 rounded-lg transition-colors ${isActive('/profile') ? 'bg-primary/10 text-primary' : ''}`}>
+                  Profil
+                </div>
+              </Link>
+            </>
+          ) : (
+            <a href="#how-it-works" onClick={closeMenu} className="w-full">
+              <div className={`py-3 px-4 rounded-lg transition-colors`}>
+                Comment ça marche
+              </div>
+            </a>
+          )}
           
           <Link to="/faq" onClick={closeMenu} className="w-full">
             <div className={`py-3 px-4 rounded-lg transition-colors ${isActive('/faq') ? 'bg-primary/10 text-primary' : ''}`}>
@@ -225,11 +270,18 @@ const Navbar = () => {
             </a>
           </div>
           
-          <Button asChild className="w-full mt-4" variant="default">
-            <Link to="/login" onClick={closeMenu}>
-              Se connecter
-            </Link>
-          </Button>
+          {user ? (
+            <Button className="w-full mt-4" variant="outline" onClick={handleLogout}>
+              <LogOut className="h-4 w-4 mr-2" />
+              Déconnexion
+            </Button>
+          ) : (
+            <Button asChild className="w-full mt-4" variant="default">
+              <Link to="/login" onClick={closeMenu}>
+                Se connecter
+              </Link>
+            </Button>
+          )}
         </div>
       </div>
     </nav>

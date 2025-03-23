@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Mail, KeyRound, ArrowRight, AlertCircle, Shield, User, Phone } from "lucide-react";
+import { Mail, KeyRound, AlertCircle, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -76,7 +76,7 @@ const Login = () => {
       <div className="w-full max-w-md space-y-4">
         <div className="text-center mb-6">
           <div className="flex justify-center mb-4">
-            <div className="h-16 w-16 bg-green-600 rounded-full flex items-center justify-center">
+            <div className="h-16 w-16 rounded-full flex items-center justify-center overflow-hidden">
               <img 
                 src="/lovable-uploads/d82c55d8-0c83-4a02-82c0-67e854a84332.png" 
                 alt="LAVUEPAYEE"
