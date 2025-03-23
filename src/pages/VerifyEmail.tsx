@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -26,7 +25,7 @@ const VerifyEmail = () => {
         setLoading(true);
         const { error } = await supabase.auth.verifyOtp({ 
           token_hash, 
-          type: 'email_confirmation' 
+          type: 'email' 
         });
         
         if (error) {
