@@ -8,6 +8,7 @@ import Login from '@/pages/Login'
 import Register from '@/pages/Register'
 import ResetPassword from '@/pages/ResetPassword'
 import VerifyEmail from '@/pages/VerifyEmail'
+import VerifyPhone from '@/pages/VerifyPhone'
 import NotFound from '@/pages/NotFound'
 import Tasks from '@/pages/Tasks'
 import Profile from '@/pages/Profile'
@@ -39,6 +40,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
+          <Route path="/verify-phone" element={<VerifyPhone />} />
           <Route path="/tasks" element={
             <ProtectedRoute>
               <Tasks />

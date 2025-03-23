@@ -10,7 +10,10 @@ type AuthContextType = {
   user: User | null;
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
+  signInWithPhone: (phone: string, password: string) => Promise<void>;
+  signInWithUsername: (username: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, userData: any) => Promise<void>;
+  signUpWithPhone: (phone: string, password: string, userData: any) => Promise<void>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
 };
@@ -58,6 +61,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, [toast]);
 
+  // Function to sign in with email
   const signIn = async (email: string, password: string) => {
     try {
       setIsLoading(true);
@@ -77,6 +81,80 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  // Function to sign in with phone number
+  const signInWithPhone = async (phone: string, password: string) => {
+    try {
+      setIsLoading(true);
+      const { error } = await supabase.auth.signInWithPassword({ phone, password });
+      
+      if (error) throw error;
+      
+      navigate('/dashboard');
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Erreur de connexion",
+        description: error.message || "Une erreur est survenue lors de la connexion",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Function to sign in with username
+  const signInWithUsername = async (username: string, password: string) => {
+    try {
+      setIsLoading(true);
+      
+      // First, we need to find the user's email or phone by their username
+      const { data: profiles, error: profileError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('username', username)
+        .single();
+      
+      if (profileError || !profiles) {
+        throw new Error("Nom d'utilisateur non trouvé");
+      }
+
+      // Get the user from auth schema using the profile id
+      const { data: authData, error: authError } = await supabase.auth.admin.getUserById(
+        profiles.id
+      );
+      
+      if (authError || !authData.user) {
+        throw new Error("Utilisateur non trouvé");
+      }
+      
+      let signInWith = {};
+      
+      // Determine if we should sign in with email or phone
+      if (authData.user.email) {
+        signInWith = { email: authData.user.email, password };
+      } else if (authData.user.phone) {
+        signInWith = { phone: authData.user.phone, password };
+      } else {
+        throw new Error("Aucune méthode de connexion disponible pour cet utilisateur");
+      }
+      
+      // Now sign in
+      const { error } = await supabase.auth.signInWithPassword(signInWith);
+      
+      if (error) throw error;
+      
+      navigate('/dashboard');
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Erreur de connexion",
+        description: error.message || "Une erreur est survenue lors de la connexion",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Function to sign up with email
   const signUp = async (email: string, password: string, userData: any) => {
     try {
       setIsLoading(true);
@@ -96,6 +174,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
       
       navigate('/verify-email');
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Erreur d'inscription",
+        description: error.message || "Une erreur est survenue lors de l'inscription",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Function to sign up with phone
+  const signUpWithPhone = async (phone: string, password: string, userData: any) => {
+    try {
+      setIsLoading(true);
+      
+      // For phone sign up, we need to initiate the sign up process which sends an OTP
+      const { error } = await supabase.auth.signUp({
+        phone,
+        password,
+        options: {
+          data: userData,
+        },
+      });
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Code de vérification envoyé!",
+        description: "Un code de vérification a été envoyé à votre numéro de téléphone.",
+      });
+      
+      // Store the phone in localStorage for use in the verification page
+      localStorage.setItem('pendingPhone', phone);
+      
+      navigate('/verify-phone');
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -153,7 +267,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user,
     isLoading,
     signIn,
+    signInWithPhone,
+    signInWithUsername,
     signUp,
+    signUpWithPhone,
     signOut,
     resetPassword,
   };
