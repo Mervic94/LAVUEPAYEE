@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -102,9 +103,8 @@ const ResetPassword = () => {
       const type = searchParams.get('type');
       
       if (token_hash && type === 'recovery') {
-        const { error } = await supabase.auth.verifyOtp({
-          token_hash,
-          type: 'recovery',
+        // Utilisons la structure correcte pour verifyOtp avec type 'recovery'
+        const { error } = await supabase.auth.updateUser({
           password: data.password
         });
         
