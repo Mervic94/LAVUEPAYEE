@@ -58,6 +58,9 @@ const mockAds = [
   }
 ];
 
+// Define predefined ad types to use
+const adTypes: Array<"banner" | "interstitial" | "video" | "native" | "popup" | "audio"> = ['popup', 'audio', 'native'];
+
 const Dashboard = () => {
   const navigate = useNavigate();
   
@@ -124,7 +127,7 @@ const Dashboard = () => {
                 <div className="h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center">
                   {typeof stat.icon === 'function' 
                     ? <stat.icon />
-                    : <stat.icon className="h-5 w-5 text-primary" />
+                    : React.createElement(stat.icon, { className: "h-5 w-5 text-primary" })
                   }
                 </div>
               </div>
@@ -166,8 +169,12 @@ const Dashboard = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mockAds.slice(3, 6).map((ad) => (
-              <AdCard key={ad.id} {...ad} adType={index => ['popup', 'audio', 'native'][index % 3]} />
+            {mockAds.slice(3, 6).map((ad, index) => (
+              <AdCard 
+                key={ad.id} 
+                {...ad} 
+                adType={adTypes[index % adTypes.length]} 
+              />
             ))}
           </div>
         </div>
