@@ -2,6 +2,7 @@
 import React from 'react';
 import { CreditCard, Building, Wallet, AlertCircle, Smartphone } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface CashoutMethod {
   id: string;
@@ -95,62 +96,64 @@ const CashoutOptions: React.FC<CashoutOptionsProps> = ({ userPoints, onSelectMet
         </AlertDescription>
       </Alert>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {paymentMethods.map((method) => {
-          const isEligible = userPoints >= method.minPoints;
-          const cashValue = (userPoints * method.conversionRate).toFixed(2);
-          
-          return (
-            <div 
-              key={method.id}
-              className={`glass-card rounded-lg p-5 transition-all ${
-                isEligible 
-                  ? 'cursor-pointer hover:shadow-md border-primary/20 hover:border-primary/50' 
-                  : 'opacity-70 border-gray-200 cursor-not-allowed'
-              }`}
-              onClick={() => isEligible && onSelectMethod(method)}
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center">
-                  {method.icon}
-                </div>
-                <div>
-                  <h3 className="font-medium text-lg">{method.name}</h3>
-                  <p className="text-sm text-foreground/60">
-                    Minimum: {method.minPoints} LVP
-                  </p>
-                </div>
-              </div>
-              
-              <div className="space-y-2 mb-4">
-                <div className="flex justify-between text-sm">
-                  <span className="text-foreground/60">Valeur estimée:</span>
-                  <span className="font-medium">{cashValue}€</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-foreground/60">Frais:</span>
-                  <span>{method.fees}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-foreground/60">Délai:</span>
-                  <span>{method.processingTime}</span>
-                </div>
-              </div>
-              
-              <button 
-                className={`w-full px-4 py-2 rounded-lg text-sm font-medium ${
+      <ScrollArea className="h-[400px] rounded-md">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-1">
+          {paymentMethods.map((method) => {
+            const isEligible = userPoints >= method.minPoints;
+            const cashValue = (userPoints * method.conversionRate).toFixed(2);
+            
+            return (
+              <div 
+                key={method.id}
+                className={`glass-card rounded-lg p-5 transition-all ${
                   isEligible 
-                    ? 'bg-primary text-white hover:bg-primary/90' 
-                    : 'bg-gray-200 text-gray-500'
+                    ? 'cursor-pointer hover:shadow-md border-primary/20 hover:border-primary/50' 
+                    : 'opacity-70 border-gray-200 cursor-not-allowed'
                 }`}
-                disabled={!isEligible}
+                onClick={() => isEligible && onSelectMethod(method)}
               >
-                {isEligible ? 'Choisir ce moyen' : 'Points insuffisants'}
-              </button>
-            </div>
-          );
-        })}
-      </div>
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center">
+                    {method.icon}
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-lg">{method.name}</h3>
+                    <p className="text-sm text-foreground/60">
+                      Minimum: {method.minPoints} LVP
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="space-y-2 mb-4">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-foreground/60">Valeur estimée:</span>
+                    <span className="font-medium">{cashValue}€</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-foreground/60">Frais:</span>
+                    <span>{method.fees}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-foreground/60">Délai:</span>
+                    <span>{method.processingTime}</span>
+                  </div>
+                </div>
+                
+                <button 
+                  className={`w-full px-4 py-2 rounded-lg text-sm font-medium ${
+                    isEligible 
+                      ? 'bg-primary text-white hover:bg-primary/90' 
+                      : 'bg-gray-200 text-gray-500'
+                  }`}
+                  disabled={!isEligible}
+                >
+                  {isEligible ? 'Choisir ce moyen' : 'Points insuffisants'}
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      </ScrollArea>
     </div>
   );
 };

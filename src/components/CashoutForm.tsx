@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
+import { PhoneNumberInput } from '@/components/ui/phone-input';
 
 interface CashoutMethod {
   id: string;
@@ -34,6 +35,7 @@ interface FormValues {
   cardNumber?: string;
   expiryDate?: string;
   cvv?: string;
+  phoneNumber?: string;
 }
 
 const CashoutForm: React.FC<CashoutFormProps> = ({ method, userPoints, onBack, onComplete }) => {
@@ -73,7 +75,13 @@ const CashoutForm: React.FC<CashoutFormProps> = ({ method, userPoints, onBack, o
           <ArrowLeft className="h-4 w-4" /> Retour
         </Button>
         <div className="flex items-center gap-2">
-          <CircleDollarSign className="h-5 w-5 text-primary" />
+          <div className="h-5 w-5 flex items-center justify-center">
+            <img 
+              src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
+              alt="LVP" 
+              className="w-full h-full object-contain"
+            />
+          </div>
           <span className="font-medium">{userPoints} points disponibles</span>
         </div>
       </div>
@@ -116,7 +124,7 @@ const CashoutForm: React.FC<CashoutFormProps> = ({ method, userPoints, onBack, o
                   <div className="flex justify-between text-sm">
                     <FormMessage />
                     <span className="text-foreground/60">
-                      Points nécessaires: <strong>{pointsNeeded}</strong>
+                      LVP nécessaires: <strong>{pointsNeeded}</strong>
                     </span>
                   </div>
                 </FormItem>
@@ -225,6 +233,26 @@ const CashoutForm: React.FC<CashoutFormProps> = ({ method, userPoints, onBack, o
                   />
                 </div>
               </>
+            )}
+            
+            {(method.id === 'mtn-benin' || method.id === 'moov-africa' || method.id === 'fedapay' || method.id === 'kikiapay') && (
+              <FormField
+                control={form.control}
+                name="phoneNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Numéro de téléphone</FormLabel>
+                    <FormControl>
+                      <PhoneNumberInput 
+                        value={field.value || ''} 
+                        onChange={field.onChange}
+                        className="w-full"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             )}
             
             <Button 

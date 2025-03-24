@@ -1,27 +1,33 @@
-import React, { useState, useRef } from 'react';
-import { BadgeDollarSign, Users, Clock, ChevronDown, ChevronUp, Check, Link as LinkIcon, Copy, CreditCard, Camera, Facebook, Instagram, Mail, Phone } from 'lucide-react';
+import React, { useState } from 'react';
+import { BadgeDollarSign, Users, ChevronDown, ChevronUp, Check, Link as LinkIcon, Copy, CreditCard, Mail, Phone, Building } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { toast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import Navbar from '@/components/Navbar';
 import PointsIndicator from '@/components/PointsIndicator';
 import CashoutDialog from '@/components/CashoutDialog';
 import SocialShareLinks from '@/components/SocialShareLinks';
+import ProfilePhotoUploader from '@/components/ProfilePhotoUploader';
+import SocialMediaManager from '@/components/SocialMediaManager';
+import { PhoneNumberInput } from '@/components/ui/phone-input';
+import { Switch } from '@/components/ui/switch';
 
 const Profile = () => {
+  const { toast } = useToast();
   const [expanded, setExpanded] = useState(false);
   const [copiedToClipboard, setCopiedToClipboard] = useState(false);
   const [cashoutDialogOpen, setCashoutDialogOpen] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isAdvertiser, setIsAdvertiser] = useState(false);
+  const [phoneValue, setPhoneValue] = useState('');
   
   // Mock user data
   const userData = {
     name: 'Thomas Dubois',
     email: 'thomas.dubois@example.com',
-    phone: '+33 6 12 34 56 78',
+    phone: '+33612345678',
     points: 1250,
     affiliationCode: 'THOMAS25',
     affiliationLink: 'https://rewardads.com/ref/THOMAS25',
@@ -72,30 +78,31 @@ const Profile = () => {
     setTimeout(() => setCopiedToClipboard(false), 2000);
   };
   
-  // Handle profile image upload
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        if (e.target?.result) {
-          setProfileImage(e.target.result as string);
-          toast({
-            title: "Photo de profil mise à jour",
-            description: "Votre photo a été modifiée avec succès."
-          });
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-  
   // Handle profile update
   const handleProfileUpdate = (e: React.FormEvent) => {
     e.preventDefault();
     toast({
       title: "Profil mis à jour",
       description: "Vos informations ont été enregistrées avec succès."
+    });
+  };
+  
+  // Handle social media links save
+  const handleSaveSocialLinks = (links: any[]) => {
+    toast({
+      title: "Réseaux sociaux mis à jour",
+      description: `${links.length} lien(s) enregistré(s).`
+    });
+  };
+  
+  // Toggle advertiser status
+  const handleToggleAdvertiser = (checked: boolean) => {
+    setIsAdvertiser(checked);
+    toast({
+      title: checked ? "Compte annonceur activé" : "Compte annonceur désactivé",
+      description: checked 
+        ? "Vous pouvez maintenant accéder aux fonctionnalités annonceur." 
+        : "Les fonctionnalités annonceur ont été désactivées."
     });
   };
 
@@ -110,28 +117,11 @@ const Profile = () => {
         <div className="glass-card rounded-xl p-6 mb-10">
           <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
             {/* Avatar with Upload */}
-            <div className="relative group">
-              <div 
-                className="h-24 w-24 rounded-full bg-primary/10 flex items-center justify-center text-primary text-2xl font-bold overflow-hidden"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                {profileImage ? (
-                  <img src={profileImage} alt={userData.name} className="h-full w-full object-cover" />
-                ) : (
-                  userData.name.charAt(0)
-                )}
-                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
-                  <Camera className="h-6 w-6 text-white" />
-                </div>
-              </div>
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                className="hidden" 
-                accept="image/*" 
-                onChange={handleImageUpload}
-              />
-            </div>
+            <ProfilePhotoUploader 
+              initialPhoto={profileImage}
+              userName={userData.name}
+              onPhotoChange={setProfileImage}
+            />
             
             {/* User Info */}
             <div className="flex-grow text-center md:text-left">
@@ -144,6 +134,12 @@ const Profile = () => {
                   <Users className="h-4 w-4" />
                   <span>{userData.affiliationStats.totalAffiliates} affiliés</span>
                 </div>
+                {isAdvertiser && (
+                  <div className="flex items-center gap-1 px-4 py-2 rounded-full bg-blue-100 text-blue-800 font-medium">
+                    <Building className="h-4 w-4" />
+                    <span>Annonceur</span>
+                  </div>
+                )}
               </div>
             </div>
             
@@ -227,6 +223,9 @@ const Profile = () => {
           <TabsList className="mb-6">
             <TabsTrigger value="history" className="text-base">Historique</TabsTrigger>
             <TabsTrigger value="settings" className="text-base">Paramètres</TabsTrigger>
+            {isAdvertiser && (
+              <TabsTrigger value="advertiser" className="text-base">Annonceur</TabsTrigger>
+            )}
           </TabsList>
           
           <TabsContent value="history" className="animate-fade-in">
@@ -285,13 +284,12 @@ const Profile = () => {
                 <div>
                   <Label htmlFor="phone" className="block text-foreground/70 mb-2">Numéro de téléphone</Label>
                   <div className="flex gap-2">
-                    <Input 
-                      id="phone"
-                      type="tel" 
-                      defaultValue={userData.phone}
+                    <PhoneNumberInput 
+                      value={phoneValue || userData.phone}
+                      onChange={setPhoneValue}
                       className="w-full"
                     />
-                    <Button type="button" variant="outline" className="flex items-center gap-1">
+                    <Button type="button" variant="outline" className="flex items-center gap-1 whitespace-nowrap">
                       <Phone className="h-4 w-4" />
                       Vérifier
                     </Button>
@@ -324,24 +322,14 @@ const Profile = () => {
                 
                 <div>
                   <Label className="block text-foreground/70 mb-2">Réseaux sociaux</Label>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="flex items-center gap-2">
-                      <div className="h-8 w-8 bg-blue-500 text-white rounded flex items-center justify-center">
-                        <Facebook className="h-4 w-4" />
-                      </div>
-                      <Input placeholder="URL Facebook" className="flex-grow" />
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="h-8 w-8 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded flex items-center justify-center">
-                        <Instagram className="h-4 w-4" />
-                      </div>
-                      <Input placeholder="URL Instagram" className="flex-grow" />
-                    </div>
-                  </div>
+                  <SocialMediaManager 
+                    onSave={handleSaveSocialLinks}
+                    initialLinks={[]}
+                  />
                 </div>
                 
                 <div>
-                  <Label className="block text-foreground/70 mb-2">Préférences de notification</Label>
+                  <Label className="block text-foreground/70 mb-4">Préférences de notification</Label>
                   <div className="space-y-2">
                     <div className="flex items-center">
                       <input type="checkbox" id="notify_new_ads" className="rounded border-border focus:ring-primary" />
@@ -359,11 +347,82 @@ const Profile = () => {
                 </div>
                 
                 <div className="pt-4 border-t">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h4 className="font-medium">Compte annonceur</h4>
+                      <p className="text-sm text-foreground/60">Activez pour créer et gérer vos propres campagnes publicitaires</p>
+                    </div>
+                    <Switch 
+                      checked={isAdvertiser}
+                      onCheckedChange={handleToggleAdvertiser}
+                    />
+                  </div>
                   <Button type="submit">Enregistrer les modifications</Button>
                 </div>
               </form>
             </div>
           </TabsContent>
+          
+          {isAdvertiser && (
+            <TabsContent value="advertiser" className="animate-fade-in">
+              <div className="glass-card rounded-xl p-6">
+                <h3 className="text-xl font-semibold mb-6">Gestion des campagnes publicitaires</h3>
+                
+                <div className="space-y-6">
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-blue-800">
+                    <h4 className="font-medium mb-2">Bienvenue dans votre espace annonceur !</h4>
+                    <p className="text-sm">Vous pouvez maintenant créer et gérer vos propres campagnes publicitaires.</p>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="glass-card p-4 border-2 border-dashed border-primary/30 rounded-lg flex flex-col items-center justify-center text-center py-8">
+                      <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                        <BadgeDollarSign className="h-6 w-6 text-primary" />
+                      </div>
+                      <h3 className="font-medium mb-2">Créer une campagne</h3>
+                      <p className="text-sm text-foreground/60 mb-4">Lancez votre première campagne publicitaire</p>
+                      <Button>Commencer</Button>
+                    </div>
+                    
+                    <div className="glass-card p-4 rounded-lg">
+                      <h3 className="font-medium mb-4 flex items-center justify-between">
+                        Statistiques
+                        <span className="text-xs bg-secondary px-2 py-1 rounded">Cette semaine</span>
+                      </h3>
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-foreground/60 text-sm">Impressions</span>
+                          <span className="font-medium">0</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-foreground/60 text-sm">Clics</span>
+                          <span className="font-medium">0</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-foreground/60 text-sm">Taux de conversion</span>
+                          <span className="font-medium">0%</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="glass-card p-4 rounded-lg">
+                      <h3 className="font-medium mb-4">Solde du compte</h3>
+                      <div className="text-3xl font-bold mb-2">0.00€</div>
+                      <p className="text-xs text-foreground/60 mb-4">Créditez votre compte pour lancer des campagnes</p>
+                      <Button size="sm" className="w-full">Ajouter des fonds</Button>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-secondary/20 rounded-lg p-4">
+                    <h4 className="font-medium mb-2">Aucune campagne active</h4>
+                    <p className="text-sm text-foreground/60">
+                      Vous n'avez pas encore de campagnes publicitaires. Créez votre première campagne pour commencer à promouvoir vos produits ou services.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+          )}
         </Tabs>
       </main>
       
