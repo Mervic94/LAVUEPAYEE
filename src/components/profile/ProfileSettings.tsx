@@ -1,10 +1,10 @@
-
 import React, { useState } from 'react';
-import { Mail, Phone, Switch } from 'lucide-react';
+import { Mail, Phone, ToggleLeft } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { Switch } from "@/components/ui/switch";
 import SocialMediaManager from '@/components/SocialMediaManager';
 import { PhoneNumberInput } from '@/components/ui/phone-input';
 
@@ -28,7 +28,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
   const { toast } = useToast();
   const [phoneValue, setPhoneValue] = useState('');
 
-  // Handle profile update
   const handleProfileUpdate = (e: React.FormEvent) => {
     e.preventDefault();
     toast({
@@ -37,7 +36,6 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
     });
   };
   
-  // Handle social media links save
   const handleSaveSocialLinks = (links: any[]) => {
     toast({
       title: "Réseaux sociaux mis à jour",
