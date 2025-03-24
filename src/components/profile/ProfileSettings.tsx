@@ -130,7 +130,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({
             </div>
             <div className="flex items-center">
               <input type="checkbox" id="notify_earnings" className="rounded border-border focus:ring-primary" />
-              <label htmlFor="notify_earnings" className="ml-2">Gains de points</label>
+              <label htmlFor="notify_earnings" className="ml-2">Gains de LPV</label>
             </div>
             <div className="flex items-center">
               <input type="checkbox" id="notify_affiliates" className="rounded border-border focus:ring-primary" />

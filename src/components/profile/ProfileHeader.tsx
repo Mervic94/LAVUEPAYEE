@@ -64,7 +64,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
             onClick={() => setCashoutDialogOpen(true)}
           >
             <CreditCard className="h-4 w-4" />
-            Retirer mes points
+            Retirer mes LPV
           </Button>
           <Button variant="outline" className="w-full md:w-auto">
             Paramètres du compte
