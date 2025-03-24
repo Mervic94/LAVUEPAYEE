@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BadgeDollarSign, Users, ChevronDown, ChevronUp, Check, Link as LinkIcon, Copy, CreditCard, Mail, Phone, Building } from 'lucide-react';
+import { BadgeDollarSign, Users, ChevronDown, ChevronUp, Check, Link as LinkIcon, Copy, CreditCard, Mail, Phone, Building, AlertTriangle, Shield, FileCheck } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,7 @@ import ProfilePhotoUploader from '@/components/ProfilePhotoUploader';
 import SocialMediaManager from '@/components/SocialMediaManager';
 import { PhoneNumberInput } from '@/components/ui/phone-input';
 import { Switch } from '@/components/ui/switch';
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Profile = () => {
   const { toast } = useToast();
@@ -22,6 +23,10 @@ const Profile = () => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [isAdvertiser, setIsAdvertiser] = useState(false);
   const [phoneValue, setPhoneValue] = useState('');
+  const [showAdvertiserTerms, setShowAdvertiserTerms] = useState(false);
+  const [kycVerified, setKycVerified] = useState(false);
+  const [kybVerified, setKybVerified] = useState(false);
+  const [advertiserVerificationRequested, setAdvertiserVerificationRequested] = useState(false);
   
   // Mock user data
   const userData = {
@@ -61,6 +66,38 @@ const Profile = () => {
     { id: 5, name: 'Sophie Durand', level: 2, joinDate: '2023-05-05T16:20:00', earnings: 200 },
   ];
   
+  // Advertiser account requirements
+  const advertiserRequirements = [
+    "Vérification d'identité complète (KYC)",
+    "Vérification d'entreprise (KYB) pour les professionnels",
+    "Respect des règles publicitaires de LAVUEPAYEE",
+    "Contenu publicitaire conforme aux lois en vigueur",
+    "Absence d'antécédents de fraude ou de contenu trompeur",
+    "Solde minimum de 100€ pour lancer des campagnes"
+  ];
+  
+  // Advertiser violations and penalties
+  const advertiserViolations = [
+    {
+      level: "Mineur",
+      examples: ["Publicité non conforme aux directives", "Erreurs dans les descriptions"],
+      penalty: "Avertissement et suspension temporaire de la campagne",
+      duration: "3 jours"
+    },
+    {
+      level: "Moyen",
+      examples: ["Contenu inapproprié", "Publicité trompeuse"],
+      penalty: "Suspension du compte annonceur",
+      duration: "14 jours"
+    },
+    {
+      level: "Grave",
+      examples: ["Fraude", "Contenu illégal", "Harcèlement"],
+      penalty: "Suspension permanente et confiscation des LVP",
+      duration: "Définitive"
+    }
+  ];
+  
   // Format date
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -95,8 +132,26 @@ const Profile = () => {
     });
   };
   
-  // Toggle advertiser status
+  // Request advertiser verification
+  const handleRequestAdvertiserVerification = () => {
+    setAdvertiserVerificationRequested(true);
+    toast({
+      title: "Demande de vérification envoyée",
+      description: "Votre demande a été soumise. Notre équipe examinera votre profil et vos documents dans les 48 heures."
+    });
+  };
+  
+  // Toggle advertiser status - now only available for admin
   const handleToggleAdvertiser = (checked: boolean) => {
+    // This would typically be restricted to admin users only
+    if (checked && !kycVerified) {
+      toast({
+        title: "Vérification requise",
+        description: "La vérification KYC/KYB est requise pour devenir annonceur."
+      });
+      return;
+    }
+    
     setIsAdvertiser(checked);
     toast({
       title: checked ? "Compte annonceur activé" : "Compte annonceur désactivé",
@@ -225,6 +280,9 @@ const Profile = () => {
             <TabsTrigger value="settings" className="text-base">Paramètres</TabsTrigger>
             {isAdvertiser && (
               <TabsTrigger value="advertiser" className="text-base">Annonceur</TabsTrigger>
+            )}
+            {!isAdvertiser && (
+              <TabsTrigger value="advertiser-registration" className="text-base">Devenir Annonceur</TabsTrigger>
             )}
           </TabsList>
           
@@ -363,16 +421,126 @@ const Profile = () => {
             </div>
           </TabsContent>
           
+          <TabsContent value="advertiser-registration" className="animate-fade-in">
+            <div className="glass-card rounded-xl p-6">
+              <h3 className="text-xl font-semibold mb-4">Devenir Annonceur LAVUEPAYEE</h3>
+              <p className="text-foreground/70 mb-6">
+                Pour diffuser des publicités sur notre plateforme, vous devez soumettre une demande de vérification et respecter nos conditions strictes.
+              </p>
+              
+              <Alert className="mb-6 bg-amber-50 border-amber-200">
+                <AlertTriangle className="h-4 w-4 text-amber-600" />
+                <AlertDescription className="text-amber-800">
+                  L'activation d'un compte annonceur est permanente. Une fois activé, ce compte ne peut être désactivé que par l'équipe LAVUEPAYEE.
+                </AlertDescription>
+              </Alert>
+              
+              <div className="space-y-6">
+                <div>
+                  <h4 className="font-semibold flex items-center gap-2 mb-3">
+                    <Shield className="h-4 w-4 text-primary" />
+                    Conditions requises
+                  </h4>
+                  <ul className="list-disc pl-5 space-y-2">
+                    {advertiserRequirements.map((req, index) => (
+                      <li key={index} className="text-foreground/80">{req}</li>
+                    ))}
+                  </ul>
+                </div>
+                
+                <div>
+                  <h4 className="font-semibold flex items-center gap-2 mb-3">
+                    <AlertTriangle className="h-4 w-4 text-red-500" />
+                    Infractions et pénalités
+                  </h4>
+                  <div className="space-y-4">
+                    {advertiserViolations.map((violation, index) => (
+                      <div key={index} className="glass-card p-3 rounded-lg border border-border">
+                        <div className="font-medium text-base mb-1">Niveau {violation.level}</div>
+                        <div className="text-sm text-foreground/70 mb-2">
+                          <span className="font-medium">Exemples:</span> {violation.examples.join(", ")}
+                        </div>
+                        <div className="text-sm">
+                          <span className="font-medium">Sanction:</span> {violation.penalty}
+                        </div>
+                        <div className="text-sm">
+                          <span className="font-medium">Durée:</span> {violation.duration}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="border-t pt-6">
+                  <h4 className="font-semibold mb-3">Vérifications obligatoires</h4>
+                  
+                  <div className="space-y-4 mb-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-medium">Vérification d'identité (KYC)</div>
+                        <p className="text-sm text-foreground/60">Téléchargez une pièce d'identité valide</p>
+                      </div>
+                      {kycVerified ? (
+                        <div className="flex items-center text-green-600 gap-1">
+                          <Check className="h-4 w-4" />
+                          <span>Vérifié</span>
+                        </div>
+                      ) : (
+                        <Button size="sm" variant="outline">
+                          <FileCheck className="h-4 w-4 mr-2" />
+                          Soumettre
+                        </Button>
+                      )}
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="font-medium">Vérification d'entreprise (KYB)</div>
+                        <p className="text-sm text-foreground/60">Téléchargez les documents officiels de votre entreprise</p>
+                      </div>
+                      {kybVerified ? (
+                        <div className="flex items-center text-green-600 gap-1">
+                          <Check className="h-4 w-4" />
+                          <span>Vérifié</span>
+                        </div>
+                      ) : (
+                        <Button size="sm" variant="outline">
+                          <FileCheck className="h-4 w-4 mr-2" />
+                          Soumettre
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <Button
+                    onClick={handleRequestAdvertiserVerification}
+                    disabled={advertiserVerificationRequested}
+                    className="w-full sm:w-auto"
+                  >
+                    {advertiserVerificationRequested 
+                      ? "Demande en cours d'examen" 
+                      : "Demander la vérification"}
+                  </Button>
+                  {advertiserVerificationRequested && (
+                    <p className="text-sm text-foreground/60 mt-2">
+                      Notre équipe examine votre demande. Vous recevrez une réponse dans les 48 heures.
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+          
           {isAdvertiser && (
             <TabsContent value="advertiser" className="animate-fade-in">
               <div className="glass-card rounded-xl p-6">
                 <h3 className="text-xl font-semibold mb-6">Gestion des campagnes publicitaires</h3>
                 
                 <div className="space-y-6">
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-blue-800">
-                    <h4 className="font-medium mb-2">Bienvenue dans votre espace annonceur !</h4>
-                    <p className="text-sm">Vous pouvez maintenant créer et gérer vos propres campagnes publicitaires.</p>
-                  </div>
+                  <Alert className="bg-blue-50 border-blue-200 text-blue-800">
+                    <h4 className="font-medium mb-2">Compte annonceur actif</h4>
+                    <p className="text-sm">Votre compte annonceur a été vérifié et approuvé par l'équipe LAVUEPAYEE.</p>
+                  </Alert>
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="glass-card p-4 border-2 border-dashed border-primary/30 rounded-lg flex flex-col items-center justify-center text-center py-8">
@@ -418,6 +586,25 @@ const Profile = () => {
                     <p className="text-sm text-foreground/60">
                       Vous n'avez pas encore de campagnes publicitaires. Créez votre première campagne pour commencer à promouvoir vos produits ou services.
                     </p>
+                  </div>
+                  
+                  <div className="border-t pt-6">
+                    <h4 className="font-medium mb-4">Rappel des règles publicitaires</h4>
+                    <div className="glass-card p-4 rounded-lg bg-amber-50 border-amber-200">
+                      <p className="text-sm mb-2">
+                        <strong>Important:</strong> Le non-respect des règles publicitaires peut entraîner la suspension ou la suppression de votre compte annonceur.
+                      </p>
+                      <ul className="list-disc pl-5 space-y-1 text-sm">
+                        <li>Toutes les publicités doivent être conformes aux lois en vigueur</li>
+                        <li>Les publicités trompeuses ou mensongères sont strictement interdites</li>
+                        <li>Le contenu doit être approprié pour tous les publics</li>
+                        <li>L'équipe LAVUEPAYEE se réserve le droit de refuser toute publicité</li>
+                      </ul>
+                    </div>
+                    
+                    <div className="mt-4">
+                      <Button variant="outline" className="w-full">Consulter toutes les règles</Button>
+                    </div>
                   </div>
                 </div>
               </div>

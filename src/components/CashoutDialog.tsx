@@ -97,7 +97,13 @@ const CashoutDialog: React.FC<CashoutDialogProps> = ({ open, onOpenChange, userP
         {isComplete && (
           <div className="text-center py-8">
             <div className="h-20 w-20 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
-              <BadgeDollarSign className="h-10 w-10 text-green-600" />
+              <div className="h-10 w-10 rounded-full flex items-center justify-center overflow-hidden">
+                <img 
+                  src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
+                  alt="LVP" 
+                  className="w-full h-full object-contain"
+                />
+              </div>
             </div>
             <h3 className="text-xl font-semibold mb-2">Retrait en cours de traitement</h3>
             <p className="text-foreground/70 mb-6">

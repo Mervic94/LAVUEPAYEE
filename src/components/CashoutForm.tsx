@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { CircleDollarSign, ArrowLeft, ChevronRight, CreditCard, Building, Wallet } from 'lucide-react';
+import { ArrowLeft, ChevronRight, CreditCard, Building, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -75,14 +75,14 @@ const CashoutForm: React.FC<CashoutFormProps> = ({ method, userPoints, onBack, o
           <ArrowLeft className="h-4 w-4" /> Retour
         </Button>
         <div className="flex items-center gap-2">
-          <div className="h-5 w-5 flex items-center justify-center">
+          <div className="h-5 w-5 rounded-full flex items-center justify-center overflow-hidden">
             <img 
               src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
               alt="LVP" 
               className="w-full h-full object-contain"
             />
           </div>
-          <span className="font-medium">{userPoints} points disponibles</span>
+          <span className="font-medium">{userPoints} LVP disponibles</span>
         </div>
       </div>
       
@@ -96,7 +96,7 @@ const CashoutForm: React.FC<CashoutFormProps> = ({ method, userPoints, onBack, o
           <div>
             <h3 className="font-medium text-lg">{method.name}</h3>
             <p className="text-sm text-foreground/60">
-              Taux de conversion: 1 point = {method.conversionRate}€
+              Taux de conversion: 1 LVP = {method.conversionRate}€
             </p>
           </div>
         </div>
@@ -134,7 +134,7 @@ const CashoutForm: React.FC<CashoutFormProps> = ({ method, userPoints, onBack, o
             {!isAmountValid && (
               <Alert variant="destructive">
                 <AlertDescription>
-                  Le montant demandé dépasse vos points disponibles ou est invalide.
+                  Le montant demandé dépasse vos LVP disponibles ou est invalide.
                 </AlertDescription>
               </Alert>
             )}
@@ -272,7 +272,8 @@ const CashoutForm: React.FC<CashoutFormProps> = ({ method, userPoints, onBack, o
         <ul className="list-disc pl-5 space-y-1 mt-2">
           <li>Délai de traitement estimé: {method.processingTime}</li>
           <li>Frais applicables: {method.fees}</li>
-          <li>Seuil minimum de retrait: {method.minPoints} points ({Math.ceil(method.minPoints * method.conversionRate)}€)</li>
+          <li>Taux de conversion: 1 LVP = 0.00014 Vc</li>
+          <li>Seuil minimum de retrait: {method.minPoints} LVP ({Math.ceil(method.minPoints * method.conversionRate)}€)</li>
         </ul>
       </div>
     </div>
