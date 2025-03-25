@@ -1,10 +1,13 @@
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowUpRight, TrendingUp, Calendar, Clock, Users } from 'lucide-react';
+import { ArrowUpRight, TrendingUp, Calendar, Clock, Users, User, UserCog, Store } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import AdCard from '@/components/AdCard';
 import PointsIndicator from '@/components/PointsIndicator';
+import AdminDashboard from '@/components/dashboards/AdminDashboard';
+import AdvertiserDashboard from '@/components/dashboards/AdvertiserDashboard';
+import ConsumerDashboard from '@/components/dashboards/ConsumerDashboard';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 // Mock data for ads
 const mockAds = [
@@ -63,11 +66,17 @@ const adTypes: Array<"banner" | "interstitial" | "video" | "native" | "popup" | 
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [userRole, setUserRole] = useState<'admin' | 'advertiser' | 'consumer'>('consumer');
+  
+  // For demonstration purposes, we'll provide a way to switch between roles
+  const handleRoleChange = (role: 'admin' | 'advertiser' | 'consumer') => {
+    setUserRole(role);
+  };
   
   // Mock statistics for the dashboard
   const stats = [
     { 
-      title: 'Points gagnés', 
+      title: 'LVP gagnés', 
       value: '1,250', 
       change: '+125 aujourd\'hui', 
       positive: true,
@@ -109,75 +118,32 @@ const Dashboard = () => {
       <Navbar />
       
       <main className="container px-6 mx-auto max-w-7xl pt-24 pb-12">
-        <h1 className="text-3xl font-bold mb-8">Tableau de bord</h1>
+        <h1 className="text-3xl font-bold mb-4">Tableau de bord</h1>
         
-        {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {stats.map((stat, index) => (
-            <div key={index} className="glass-card rounded-xl p-6 animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-foreground/60 text-sm">{stat.title}</p>
-                  <h3 className="text-2xl font-bold mt-1">{stat.value}</h3>
-                  <div className={`flex items-center mt-2 text-xs font-medium ${stat.positive ? 'text-green-500' : 'text-red-500'}`}>
-                    <TrendingUp className="h-3 w-3 mr-1" />
-                    {stat.change}
-                  </div>
-                </div>
-                <div className="h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center">
-                  {typeof stat.icon === 'function' 
-                    ? <stat.icon />
-                    : React.createElement(stat.icon, { className: "h-5 w-5 text-primary" })
-                  }
-                </div>
-              </div>
-            </div>
-          ))}
+        {/* Role switcher (for demo purposes) */}
+        <div className="mb-8">
+          <Tabs defaultValue={userRole} onValueChange={(value) => handleRoleChange(value as any)}>
+            <TabsList className="grid grid-cols-3 w-full max-w-md">
+              <TabsTrigger value="consumer" className="flex items-center gap-2">
+                <User className="h-4 w-4" />
+                Consommateur
+              </TabsTrigger>
+              <TabsTrigger value="advertiser" className="flex items-center gap-2">
+                <Store className="h-4 w-4" />
+                Annonceur
+              </TabsTrigger>
+              <TabsTrigger value="admin" className="flex items-center gap-2">
+                <UserCog className="h-4 w-4" />
+                Admin
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
         
-        {/* Recommended Ads */}
-        <div className="mb-12">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-semibold">Publicités recommandées</h2>
-            <button 
-              onClick={() => {}}
-              className="text-primary hover:text-primary/80 transition-colors flex items-center text-sm font-medium"
-            >
-              Voir tout
-              <ArrowUpRight className="h-4 w-4 ml-1" />
-            </button>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mockAds.slice(0, 3).map((ad) => (
-              <AdCard key={ad.id} {...ad} />
-            ))}
-          </div>
-        </div>
-        
-        {/* Latest Ads */}
-        <div>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-semibold">Dernières publicités</h2>
-            <button 
-              onClick={() => {}}
-              className="text-primary hover:text-primary/80 transition-colors flex items-center text-sm font-medium"
-            >
-              Voir tout
-              <ArrowUpRight className="h-4 w-4 ml-1" />
-            </button>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mockAds.slice(3, 6).map((ad, index) => (
-              <AdCard 
-                key={ad.id} 
-                {...ad} 
-                adType={adTypes[index % adTypes.length]} 
-              />
-            ))}
-          </div>
-        </div>
+        {/* Display different dashboard based on user role */}
+        {userRole === 'admin' && <AdminDashboard />}
+        {userRole === 'advertiser' && <AdvertiserDashboard />}
+        {userRole === 'consumer' && <ConsumerDashboard stats={stats} mockAds={mockAds} adTypes={adTypes} />}
       </main>
     </div>
   );
