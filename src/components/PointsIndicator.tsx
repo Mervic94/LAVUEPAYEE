@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 interface PointsIndicatorProps {
@@ -31,11 +30,11 @@ const PointsIndicator: React.FC<PointsIndicatorProps> = ({ points, size = 'md' }
   return (
     <div 
       className={`flex items-center ${sizeClasses[size]} rounded-full 
-                  bg-amber-400 text-green-900 font-medium 
-                  shadow-sm transition-all duration-300 hover:scale-105`}
+                  bg-transparent text-green-900 font-medium 
+                  transition-all duration-300 hover:scale-105`}
       title={`${formattedPoints} LVP = ${formattedVuecoins} Vc`}
     >
-      <div className={`${iconSizes[size]} rounded-full flex items-center justify-center overflow-hidden`}>
+      <div className={`${iconSizes[size]} rounded-full flex items-center justify-center`}>
         <img 
           src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
           alt="LVP" 

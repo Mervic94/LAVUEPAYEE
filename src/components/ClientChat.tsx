@@ -1,18 +1,31 @@
 
-import React, { useState } from 'react';
-import { MessageCircle, X, Send, Minimize2, Maximize2 } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { MessageCircle, X, Send, Minimize2, Maximize2, Image, FileMusic, Video, User, PaperclipIcon, DollarSign } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useToast } from '@/hooks/use-toast';
 
 const ClientChat: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [message, setMessage] = useState('');
-  const [chatMessages, setChatMessages] = useState<{ text: string; isUser: boolean; timestamp: Date }[]>([
+  const [chatMessages, setChatMessages] = useState<{ 
+    text: string; 
+    isUser: boolean; 
+    timestamp: Date;
+    mediaType?: 'image' | 'audio' | 'video';
+    mediaUrl?: string;
+    mediaCost?: number;
+  }[]>([
     { text: "Bonjour ! Comment puis-je vous aider aujourd'hui ?", isUser: false, timestamp: new Date() }
   ]);
+  
   const isMobile = useIsMobile();
+  const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [userLvpBalance, setUserLvpBalance] = useState(1250); // Mock balance
+  const [mediaType, setMediaType] = useState<'image' | 'audio' | 'video' | null>(null);
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
@@ -21,6 +34,24 @@ const ClientChat: React.FC = () => {
 
   const toggleMinimize = () => {
     setIsMinimized(!isMinimized);
+  };
+
+  const calculateMediaCost = (fileSize: number, type: 'image' | 'audio' | 'video'): number => {
+    // File size is in bytes, convert to MB
+    const fileSizeInMB = fileSize / (1024 * 1024);
+    
+    // If filesize < 5MB, cost is 2 LVP regardless of type
+    if (fileSizeInMB < 5) {
+      return 2;
+    }
+    
+    // If filesize >= 5MB, cost depends on type
+    switch (type) {
+      case 'image': return 3;
+      case 'audio': return 4;
+      case 'video': return 5;
+      default: return 2;
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -44,6 +75,71 @@ const ClientChat: React.FC = () => {
     }
   };
 
+  const openFileSelector = (type: 'image' | 'audio' | 'video') => {
+    setMediaType(type);
+    if (fileInputRef.current) {
+      // Set accepted file types based on the media type
+      switch (type) {
+        case 'image':
+          fileInputRef.current.accept = 'image/*';
+          break;
+        case 'audio':
+          fileInputRef.current.accept = 'audio/*';
+          break;
+        case 'video':
+          fileInputRef.current.accept = 'video/*';
+          break;
+      }
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !mediaType) return;
+
+    const cost = calculateMediaCost(file.size, mediaType);
+    
+    // Check if user has enough LVP
+    if (userLvpBalance < cost) {
+      toast({
+        title: "Solde insuffisant",
+        description: `Vous n'avez pas assez de LVP pour envoyer ce média. Coût: ${cost} LVP`,
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Create an object URL for the file
+    const fileUrl = URL.createObjectURL(file);
+    
+    // Deduct the cost from the user's balance
+    setUserLvpBalance(prev => prev - cost);
+    
+    // Add the message with media
+    setChatMessages(prev => [
+      ...prev,
+      {
+        text: `A envoyé un fichier ${mediaType}`,
+        isUser: true,
+        timestamp: new Date(),
+        mediaType,
+        mediaUrl: fileUrl,
+        mediaCost: cost
+      }
+    ]);
+    
+    toast({
+      title: "Média envoyé",
+      description: `${cost} LVP ont été déduits de votre solde`,
+    });
+    
+    // Reset the input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
@@ -59,6 +155,14 @@ const ClientChat: React.FC = () => {
           <MessageCircle className="h-6 w-6" />
         </Button>
       )}
+
+      {/* Hidden file input */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        className="hidden"
+        onChange={handleFileSelected}
+      />
 
       {/* Chat window */}
       {isOpen && (
@@ -111,6 +215,25 @@ const ClientChat: React.FC = () => {
                           : 'bg-gray-200 text-gray-800'
                       }`}
                     >
+                      {msg.mediaUrl && (
+                        <div className="mb-2">
+                          {msg.mediaType === 'image' && (
+                            <img src={msg.mediaUrl} alt="Image" className="max-w-full rounded" />
+                          )}
+                          {msg.mediaType === 'audio' && (
+                            <audio src={msg.mediaUrl} controls className="max-w-full" />
+                          )}
+                          {msg.mediaType === 'video' && (
+                            <video src={msg.mediaUrl} controls className="max-w-full rounded" />
+                          )}
+                          {msg.mediaCost && (
+                            <div className="text-xs mt-1 opacity-70 flex items-center gap-1">
+                              <DollarSign className="h-3 w-3" />
+                              Coût: {msg.mediaCost} LVP
+                            </div>
+                          )}
+                        </div>
+                      )}
                       <p>{msg.text}</p>
                       <div className={`text-xs mt-1 ${msg.isUser ? 'text-primary-foreground/70' : 'text-gray-500'}`}>
                         {formatTime(msg.timestamp)}
@@ -120,17 +243,52 @@ const ClientChat: React.FC = () => {
                 ))}
               </div>
               
-              {/* Chat input */}
-              <form onSubmit={handleSubmit} className="border-t p-3 flex gap-2">
-                <Input
-                  placeholder="Écrivez votre message..."
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  className="flex-1"
-                />
-                <Button type="submit" size="icon">
-                  <Send className="h-4 w-4" />
-                </Button>
+              {/* Chat input and media buttons */}
+              <form onSubmit={handleSubmit} className="border-t p-3">
+                <div className="flex gap-2 mb-2">
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="icon"
+                    onClick={() => openFileSelector('image')}
+                    title="Envoyer une image (3 LVP)"
+                  >
+                    <Image className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="icon"
+                    onClick={() => openFileSelector('audio')}
+                    title="Envoyer un fichier audio (4 LVP)"
+                  >
+                    <FileMusic className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="icon"
+                    onClick={() => openFileSelector('video')}
+                    title="Envoyer une vidéo (5 LVP)"
+                  >
+                    <Video className="h-4 w-4" />
+                  </Button>
+                  <div className="ml-auto flex items-center gap-2 text-sm text-foreground/60">
+                    <DollarSign className="h-4 w-4" />
+                    {userLvpBalance} LVP
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Écrivez votre message..."
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    className="flex-1"
+                  />
+                  <Button type="submit" size="icon">
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </div>
               </form>
             </>
           )}
