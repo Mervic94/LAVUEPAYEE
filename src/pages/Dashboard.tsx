@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowUpRight, TrendingUp, Calendar, Clock, Users, User, UserCog, Store } from 'lucide-react';
-import Navbar from '@/components/Navbar';
+import Navbar from '@/components/navbar';
 import AdCard from '@/components/AdCard';
 import PointsIndicator from '@/components/PointsIndicator';
 import AdminDashboard from '@/components/dashboards/AdminDashboard';

@@ -22,6 +22,7 @@ import ClientChat from '@/components/ClientChat'
 import Footer from '@/components/Footer'
 import { AuthProvider } from '@/contexts/AuthContext'
 import ProtectedRoute from '@/components/ProtectedRoute'
+import Navbar from '@/components/navbar'
 
 import './App.css'
 import './styles/phone-input.css'
