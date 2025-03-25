@@ -1,17 +1,8 @@
-
 import React from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Phone, Video, Info } from 'lucide-react';
-
-interface User {
-  id: string;
-  name: string;
-  avatar: string | null;
-  lastSeen: string;
-  isAffiliate?: boolean;
-  level?: number;
-}
+import { User } from './types';
 
 interface ConversationHeaderProps {
   user: User;

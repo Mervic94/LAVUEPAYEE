@@ -1,28 +1,9 @@
-
 import React from 'react';
 import { Search, PlusCircle } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-
-interface Conversation {
-  id: string;
-  user: {
-    id: string;
-    name: string;
-    avatar: string | null;
-    lastSeen: string;
-    isAffiliate?: boolean;
-    level?: number;
-  };
-  lastMessage: {
-    text: string;
-    timestamp: string;
-    isRead: boolean;
-    sender: string;
-  };
-  unread: number;
-}
+import { Conversation } from './types';
 
 interface ConversationListProps {
   conversations: Conversation[];

@@ -3,34 +3,7 @@ import React from 'react';
 import ConversationHeader from './ConversationHeader';
 import MessagesList from './MessagesList';
 import MessageInput from './MessageInput';
-
-interface User {
-  id: string;
-  name: string;
-  avatar: string | null;
-  lastSeen: string;
-  isAffiliate?: boolean;
-  level?: number;
-}
-
-interface Message {
-  id: string;
-  sender: string;
-  text: string;
-  timestamp: string;
-}
-
-interface Conversation {
-  id: string;
-  user: User;
-  lastMessage: {
-    text: string;
-    timestamp: string;
-    isRead: boolean;
-    sender: string;
-  };
-  unread: number;
-}
+import { Conversation, Message } from './types';
 
 interface ConversationViewProps {
   conversation: Conversation;

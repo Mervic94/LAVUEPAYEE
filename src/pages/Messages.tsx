@@ -5,9 +5,9 @@ import { toast } from '@/components/ui/use-toast';
 import ConversationList from '@/components/messages/ConversationList';
 import ConversationView from '@/components/messages/ConversationView';
 import EmptyConversation from '@/components/messages/EmptyConversation';
+import { Conversation, Message } from '@/components/messages/types';
 
-// Mock data for conversations
-const mockConversations = [
+const mockConversations: Conversation[] = [
   {
     id: '1',
     user: {
@@ -98,8 +98,7 @@ const mockConversations = [
   }
 ];
 
-// Mock messages for conversation
-const mockMessages = [
+const mockMessages: Message[] = [
   {
     id: 'm1',
     sender: '102',
@@ -152,7 +151,7 @@ const mockMessages = [
 
 const Messages = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedConversation, setSelectedConversation] = useState(mockConversations[1]);
+  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(mockConversations[1]);
   const [newMessage, setNewMessage] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
@@ -171,6 +170,10 @@ const Messages = () => {
     }
   }, [navigate]);
   
+  const handleSelectConversation = (conversation: Conversation) => {
+    setSelectedConversation(conversation);
+  };
+
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (newMessage.trim()) {
@@ -201,7 +204,7 @@ const Messages = () => {
             searchQuery={searchQuery}
             selectedConversation={selectedConversation}
             onSearchChange={setSearchQuery}
-            onSelectConversation={setSelectedConversation}
+            onSelectConversation={handleSelectConversation}
             onNewConversation={handleNewConversation}
           />
           
