@@ -1,96 +1,137 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Play, Book, Award, Clock, CheckCircle } from 'lucide-react';
+import { Progress } from "@/components/ui/progress";
+import { BookOpen, PlayCircle, CheckCircle, Lock, Award } from "lucide-react";
 
-interface OnlineTrainingProps {
-  className?: string;
+export interface OnlineTrainingProps {
+  userPoints?: number;
+  userLevel?: number;
 }
 
-const OnlineTraining: React.FC<OnlineTrainingProps> = ({ className }) => {
-  const courses = [
+const OnlineTraining: React.FC<OnlineTrainingProps> = ({ 
+  userPoints = 0,
+  userLevel = 0
+}) => {
+  const [activeModule, setActiveModule] = useState<number | null>(null);
+  
+  // Training modules data
+  const modules = [
     {
-      id: '1',
-      title: 'Débutant sur LAVUEPAYEE',
-      description: 'Apprenez les bases pour gagner vos premiers LVP',
-      duration: '30 minutes',
-      modules: 5,
-      level: 'Débutant',
-      completed: false,
-      reward: 100
+      id: 1,
+      title: "Démarrage rapide",
+      description: "Apprenez les bases de la plateforme LAVUEPAYEE",
+      progress: 100,
+      completed: true,
+      locked: false,
+      reward: 50,
+      lessons: 5
     },
     {
-      id: '2',
-      title: 'Marketing d\'Affiliation Avancé',
-      description: 'Maximisez vos gains avec l\'affiliation',
-      duration: '1 heure',
-      modules: 8,
-      level: 'Intermédiaire',
+      id: 2,
+      title: "Optimisation des gains",
+      description: "Maximisez vos revenus sur la plateforme",
+      progress: 60,
       completed: false,
-      reward: 250
+      locked: false,
+      reward: 100,
+      lessons: 8
     },
     {
-      id: '3',
-      title: 'Devenir Annonceur Pro',
-      description: 'Créez des campagnes publicitaires performantes',
-      duration: '2 heures',
-      modules: 12,
-      level: 'Avancé',
+      id: 3,
+      title: "Stratégies d'affiliation",
+      description: "Développez votre réseau d'affiliés",
+      progress: 0,
       completed: false,
-      reward: 500
+      locked: userLevel < 1,
+      reward: 150,
+      lessons: 6
+    },
+    {
+      id: 4,
+      title: "Marketing avancé",
+      description: "Techniques avancées pour promoteurs",
+      progress: 0,
+      completed: false,
+      locked: userLevel < 2,
+      reward: 200,
+      lessons: 10
     }
   ];
-
+  
+  const handleStartModule = (moduleId: number) => {
+    setActiveModule(moduleId);
+    // Logic to start the module would go here
+  };
+  
   return (
-    <div className={className}>
-      <div className="text-center mb-10">
-        <h2 className="text-3xl font-bold mb-4">Formation en ligne</h2>
-        <p className="text-foreground/60 max-w-2xl mx-auto">
-          Développez vos compétences et gagnez des LVP en suivant nos formations adaptées à votre niveau.
-        </p>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold">Formation en ligne</h2>
+        <div className="flex items-center gap-2">
+          <Award className="text-amber-500 h-5 w-5" />
+          <span className="text-sm font-medium">Niveau: {userLevel}</span>
+        </div>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {courses.map((course) => (
-          <Card key={course.id} className="overflow-hidden">
-            <CardHeader className="bg-gradient-to-br from-primary/20 to-transparent">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {modules.map((module) => (
+          <Card key={module.id} className={module.locked ? "opacity-80" : ""}>
+            <CardHeader>
               <div className="flex justify-between items-start">
-                <Badge variant={course.completed ? "default" : "outline"}>
-                  {course.completed ? (
-                    <span className="flex items-center gap-1">
-                      <CheckCircle className="h-3 w-3" />
-                      Terminé
-                    </span>
-                  ) : course.level}
-                </Badge>
-                <Badge variant="secondary" className="flex items-center gap-1">
-                  <Clock className="h-3 w-3" />
-                  {course.duration}
-                </Badge>
+                <CardTitle className="flex items-center gap-2">
+                  {module.completed ? 
+                    <CheckCircle className="h-5 w-5 text-green-500" /> : 
+                    <BookOpen className="h-5 w-5 text-primary" />
+                  }
+                  {module.title}
+                </CardTitle>
+                {module.locked && <Lock className="h-5 w-5 text-muted-foreground" />}
               </div>
-              <CardTitle>{course.title}</CardTitle>
-              <CardDescription>{course.description}</CardDescription>
+              <CardDescription>{module.description}</CardDescription>
             </CardHeader>
-            
-            <CardContent className="pt-6">
-              <div className="space-y-4">
-                <div className="flex items-center gap-2 text-foreground/70">
-                  <Book className="h-4 w-4" />
-                  <span>{course.modules} modules</span>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex justify-between text-sm">
+                  <span>Progression</span>
+                  <span>{module.progress}%</span>
                 </div>
-                <div className="flex items-center gap-2 text-foreground/70">
-                  <Award className="h-4 w-4" />
-                  <span>Récompense: {course.reward} LVP</span>
+                <Progress value={module.progress} className="h-2" />
+                <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                  <span>{module.lessons} leçons</span>
+                  <span>Récompense: {module.reward} LVP</span>
                 </div>
               </div>
             </CardContent>
-            
             <CardFooter>
-              <Button className="w-full" variant={course.completed ? "outline" : "default"}>
-                <Play className="h-4 w-4 mr-2" />
-                {course.completed ? "Revoir le cours" : "Commencer"}
+              <Button 
+                className="w-full"
+                variant={module.completed ? "outline" : "default"}
+                disabled={module.locked}
+                onClick={() => handleStartModule(module.id)}
+              >
+                {module.locked ? (
+                  <>
+                    <Lock className="h-4 w-4 mr-2" />
+                    Niveau {module.id - 1} requis
+                  </>
+                ) : module.completed ? (
+                  <>
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    Revoir le module
+                  </>
+                ) : module.progress > 0 ? (
+                  <>
+                    <PlayCircle className="h-4 w-4 mr-2" />
+                    Continuer
+                  </>
+                ) : (
+                  <>
+                    <PlayCircle className="h-4 w-4 mr-2" />
+                    Commencer
+                  </>
+                )}
               </Button>
             </CardFooter>
           </Card>

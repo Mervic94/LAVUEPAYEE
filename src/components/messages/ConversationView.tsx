@@ -1,0 +1,63 @@
+
+import React from 'react';
+import ConversationHeader from './ConversationHeader';
+import MessagesList from './MessagesList';
+import MessageInput from './MessageInput';
+
+interface User {
+  id: string;
+  name: string;
+  avatar: string | null;
+  lastSeen: string;
+  isAffiliate?: boolean;
+  level?: number;
+}
+
+interface Message {
+  id: string;
+  sender: string;
+  text: string;
+  timestamp: string;
+}
+
+interface Conversation {
+  id: string;
+  user: User;
+  lastMessage: {
+    text: string;
+    timestamp: string;
+    isRead: boolean;
+    sender: string;
+  };
+  unread: number;
+}
+
+interface ConversationViewProps {
+  conversation: Conversation;
+  messages: Message[];
+  newMessage: string;
+  onMessageChange: (message: string) => void;
+  onSendMessage: (e: React.FormEvent) => void;
+}
+
+const ConversationView: React.FC<ConversationViewProps> = ({
+  conversation,
+  messages,
+  newMessage,
+  onMessageChange,
+  onSendMessage
+}) => {
+  return (
+    <div className="md:col-span-2 lg:col-span-3 glass-card rounded-xl overflow-hidden flex flex-col h-full">
+      <ConversationHeader user={conversation.user} />
+      <MessagesList messages={messages} userName={conversation.user.name} />
+      <MessageInput 
+        newMessage={newMessage} 
+        onMessageChange={onMessageChange} 
+        onSendMessage={onSendMessage} 
+      />
+    </div>
+  );
+};
+
+export default ConversationView;
