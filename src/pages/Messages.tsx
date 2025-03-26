@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from '@/components/Navbar';
+import Navbar from '@/components/navbar';
 import { toast } from '@/components/ui/use-toast';
 import ConversationList from '@/components/messages/ConversationList';
 import ConversationView from '@/components/messages/ConversationView';

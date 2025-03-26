@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Search, Filter, ArrowUpRight } from 'lucide-react';
-import Navbar from '@/components/Navbar';
+import Navbar from '@/components/navbar';
 import ProductCard from '@/components/ProductCard';
 import PointsIndicator from '@/components/PointsIndicator';
 

@@ -4,7 +4,7 @@ import { ArrowRight, Users, ShoppingBag, PlayCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import Navbar from '@/components/Navbar';
+import Navbar from '@/components/navbar';
 import Hero from '@/components/Hero';
 
 const Index = () => {

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { CreditCard, Check } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import Navbar from '@/components/Navbar';
+import Navbar from '@/components/navbar';
 import CashoutDialog from '@/components/CashoutDialog';
 import ProfileHeader from '@/components/profile/ProfileHeader';
 import AffiliationSection from '@/components/profile/AffiliationSection';
