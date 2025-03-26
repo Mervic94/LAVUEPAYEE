@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Play, Pause, Clock, Eye, X, CheckCircle, Shield, Facebook, Instagram, Youtube, BadgeDollarSign } from 'lucide-react';
-import Navbar from '@/components/Navbar';
+import Navbar from '@/components/navbar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
