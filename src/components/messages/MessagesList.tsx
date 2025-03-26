@@ -10,7 +10,7 @@ interface MessagesListProps {
 
 const MessagesList: React.FC<MessagesListProps> = ({ messages, userName }) => {
   return (
-    <div className="flex-grow overflow-y-auto p-4 space-y-4">
+    <>
       {messages.map((message) => (
         <MessageBubble
           key={message.id}
@@ -20,7 +20,7 @@ const MessagesList: React.FC<MessagesListProps> = ({ messages, userName }) => {
           userName={userName}
         />
       ))}
-    </div>
+    </>
   );
 };
 

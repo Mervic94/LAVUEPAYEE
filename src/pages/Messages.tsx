@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/navbar';
@@ -155,6 +154,7 @@ const Messages = () => {
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(mockConversations[1]);
   const [newMessage, setNewMessage] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
   const navigate = useNavigate();
   
   useEffect(() => {
@@ -173,6 +173,16 @@ const Messages = () => {
   
   const handleSelectConversation = (conversation: Conversation) => {
     setSelectedConversation(conversation);
+    
+    if (conversation.id !== '1') {
+      setTimeout(() => {
+        setIsTyping(true);
+        
+        setTimeout(() => {
+          setIsTyping(false);
+        }, 3000);
+      }, 1000);
+    }
   };
 
   const handleSendMessage = (e: React.FormEvent) => {
@@ -180,12 +190,19 @@ const Messages = () => {
     if (newMessage.trim()) {
       console.log('Sending message:', newMessage);
       setNewMessage('');
+      
+      setTimeout(() => {
+        setIsTyping(true);
+        
+        setTimeout(() => {
+          setIsTyping(false);
+        }, 3000);
+      }, 1500);
     }
   };
 
   const handleNewConversation = () => {
     console.log('New conversation');
-    // Implementation would go here
   };
   
   if (!isAuthenticated) {
@@ -216,6 +233,7 @@ const Messages = () => {
               newMessage={newMessage}
               onMessageChange={setNewMessage}
               onSendMessage={handleSendMessage}
+              isTyping={isTyping}
             />
           ) : (
             <EmptyConversation onNewConversation={handleNewConversation} />

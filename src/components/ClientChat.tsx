@@ -1,10 +1,10 @@
-
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, X, Send, Minimize2, Maximize2, Image, FileMusic, Video, User, PaperclipIcon, DollarSign } from 'lucide-react';
+import { MessageCircle, X, Send, Minimize2, Maximize2, Image, FileMusic, Video, User, PaperclipIcon, DollarSign, Loader } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useToast } from '@/hooks/use-toast';
+import TypingIndicator from '@/components/messages/TypingIndicator';
 
 const ClientChat: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,12 +20,14 @@ const ClientChat: React.FC = () => {
   }[]>([
     { text: "Bonjour ! Comment puis-je vous aider aujourd'hui ?", isUser: false, timestamp: new Date() }
   ]);
+  const [isTyping, setIsTyping] = useState(false);
   
   const isMobile = useIsMobile();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [userLvpBalance, setUserLvpBalance] = useState(1250); // Mock balance
   const [mediaType, setMediaType] = useState<'image' | 'audio' | 'video' | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
@@ -37,15 +39,12 @@ const ClientChat: React.FC = () => {
   };
 
   const calculateMediaCost = (fileSize: number, type: 'image' | 'audio' | 'video'): number => {
-    // File size is in bytes, convert to MB
     const fileSizeInMB = fileSize / (1024 * 1024);
     
-    // If filesize < 5MB, cost is 2 LVP regardless of type
     if (fileSizeInMB < 5) {
       return 2;
     }
     
-    // If filesize >= 5MB, cost depends on type
     switch (type) {
       case 'image': return 3;
       case 'audio': return 4;
@@ -54,15 +53,22 @@ const ClientChat: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [chatMessages, isTyping]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (message.trim()) {
-      // Add user message
       setChatMessages([...chatMessages, { text: message, isUser: true, timestamp: new Date() }]);
       setMessage('');
       
-      // Simulate response
+      setIsTyping(true);
+      
       setTimeout(() => {
+        setIsTyping(false);
         setChatMessages(prev => [
           ...prev, 
           { 
@@ -71,14 +77,13 @@ const ClientChat: React.FC = () => {
             timestamp: new Date() 
           }
         ]);
-      }, 1000);
+      }, 2000);
     }
   };
 
   const openFileSelector = (type: 'image' | 'audio' | 'video') => {
     setMediaType(type);
     if (fileInputRef.current) {
-      // Set accepted file types based on the media type
       switch (type) {
         case 'image':
           fileInputRef.current.accept = 'image/*';
@@ -100,7 +105,6 @@ const ClientChat: React.FC = () => {
 
     const cost = calculateMediaCost(file.size, mediaType);
     
-    // Check if user has enough LVP
     if (userLvpBalance < cost) {
       toast({
         title: "Solde insuffisant",
@@ -110,13 +114,10 @@ const ClientChat: React.FC = () => {
       return;
     }
 
-    // Create an object URL for the file
     const fileUrl = URL.createObjectURL(file);
     
-    // Deduct the cost from the user's balance
     setUserLvpBalance(prev => prev - cost);
     
-    // Add the message with media
     setChatMessages(prev => [
       ...prev,
       {
@@ -134,7 +135,6 @@ const ClientChat: React.FC = () => {
       description: `${cost} LVP ont été déduits de votre solde`,
     });
     
-    // Reset the input
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -146,7 +146,6 @@ const ClientChat: React.FC = () => {
 
   return (
     <div className={`fixed ${isMobile ? 'bottom-16 right-4' : 'bottom-6 right-6'} z-50`}>
-      {/* Chat button */}
       {!isOpen && (
         <Button 
           className="h-14 w-14 rounded-full shadow-lg bg-primary hover:bg-primary/90"
@@ -156,7 +155,6 @@ const ClientChat: React.FC = () => {
         </Button>
       )}
 
-      {/* Hidden file input */}
       <input
         type="file"
         ref={fileInputRef}
@@ -164,10 +162,8 @@ const ClientChat: React.FC = () => {
         onChange={handleFileSelected}
       />
 
-      {/* Chat window */}
       {isOpen && (
         <div className="flex flex-col bg-white rounded-lg shadow-xl overflow-hidden w-full max-w-sm transition-all">
-          {/* Chat header */}
           <div className="bg-primary text-white p-3 flex justify-between items-center">
             <div className="flex items-center gap-2">
               <div className="h-8 w-8 bg-white rounded-full flex items-center justify-center overflow-hidden">
@@ -199,7 +195,6 @@ const ClientChat: React.FC = () => {
             </div>
           </div>
           
-          {/* Chat body */}
           {!isMinimized && (
             <>
               <div className="flex-1 p-4 h-80 overflow-y-auto bg-gray-50">
@@ -241,9 +236,18 @@ const ClientChat: React.FC = () => {
                     </div>
                   </div>
                 ))}
+                
+                {isTyping && (
+                  <div className="flex justify-start mb-3">
+                    <div className="bg-gray-200 text-gray-800 rounded-lg px-3 py-2">
+                      <TypingIndicator />
+                    </div>
+                  </div>
+                )}
+                
+                <div ref={messagesEndRef} />
               </div>
               
-              {/* Chat input and media buttons */}
               <form onSubmit={handleSubmit} className="border-t p-3">
                 <div className="flex gap-2 mb-2">
                   <Button 
