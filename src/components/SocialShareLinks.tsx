@@ -14,9 +14,7 @@ const SocialShareLinks: React.FC<SocialShareLinksProps> = ({ username, affiliati
   const [copiedToClipboard, setCopiedToClipboard] = useState(false);
   
   // Format the affiliation link with the correct domain
-  const formattedLink = affiliationLink.includes('ref/') 
-    ? `lavuepayee.com/${affiliationLink.split('ref/')[1]}`
-    : `lavuepayee.com/ref/${username.toUpperCase()}`;
+  const formattedLink = `lavuepayee.com/ref/${username.toLowerCase()}`;
   
   const shareMessage = `Bienvenue sur LAVUEPAYEE. Vous êtes invité(e) par ${username} à vous inscrire. Votre bonus d'inscription est de 1 Vc, valable pendant 24 heures: ${formattedLink}`;
   

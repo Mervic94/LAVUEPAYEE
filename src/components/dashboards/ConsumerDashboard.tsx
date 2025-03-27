@@ -1,12 +1,12 @@
-
 import React, { useState } from 'react';
-import { ArrowUpRight, TrendingUp, Calendar, Clock, Users, Star, BookOpen } from 'lucide-react';
+import { ArrowUpRight, TrendingUp, Calendar, Clock, Users, Star, BookOpen, Download, Mail } from 'lucide-react';
 import AdCard from '@/components/AdCard';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
 
 interface ConsumerDashboardProps {
   stats: Array<{
@@ -30,6 +30,7 @@ interface ConsumerDashboardProps {
 
 const ConsumerDashboard: React.FC<ConsumerDashboardProps> = ({ stats, mockAds, adTypes }) => {
   const [activePackage, setActivePackage] = useState<string | null>(null);
+  const { toast } = useToast();
   
   // Mock data for available packages
   const availablePackages = [
@@ -37,7 +38,7 @@ const ConsumerDashboard: React.FC<ConsumerDashboardProps> = ({ stats, mockAds, a
       id: 'basic',
       name: 'Pack Basique',
       pointsMultiplier: 1,
-      price: 'Gratuit',
+      price: '0 Vc',
       features: ['Accès aux publicités standard', 'Rémunération de base', 'Conversions LVP standards'],
       isActive: false
     },
@@ -45,7 +46,7 @@ const ConsumerDashboard: React.FC<ConsumerDashboardProps> = ({ stats, mockAds, a
       id: 'premium',
       name: 'Pack Premium',
       pointsMultiplier: 1.5,
-      price: '9.99€/mois',
+      price: '14.3 Vc',
       features: ['Accès prioritaire aux publicités', '+50% de LVP par visionnage', 'Conversions LVP améliorées', 'Support premium'],
       isActive: false
     },
@@ -53,7 +54,7 @@ const ConsumerDashboard: React.FC<ConsumerDashboardProps> = ({ stats, mockAds, a
       id: 'elite',
       name: 'Pack Élite',
       pointsMultiplier: 2,
-      price: '19.99€/mois',
+      price: '28.6 Vc',
       features: ['Accès exclusif à toutes les publicités', 'Double LVP par visionnage', 'Taux de conversion LVP maximum', 'Support prioritaire 24/7', 'Accès aux offres spéciales'],
       isActive: false
     }
@@ -68,7 +69,8 @@ const ConsumerDashboard: React.FC<ConsumerDashboardProps> = ({ stats, mockAds, a
       progress: 100,
       duration: '45 min',
       modules: 5,
-      completed: true
+      completed: true,
+      certificate: true
     },
     {
       id: 'course-2',
@@ -77,7 +79,8 @@ const ConsumerDashboard: React.FC<ConsumerDashboardProps> = ({ stats, mockAds, a
       progress: 60,
       duration: '1h20',
       modules: 8,
-      completed: false
+      completed: false,
+      certificate: false
     },
     {
       id: 'course-3',
@@ -86,7 +89,8 @@ const ConsumerDashboard: React.FC<ConsumerDashboardProps> = ({ stats, mockAds, a
       progress: 0,
       duration: '2h',
       modules: 10,
-      completed: false
+      completed: false,
+      certificate: false
     },
     {
       id: 'course-4',
@@ -95,7 +99,8 @@ const ConsumerDashboard: React.FC<ConsumerDashboardProps> = ({ stats, mockAds, a
       progress: 25,
       duration: '1h30',
       modules: 7,
-      completed: false
+      completed: false,
+      certificate: false
     }
   ];
   
@@ -107,13 +112,30 @@ const ConsumerDashboard: React.FC<ConsumerDashboardProps> = ({ stats, mockAds, a
     }
   };
   
+  const downloadCertificate = (courseId: string) => {
+    toast({
+      title: "Téléchargement démarré",
+      description: "Votre attestation de formation est en cours de téléchargement."
+    });
+    // In a real app, this would trigger a download
+  };
+  
+  const resendCertificateByEmail = (courseId: string) => {
+    toast({
+      title: "Attestation envoyée",
+      description: "Votre attestation a été envoyée à votre adresse email."
+    });
+    // In a real app, this would send an email
+  };
+  
   return (
     <div>
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-6">
+        <TabsList className="grid w-full grid-cols-4 mb-6">
           <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
           <TabsTrigger value="packages">Packs LVP</TabsTrigger>
           <TabsTrigger value="training">Formation</TabsTrigger>
+          <TabsTrigger value="certificates">Attestations</TabsTrigger>
         </TabsList>
         
         <TabsContent value="overview" className="space-y-6">
@@ -343,6 +365,93 @@ const ConsumerDashboard: React.FC<ConsumerDashboardProps> = ({ stats, mockAds, a
                   <p className="text-sm text-muted-foreground">
                     Suivez les formations quand vous le souhaitez et reprenez là où vous vous étiez arrêté.
                   </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="certificates" className="space-y-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-semibold">Mes attestations</h2>
+            <p className="text-sm text-muted-foreground">Accédez à toutes vos attestations de formation</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {trainingCourses.filter(course => course.completed).map((course) => (
+              <Card key={course.id} className="overflow-hidden">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    {course.title}
+                    <Badge variant="secondary" className="bg-green-100 text-green-800">
+                      Complété
+                    </Badge>
+                  </CardTitle>
+                  <CardDescription>{course.description}</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Date d'obtention: 15/06/2023</span>
+                    <span className="text-muted-foreground">{course.duration} · {course.modules} modules</span>
+                  </div>
+                  
+                  <div className="pt-2 flex flex-col gap-2">
+                    <Button 
+                      variant="default"
+                      className="w-full flex items-center justify-center gap-2"
+                      onClick={() => downloadCertificate(course.id)}
+                    >
+                      <Download className="h-4 w-4" />
+                      Télécharger l'attestation
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      className="w-full flex items-center justify-center gap-2"
+                      onClick={() => resendCertificateByEmail(course.id)}
+                    >
+                      <Mail className="h-4 w-4" />
+                      Recevoir par email
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+            
+            {trainingCourses.filter(course => course.completed).length === 0 && (
+              <div className="col-span-1 md:col-span-2 text-center py-12">
+                <div className="mx-auto w-16 h-16 rounded-full bg-secondary/20 flex items-center justify-center mb-4">
+                  <BookOpen className="h-8 w-8 text-muted-foreground" />
+                </div>
+                <h3 className="text-lg font-medium mb-2">Aucune attestation disponible</h3>
+                <p className="text-muted-foreground max-w-md mx-auto">
+                  Complétez une formation pour obtenir une attestation. Vous pouvez consulter les formations disponibles dans l'onglet Formation.
+                </p>
+              </div>
+            )}
+          </div>
+          
+          <Card className="mt-4">
+            <CardHeader>
+              <CardTitle>Attestations et certifications</CardTitle>
+              <CardDescription>Valorisez vos compétences avec nos attestations</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <p>
+                  Chaque formation complétée vous donne droit à une attestation officielle LAVUEPAYEE. Ces attestations certifient les compétences acquises lors de votre parcours de formation.
+                </p>
+                
+                <div className="p-4 rounded-lg border bg-secondary/10">
+                  <h3 className="font-medium flex items-center mb-2">
+                    <Star className="h-4 w-4 text-primary mr-2" />
+                    Comment obtenir une attestation ?
+                  </h3>
+                  <ol className="list-decimal pl-5 space-y-1 text-sm">
+                    <li>Suivez l'intégralité d'une formation</li>
+                    <li>Passez l'examen final avec succès</li>
+                    <li>Recevez automatiquement votre attestation par email</li>
+                    <li>Retrouvez-la à tout moment dans cette section</li>
+                  </ol>
                 </div>
               </div>
             </CardContent>

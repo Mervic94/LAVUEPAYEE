@@ -100,7 +100,7 @@ const Marketplace = () => {
           <div className="flex items-center gap-3">
             <PointsIndicator points={1250} size="lg" />
             <button className="btn-secondary">
-              Retirer des points
+              Retirer des LVP
             </button>
           </div>
         </div>

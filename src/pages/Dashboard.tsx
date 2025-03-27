@@ -114,6 +114,17 @@ const Dashboard = () => {
     }
   ];
 
+  // Check if user is authenticated
+  // For demo purposes, assume logged in
+  const isAuthenticated = true;
+
+  // In a real app, redirect unauthenticated users to login
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate('/login');
+    }
+  }, [isAuthenticated, navigate]);
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -121,7 +132,7 @@ const Dashboard = () => {
       <main className="container px-6 mx-auto max-w-7xl pt-24 pb-12">
         <h1 className="text-3xl font-bold mb-4">Tableau de bord</h1>
         
-        {/* Role switcher (for demo purposes) */}
+        {/* Role switcher (for demo purposes) - in production, this would be determined by user's actual role */}
         <div className="mb-8">
           <Tabs defaultValue={userRole} onValueChange={(value) => handleRoleChange(value as any)}>
             <TabsList className="grid grid-cols-3 w-full max-w-md">

@@ -29,7 +29,7 @@ const TransactionsHistory: React.FC<TransactionsHistoryProps> = ({ transactions 
       <div className="grid grid-cols-4 gap-4 p-4 bg-secondary/50 font-medium">
         <div className="col-span-2">Transaction</div>
         <div className="text-center">Date</div>
-        <div className="text-right">Points</div>
+        <div className="text-right">LVP</div>
       </div>
       
       {transactions.map((transaction) => (
@@ -39,7 +39,7 @@ const TransactionsHistory: React.FC<TransactionsHistoryProps> = ({ transactions 
           <div className={`text-right font-medium ${
             transaction.amount > 0 ? 'text-green-500' : 'text-red-500'
           }`}>
-            {transaction.amount > 0 ? '+' : ''}{transaction.amount} pts
+            {transaction.amount > 0 ? '+' : ''}{transaction.amount} LVP
           </div>
         </div>
       ))}
