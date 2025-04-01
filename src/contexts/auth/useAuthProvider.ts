@@ -13,6 +13,7 @@ export const useAuthProvider = () => {
   const { toast } = useToast();
 
   useEffect(() => {
+    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, currentSession) => {
         setSession(currentSession);
@@ -33,6 +34,7 @@ export const useAuthProvider = () => {
       }
     );
 
+    // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
@@ -148,7 +150,11 @@ export const useAuthProvider = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/dashboard`
+          redirectTo: `${window.location.origin}/dashboard`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          }
         }
       });
       

@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   Form,
   FormControl,
@@ -23,8 +24,8 @@ import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
-import { PhoneInput } from "@/components/ui/phone-input";
-import { Building, Mail, Phone, Shield, User, Lock } from "lucide-react";
+import { PhoneNumberInput } from "@/components/ui/phone-input";
+import { Building, Mail, Phone, Shield, User, KeyRound } from "lucide-react";
 
 const commonSchema = {
   firstName: z.string().min(2, { message: "Prénom requis" }),
