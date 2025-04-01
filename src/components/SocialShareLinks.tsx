@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -13,10 +12,8 @@ interface SocialShareLinksProps {
 const SocialShareLinks: React.FC<SocialShareLinksProps> = ({ username, affiliationLink }) => {
   const [copiedToClipboard, setCopiedToClipboard] = useState(false);
   
-  // Format the affiliation link with the correct domain
-  const formattedLink = `lavuepayee.com/ref/${username.toLowerCase()}`;
-  
-  const shareMessage = `Bienvenue sur LAVUEPAYEE. Vous êtes invité(e) par ${username} à vous inscrire. Votre bonus d'inscription est de 1 Vc, valable pendant 24 heures: ${formattedLink}`;
+  // Format the share message with the correct affiliation link
+  const shareMessage = `Bienvenue sur LAVUEPAYEE. Vous êtes invité(e) par ${username} à vous inscrire. Votre bonus d'inscription est de 1 Vc, valable pendant 24 heures: ${affiliationLink}`;
   
   const copyToClipboard = () => {
     navigator.clipboard.writeText(shareMessage);
@@ -29,7 +26,7 @@ const SocialShareLinks: React.FC<SocialShareLinksProps> = ({ username, affiliati
   };
   
   const shareViaFacebook = () => {
-    const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`https://${formattedLink}`)}&quote=${encodeURIComponent(shareMessage)}`;
+    const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(affiliationLink)}&quote=${encodeURIComponent(shareMessage)}`;
     window.open(url, '_blank');
   };
   

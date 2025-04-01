@@ -3,12 +3,12 @@ import React, { useState } from 'react';
 import { ChevronUp, ChevronDown, Copy, Check } from 'lucide-react';
 import SocialShareLinks from '@/components/SocialShareLinks';
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from '@/contexts/AuthContext';
 
 interface AffiliationSectionProps {
   userData: {
     name: string;
     affiliationCode: string;
-    affiliationLink: string;
     affiliationStats: {
       totalAffiliates: number;
       level1: number;
@@ -25,10 +25,15 @@ const AffiliationSection: React.FC<AffiliationSectionProps> = ({ userData }) => 
   const [expanded, setExpanded] = useState(false);
   const [copiedToClipboard, setCopiedToClipboard] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
+  
+  // Automatiser le lien d'affiliation en fonction du nom d'utilisateur
+  const username = user?.user_metadata?.username || userData.name.toLowerCase().replace(/\s+/g, '');
+  const affiliationLink = `https://lavuepayee.com/ref/${username}`;
 
   // Handle copy affiliation link
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(userData.affiliationLink);
+    navigator.clipboard.writeText(affiliationLink);
     setCopiedToClipboard(true);
     toast({
       title: "Lien copié !",
@@ -47,8 +52,8 @@ const AffiliationSection: React.FC<AffiliationSectionProps> = ({ userData }) => 
         
         <div className="flex items-center gap-2 mt-2 md:mt-0">
           <SocialShareLinks 
-            username={userData.name}
-            affiliationLink={userData.affiliationLink}
+            username={username}
+            affiliationLink={affiliationLink}
           />
           
           <button 
@@ -66,7 +71,7 @@ const AffiliationSection: React.FC<AffiliationSectionProps> = ({ userData }) => 
         <p className="text-sm text-foreground/60 mb-2">Votre lien d'affiliation</p>
         <div className="flex items-center gap-2">
           <div className="flex-grow bg-background rounded-lg px-4 py-2.5 border border-border overflow-hidden overflow-ellipsis">
-            {userData.affiliationLink}
+            {affiliationLink}
           </div>
           <button 
             className={`min-w-24 px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-colors ${

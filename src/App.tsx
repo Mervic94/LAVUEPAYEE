@@ -27,7 +27,25 @@ import Navbar from '@/components/navbar'
 import './App.css'
 import './styles/phone-input.css'
 
+// Fonction pour mettre à jour le favicon
+const updateFavicon = () => {
+  const link = document.querySelector("link[rel='icon']") as HTMLLinkElement;
+  if (link) {
+    link.href = "/lovable-uploads/d82c55d8-0c83-4a02-82c0-67e854a84332.png";
+  } else {
+    const newLink = document.createElement("link");
+    newLink.rel = "icon";
+    newLink.href = "/lovable-uploads/d82c55d8-0c83-4a02-82c0-67e854a84332.png";
+    document.head.appendChild(newLink);
+  }
+};
+
 function App() {
+  // Mettre à jour le favicon au chargement de l'application
+  React.useEffect(() => {
+    updateFavicon();
+  }, []);
+
   return (
     <Router>
       <AuthProvider>
@@ -57,7 +75,7 @@ function App() {
                 </ProtectedRoute>
               } />
               <Route path="/view-ad/:id" element={<ViewAd />} />
-              <Route path="/messages" element={<Messages />} /> {/* Removed ProtectedRoute to allow all users access */}
+              <Route path="/messages" element={<Messages />} />
               <Route path="/faq" element={<FAQ />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/privacy" element={<Privacy />} />

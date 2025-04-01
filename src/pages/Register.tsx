@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Mail, KeyRound, User, Building, Phone, Calendar, ArrowRight, InfoIcon } from "lucide-react";
+import { Mail, KeyRound, User, Phone, AtSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -14,17 +13,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from "@/components/ui/form";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Checkbox } from "@/components/ui/checkbox";
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { 
   Tabs, 
   TabsContent, 
@@ -35,8 +24,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/contexts/AuthContext";
 import { PhoneNumberInput } from "@/components/ui/phone-input";
+import { supabase } from "@/integrations/supabase/client";
 
-// Common schema fields
 const commonSchema = {
   firstName: z.string().min(2, { message: "Prénom requis" }),
   lastName: z.string().min(2, { message: "Nom de famille requis" }),
@@ -58,14 +47,12 @@ const commonSchema = {
   }),
 };
 
-// Email registration schema
 const emailRegisterSchema = z.object({
   ...commonSchema,
   email: z.string().email({ message: "Adresse email invalide" }),
   phone: z.string().optional(),
 });
 
-// Phone registration schema
 const phoneRegisterSchema = z.object({
   ...commonSchema,
   phone: z.string().min(6, { message: "Numéro de téléphone invalide" }),
@@ -75,12 +62,13 @@ const phoneRegisterSchema = z.object({
 type EmailRegisterFormValues = z.infer<typeof emailRegisterSchema>;
 type PhoneRegisterFormValues = z.infer<typeof phoneRegisterSchema>;
 
-const Register = () => {
+const RegisterPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { signUp, signUpWithPhone, user } = useAuth();
+  const { signUp, signUpWithPhone, user, isLoading } = useAuth();
   const [activeTab, setActiveTab] = useState<string>("email");
-  
+  const [googleLoading, setGoogleLoading] = useState(false);
+
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
   const months = [
@@ -99,7 +87,6 @@ const Register = () => {
   ];
   const days = Array.from({ length: 31 }, (_, i) => i + 1);
 
-  // Create forms for each registration method
   const emailForm = useForm<EmailRegisterFormValues>({
     resolver: zodResolver(emailRegisterSchema),
     defaultValues: {
@@ -134,17 +121,15 @@ const Register = () => {
     },
   });
 
-  // Redirect if user is already logged in
   useEffect(() => {
     if (user) {
-      navigate('/dashboard');
+      navigate("/dashboard");
     }
   }, [user, navigate]);
 
   const onEmailSubmit = async (data: EmailRegisterFormValues) => {
     const dateOfBirth = `${data.birthYear}-${data.birthMonth.padStart(2, '0')}-${data.birthDay.padStart(2, '0')}`;
     
-    // Préparer les données de l'utilisateur pour le profil
     const userData = {
       username: data.username,
       first_name: data.firstName,
@@ -160,7 +145,6 @@ const Register = () => {
   const onPhoneSubmit = async (data: PhoneRegisterFormValues) => {
     const dateOfBirth = `${data.birthYear}-${data.birthMonth.padStart(2, '0')}-${data.birthDay.padStart(2, '0')}`;
     
-    // Préparer les données de l'utilisateur pour le profil
     const userData = {
       username: data.username,
       first_name: data.firstName,
@@ -171,6 +155,28 @@ const Register = () => {
     };
     
     await signUpWithPhone(data.phone, data.password, userData);
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      setGoogleLoading(true);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`
+        }
+      });
+      
+      if (error) throw error;
+      
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Erreur d'inscription",
+        description: error.message || "Une erreur est survenue lors de l'inscription avec Google",
+      });
+      setGoogleLoading(false);
+    }
   };
 
   const renderCommonFields = (formType: "email" | "phone") => {
@@ -222,7 +228,6 @@ const Register = () => {
           )}
         />
 
-        {/* Birth Date Fields */}
         <div>
           <FormLabel className="block mb-2">Date de naissance</FormLabel>
           <div className="grid grid-cols-3 gap-2">
@@ -313,7 +318,6 @@ const Register = () => {
           </FormDescription>
         </div>
         
-        {/* Password Field */}
         <FormField
           control={form.control}
           name="password"
@@ -338,7 +342,6 @@ const Register = () => {
           )}
         />
 
-        {/* Account Type Field */}
         <FormField
           control={form.control}
           name="accountType"
@@ -376,7 +379,6 @@ const Register = () => {
           )}
         />
 
-        {/* Terms and Conditions Field */}
         <FormField
           control={form.control}
           name="termsAccepted"
@@ -407,15 +409,47 @@ const Register = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
-      <div className="w-full max-w-2xl space-y-6">
+      <div className="w-full max-w-md space-y-6">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-primary">S'inscrire</h1>
-          <p className="text-muted-foreground mt-2 text-lg">
-            C'est rapide et facile.
+          <p className="text-muted-foreground mt-2">
+            Créez votre compte pour commencer.
           </p>
         </div>
 
         <div className="glass-card p-6 rounded-lg shadow-md bg-card">
+          <div className="mb-6">
+            <Button 
+              variant="outline" 
+              className="w-full flex items-center justify-center gap-2"
+              onClick={handleGoogleSignIn}
+              disabled={googleLoading}
+            >
+              {googleLoading ? (
+                "Inscription en cours..."
+              ) : (
+                <>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="w-5 h-5">
+                    <path fill="#EA4335" d="M5.26620003,9.76452941 C6.19878754,6.93863203 8.85444915,4.90909091 12,4.90909091 C13.6909091,4.90909091 15.2181818,5.50909091 16.4181818,6.49090909 L19.9090909,3 C17.7818182,1.14545455 15.0545455,0 12,0 C7.27006974,0 3.1977497,2.69829785 1.23999023,6.65002441 L5.26620003,9.76452941 Z" />
+                    <path fill="#34A853" d="M16.0407269,18.0125889 C14.9509167,18.7163016 13.5660892,19.0909091 12,19.0909091 C8.86648613,19.0909091 6.21911939,17.076871 5.27698177,14.2678769 L1.23746264,17.3349879 C3.19279051,21.2970142 7.26500293,24 12,24 C14.9328362,24 17.7353462,22.9573905 19.834192,20.9995801 L16.0407269,18.0125889 Z" />
+                    <path fill="#4A90E2" d="M19.834192,20.9995801 C22.0291676,18.9520994 23.4545455,15.903663 23.4545455,12 C23.4545455,11.2909091 23.3454545,10.5272727 23.1818182,9.81818182 L12,9.81818182 L12,14.4545455 L18.4363636,14.4545455 C18.1187732,16.013626 17.2662994,17.2212117 16.0407269,18.0125889 L19.834192,20.9995801 Z" />
+                    <path fill="#FBBC05" d="M5.27698177,14.2678769 C5.03832634,13.556323 4.90909091,12.7937589 4.90909091,12 C4.90909091,11.2182781 5.03443647,10.4668121 5.26620003,9.76452941 L1.23999023,6.65002441 C0.43658717,8.26043162 0,10.0753848 0,12 C0,13.9195484 0.444780743,15.7301709 1.23746264,17.3349879 L5.27698177,14.2678769 Z" />
+                  </svg>
+                  S'inscrire avec Google
+                </>
+              )}
+            </Button>
+          </div>
+
+          <div className="relative mb-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-border"></div>
+            </div>
+            <div className="relative flex justify-center text-xs">
+              <span className="bg-card px-2 text-muted-foreground">ou continuer avec</span>
+            </div>
+          </div>
+
           <Tabs defaultValue="email" value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid grid-cols-2 mb-6">
               <TabsTrigger value="email" className="flex items-center gap-2">
@@ -527,4 +561,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default RegisterPage;
