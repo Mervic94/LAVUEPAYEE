@@ -1,10 +1,13 @@
 
-import React from 'react';
-import { ArrowRight, PlayCircle, Eye, Package, Users } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowRight, PlayCircle, Eye, Package, Users, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogTrigger, DialogClose } from '@/components/ui/dialog';
 
 const Hero = () => {
+  const [showVideoDialog, setShowVideoDialog] = useState(false);
+  
   return (
     <div className="relative pt-20 pb-20 md:pt-32 md:pb-32 overflow-hidden">
       {/* Background gradient */}
@@ -44,12 +47,32 @@ const Hero = () => {
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="rounded-full border-green-600 text-green-600">
-              <Link to="/#how-it-works">
-                <PlayCircle className="mr-2 h-4 w-4" />
-                Comment ça marche
-              </Link>
-            </Button>
+            
+            <Dialog open={showVideoDialog} onOpenChange={setShowVideoDialog}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="lg" className="rounded-full border-green-600 text-green-600">
+                  <PlayCircle className="mr-2 h-4 w-4" />
+                  Comment ça marche
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-4xl p-1 overflow-hidden">
+                <div className="relative">
+                  <DialogClose className="absolute top-2 right-2 z-10 rounded-full p-1 bg-black/20 hover:bg-black/40 text-white">
+                    <X className="h-5 w-5" />
+                  </DialogClose>
+                  <div className="w-full">
+                    <iframe
+                      width="100%" 
+                      height="550" 
+                      src="https://www.videoindexer.ai/embed/insights/b0bd1b5c-8366-48fe-9b6f-4a9012c0ae89/2tamhshut2/?accessToken=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJWZXJzaW9uIjoiMi4wLjAuMCIsIktleVZlcnNpb24iOiI3NTExMjE1MGMzNDg0ZjI1ODdhNGFiMWE2OTMyMjE1OCIsIkFjY291bnRJZCI6ImIwYmQxYjVjLTgzNjYtNDhmZS05YjZmLTRhOTAxMmMwYWU4OSIsIkFjY291bnRUeXBlIjoiVHJpYWwiLCJWaWRlb0lkIjoiMnRhbWhzaHV0MiIsIlBlcm1pc3Npb24iOiJSZWFkZXIiLCJFeHRlcm5hbFVzZXJJZCI6IjExMTIwMDg1MjM5MTg2Nzg5OTA5MyIsIlVzZXJUeXBlIjoiR29vZ2xlIiwiSXNzdWVyTG9jYXRpb24iOiJUcmlhbCIsIm5iZiI6MTc0MzUzMTIzNiwiZXhwIjoxNzQzNTM1MTM2LCJpc3MiOiJodHRwczovL2FwaS52aWRlb2luZGV4ZXIuYWkvIiwiYXVkIjoiaHR0cHM6Ly9hcGkudmlkZW9pbmRleGVyLmFpLyJ9.ZBW68WEb64Bw9unasnDQpNn5G2LFVtG5oi-NMPc-hsfqpoaDyp1oNZt7g9PHprqmfSlNEwJ_3cq3G7s7dqHuMQlbseIy5YUyIoYWFtg9uZrf6KMTR80DrhOq4Kh75WnWeQ4A3-Gf8DhTQNRRbh7Ez4aQK77-1THCZBwtPgxWfj6unEeK1vgBfwAYVJTMQgoDk2f9X-BT8ncgJ2nbkm3irkrdq86zMDl1QcW55DtQIANucImsHdm-HF8-7fMlsnicF3cC--xCnoMkHlUyKEWsl1mryYxE4yWh7bG9hF7L_C6pmXoxV1by0V--tzsxfe1qdl7kZlUlNlhZqdHSfhWJRg&locale=fr&location=trial" 
+                      frameBorder="0" 
+                      allowFullScreen
+                      title="Comment ça marche LAVUEPAYEE"
+                    ></iframe>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
         

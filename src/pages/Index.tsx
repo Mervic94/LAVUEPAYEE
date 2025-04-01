@@ -1,15 +1,11 @@
-
 import React, { useRef } from 'react';
-import { ArrowRight, Users, ShoppingBag, PlayCircle } from 'lucide-react';
+import { ArrowRight, Users, ShoppingBag } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import Navbar from '@/components/navbar';
 import Hero from '@/components/Hero';
 
 const Index = () => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-
   return (
     <div className="min-h-screen">
       <Navbar />
@@ -67,28 +63,6 @@ const Index = () => {
           </div>
           
           <div className="mt-16 text-center flex flex-col md:flex-row justify-center gap-4">
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="outline" size="lg" className="rounded-full">
-                  <PlayCircle className="mr-2 h-5 w-5" />
-                  Regarder la vidéo de présentation
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-3xl p-0 overflow-hidden">
-                <div className="aspect-video w-full">
-                  <video 
-                    ref={videoRef} 
-                    controls 
-                    className="w-full h-full object-cover"
-                    poster="/lovable-uploads/d82c55d8-0c83-4a02-82c0-67e854a84332.png"
-                  >
-                    <source src="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" type="video/mp4" />
-                    Votre navigateur ne supporte pas la lecture de vidéos.
-                  </video>
-                </div>
-              </DialogContent>
-            </Dialog>
-
             <Button asChild size="lg" className="rounded-full">
               <Link to="/register">
                 Commencer maintenant

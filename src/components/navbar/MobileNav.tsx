@@ -24,7 +24,20 @@ const MobileNav: React.FC<MobileNavProps> = ({ isOpen, user, onLogout, onItemCli
         
         <MobileNavLinks user={user} onItemClick={onItemClick} />
         
-        <SocialLinks size="md" />
+        <div className="w-full px-4 py-3 border-t border-gray-100">
+          <p className="text-gray-500 text-sm mb-3 text-center">Suivez-nous</p>
+          <SocialLinks size="md" />
+        </div>
+        
+        <div className="w-full px-4 py-3 border-t border-gray-100">
+          <p className="text-gray-500 text-sm mb-3 text-center">Contact</p>
+          <div className="flex items-center justify-center">
+            <a href="tel:+2290190069561" className="flex items-center gap-2 text-gray-700 hover:text-primary">
+              <Phone size={16} />
+              <span>+229 01 900 695 61</span>
+            </a>
+          </div>
+        </div>
         
         <UserControls user={user} onLogout={onLogout} isMobile={true} />
       </div>
