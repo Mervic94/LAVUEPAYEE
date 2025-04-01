@@ -1,4 +1,5 @@
 
+import React, { useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from "@/components/ui/toaster"
 import Index from '@/pages/Index'
@@ -42,7 +43,7 @@ const updateFavicon = () => {
 
 function App() {
   // Mettre à jour le favicon au chargement de l'application
-  React.useEffect(() => {
+  useEffect(() => {
     updateFavicon();
   }, []);
 
