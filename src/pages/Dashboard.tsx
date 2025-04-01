@@ -67,12 +67,13 @@ const adTypes: Array<"banner" | "interstitial" | "video" | "native" | "popup" | 
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  // In a real application, this would be determined by the authenticated user's role
   const [userRole, setUserRole] = useState<'admin' | 'advertiser' | 'consumer'>('consumer');
   
-  // For demonstration purposes, we'll provide a way to switch between roles
-  const handleRoleChange = (role: 'admin' | 'advertiser' | 'consumer') => {
-    setUserRole(role);
-  };
+  // In a demo application, we allow role switching, but in production this would be determined by user's actual role
+  // For admin users, all tabs would be visible
+  // For regular users, only their role's dashboard would be visible
+  const isAdmin = userRole === 'admin';
   
   // Mock statistics for the dashboard
   const stats = [
@@ -115,7 +116,6 @@ const Dashboard = () => {
   ];
 
   // Check if user is authenticated
-  // For demo purposes, assume logged in
   const isAuthenticated = true;
 
   // In a real app, redirect unauthenticated users to login
@@ -132,27 +132,29 @@ const Dashboard = () => {
       <main className="container px-6 mx-auto max-w-7xl pt-24 pb-12">
         <h1 className="text-3xl font-bold mb-4">Tableau de bord</h1>
         
-        {/* Role switcher (for demo purposes) - in production, this would be determined by user's actual role */}
-        <div className="mb-8">
-          <Tabs defaultValue={userRole} onValueChange={(value) => handleRoleChange(value as any)}>
-            <TabsList className="grid grid-cols-3 w-full max-w-md">
-              <TabsTrigger value="consumer" className="flex items-center gap-2">
-                <User className="h-4 w-4" />
-                Consommateur
-              </TabsTrigger>
-              <TabsTrigger value="advertiser" className="flex items-center gap-2">
-                <Store className="h-4 w-4" />
-                Annonceur
-              </TabsTrigger>
-              <TabsTrigger value="admin" className="flex items-center gap-2">
-                <UserCog className="h-4 w-4" />
-                Admin
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
+        {/* Role switcher - only visible for demo or admin users */}
+        {isAdmin && (
+          <div className="mb-8">
+            <Tabs defaultValue={userRole} onValueChange={(value) => setUserRole(value as any)}>
+              <TabsList className="grid grid-cols-3 w-full max-w-md">
+                <TabsTrigger value="consumer" className="flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  Consommateur
+                </TabsTrigger>
+                <TabsTrigger value="advertiser" className="flex items-center gap-2">
+                  <Store className="h-4 w-4" />
+                  Annonceur
+                </TabsTrigger>
+                <TabsTrigger value="admin" className="flex items-center gap-2">
+                  <UserCog className="h-4 w-4" />
+                  Admin
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+        )}
         
-        {/* Display different dashboard based on user role */}
+        {/* Display appropriate dashboard based on user role */}
         {userRole === 'admin' && <AdminDashboard />}
         {userRole === 'advertiser' && <AdvertiserDashboard />}
         {userRole === 'consumer' && <ConsumerDashboard stats={stats} mockAds={mockAds} adTypes={adTypes} />}

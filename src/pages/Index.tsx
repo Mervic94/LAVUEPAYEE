@@ -109,7 +109,7 @@ const Index = () => {
                 Programme d'affiliation
               </div>
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                Multipliez vos LPV avec notre programme d'affiliation
+                Multipliez vos LVP avec notre programme d'affiliation
               </h2>
               <p className="text-foreground/70 text-lg mb-8">
                 Invitez vos amis, votre famille et vos relations à rejoindre la plateforme et gagnez des commissions sur leurs activités. Notre programme d'affiliation sur cinq niveaux vous permet de maximiser vos revenus.
@@ -122,7 +122,7 @@ const Index = () => {
                   </div>
                   <div>
                     <h4 className="font-semibold">Niveau 1: 10%</h4>
-                    <p className="text-foreground/70">Commission directe sur les LPV gagnés par vos affiliés.</p>
+                    <p className="text-foreground/70">Commission directe sur les LVP gagnés par vos affiliés.</p>
                   </div>
                 </div>
                 
@@ -149,7 +149,7 @@ const Index = () => {
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent rounded-2xl -z-10 animate-pulse-light"></div>
                 <div className="glass-card rounded-2xl p-8 shadow-lg">
-                  <h3 className="text-2xl font-bold mb-6">Exemple de LPV</h3>
+                  <h3 className="text-2xl font-bold mb-6">Exemple de LVP</h3>
                   
                   <div className="space-y-6">
                     <div className="flex justify-between items-center border-b border-border pb-4">
@@ -207,7 +207,7 @@ const Index = () => {
                           alt="LVP" 
                           className="h-5 w-5" 
                         />
-                        <span>10,500 pts</span>
+                        <span>10,500 lvp</span>
                       </div>
                     </div>
                   </div>

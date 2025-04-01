@@ -57,11 +57,7 @@ function App() {
                 </ProtectedRoute>
               } />
               <Route path="/view-ad/:id" element={<ViewAd />} />
-              <Route path="/messages" element={
-                <ProtectedRoute>
-                  <Messages />
-                </ProtectedRoute>
-              } />
+              <Route path="/messages" element={<Messages />} /> {/* Removed ProtectedRoute to allow all users access */}
               <Route path="/faq" element={<FAQ />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/privacy" element={<Privacy />} />

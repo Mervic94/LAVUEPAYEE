@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/navbar';
 import { toast } from '@/components/ui/use-toast';
@@ -153,23 +153,9 @@ const Messages = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(mockConversations[1]);
   const [newMessage, setNewMessage] = useState('');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
   const [isTyping, setIsTyping] = useState(false);
   const navigate = useNavigate();
-  
-  useEffect(() => {
-    const userAuth = localStorage.getItem('userAuth');
-    if (!userAuth) {
-      toast({
-        title: "Accès refusé",
-        description: "Vous devez être connecté pour accéder à la messagerie",
-        variant: "destructive"
-      });
-      navigate('/login');
-    } else {
-      setIsAuthenticated(true);
-    }
-  }, [navigate]);
   
   const handleSelectConversation = (conversation: Conversation) => {
     setSelectedConversation(conversation);
