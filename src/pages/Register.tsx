@@ -146,7 +146,7 @@ const RegisterPage = () => {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('username, first_name, last_name')
+        .select('username')
         .eq('username', username)
         .single();
       
@@ -155,7 +155,7 @@ const RegisterPage = () => {
       } else {
         setSponsorInfo({
           username: data.username,
-          fullName: `${data.first_name || ''} ${data.last_name || ''}`.trim()
+          fullName: data.username // Since first_name and last_name don't exist, we'll just use username
         });
       }
     } catch (err) {
