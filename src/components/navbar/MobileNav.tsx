@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Phone } from 'lucide-react';
 import SocialLinks from './SocialLinks';
 import UserControls from './UserControls';
 import MobileNavLinks from './MobileNavLinks';

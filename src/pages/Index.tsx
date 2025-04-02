@@ -1,5 +1,6 @@
+
 import React, { useRef } from 'react';
-import { ArrowRight, Users, ShoppingBag } from 'lucide-react';
+import { ArrowRight, Users, ShoppingBag, PlayCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import Navbar from '@/components/navbar';
