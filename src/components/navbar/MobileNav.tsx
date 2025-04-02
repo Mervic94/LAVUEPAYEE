@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Phone, Facebook, Instagram, Twitter, BrandX } from 'lucide-react';
+import { Phone, Facebook, Instagram, Twitter } from 'lucide-react';
 import SocialLinks from './SocialLinks';
 import UserControls from './UserControls';
 import MobileNavLinks from './MobileNavLinks';

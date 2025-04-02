@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { BadgeDollarSign, X } from 'lucide-react';
 import { 
@@ -10,7 +9,7 @@ import {
   DialogClose
 } from '@/components/ui/dialog';
 import CashoutOptions from '@/components/CashoutOptions';
-import CashoutForm from '@/components/CashoutForm';
+import CashoutFormComponent from '@/components/CashoutForm';
 
 interface CashoutMethod {
   id: string;
@@ -86,7 +85,7 @@ const CashoutDialog: React.FC<CashoutDialogProps> = ({ open, onOpenChange, userP
         )}
         
         {selectedMethod && !isComplete && (
-          <CashoutForm
+          <CashoutFormComponent
             method={selectedMethod}
             userPoints={userPoints}
             onBack={handleBack}
