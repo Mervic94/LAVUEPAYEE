@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -6,6 +7,7 @@ import * as z from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   Form,
   FormControl,
@@ -17,12 +19,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PhoneNumberInput } from "@/components/ui/phone-input";
 import { Building, Mail, Phone, Shield, User, KeyRound, Users } from "lucide-react";
@@ -70,6 +71,9 @@ const RegisterPage = () => {
   const { signUp, signUpWithPhone, user, isLoading } = useAuth();
   const [activeTab, setActiveTab] = useState<string>("email");
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [sponsorInfo, setSponsorInfo] = useState<{username: string; fullName: string} | null>(null);
+  const [checkingSponsor, setCheckingSponsor] = useState(false);
+  const isMobile = useIsMobile();
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 100 }, (_, i) => currentYear - i);
@@ -131,6 +135,57 @@ const RegisterPage = () => {
     }
   }, [user, navigate]);
 
+  const checkSponsor = async (username: string) => {
+    if (!username || username.length < 3) {
+      setSponsorInfo(null);
+      return;
+    }
+    
+    setCheckingSponsor(true);
+    
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('username, first_name, last_name')
+        .eq('username', username)
+        .single();
+      
+      if (error || !data) {
+        setSponsorInfo(null);
+      } else {
+        setSponsorInfo({
+          username: data.username,
+          fullName: `${data.first_name || ''} ${data.last_name || ''}`.trim()
+        });
+      }
+    } catch (err) {
+      console.error('Error checking sponsor:', err);
+      setSponsorInfo(null);
+    } finally {
+      setCheckingSponsor(false);
+    }
+  };
+
+  useEffect(() => {
+    const debouncedCheckSponsor = setTimeout(() => {
+      const sponsorUsername = activeTab === 'email' 
+        ? emailForm.watch('sponsorUsername') 
+        : phoneForm.watch('sponsorUsername');
+        
+      if (sponsorUsername) {
+        checkSponsor(sponsorUsername);
+      } else {
+        setSponsorInfo(null);
+      }
+    }, 500);
+    
+    return () => clearTimeout(debouncedCheckSponsor);
+  }, [
+    activeTab,
+    emailForm.watch('sponsorUsername'),
+    phoneForm.watch('sponsorUsername')
+  ]);
+
   const onEmailSubmit = async (data: EmailRegisterFormValues) => {
     const dateOfBirth = `${data.birthYear}-${data.birthMonth.padStart(2, '0')}-${data.birthDay.padStart(2, '0')}`;
     
@@ -190,12 +245,13 @@ const RegisterPage = () => {
     
     return (
       <>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 form-container">
           <FormField
             control={form.control}
             name="firstName"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="form-field">
+                <FormLabel className={isMobile ? "text-sm" : ""}>Prénom</FormLabel>
                 <FormControl>
                   <Input placeholder="Prénom" {...field} />
                 </FormControl>
@@ -208,7 +264,8 @@ const RegisterPage = () => {
             control={form.control}
             name="lastName"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="form-field">
+                <FormLabel className={isMobile ? "text-sm" : ""}>Nom</FormLabel>
                 <FormControl>
                   <Input placeholder="Nom de famille" {...field} />
                 </FormControl>
@@ -222,7 +279,8 @@ const RegisterPage = () => {
           control={form.control}
           name="username"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="form-field">
+              <FormLabel className={isMobile ? "text-sm" : ""}>Nom d'utilisateur</FormLabel>
               <FormControl>
                 <div className="relative">
                   <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -238,20 +296,40 @@ const RegisterPage = () => {
           control={form.control}
           name="sponsorUsername"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="form-field">
+              <FormLabel className={isMobile ? "text-sm" : ""}>Parrain (optionnel)</FormLabel>
               <FormControl>
                 <div className="relative">
                   <Users className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input placeholder="Nom d'utilisateur du parrain (optionnel)" className="pl-10" {...field} />
+                  <Input 
+                    placeholder="Nom d'utilisateur du parrain" 
+                    className="pl-10" 
+                    {...field} 
+                  />
                 </div>
               </FormControl>
+              {sponsorInfo && (
+                <div className="text-xs text-green-600 font-medium mt-1">
+                  Parrain trouvé: {sponsorInfo.fullName || sponsorInfo.username}
+                </div>
+              )}
+              {checkingSponsor && (
+                <div className="text-xs text-muted-foreground mt-1">
+                  Vérification en cours...
+                </div>
+              )}
+              {!sponsorInfo && field.value && !checkingSponsor && field.value.length > 2 && (
+                <div className="text-xs text-amber-600 mt-1">
+                  Parrain non trouvé
+                </div>
+              )}
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <div>
-          <FormLabel className="block mb-2">Date de naissance</FormLabel>
+        <div className="form-group">
+          <FormLabel className={`block mb-2 ${isMobile ? "text-sm" : ""}`}>Date de naissance</FormLabel>
           <div className="grid grid-cols-3 gap-2">
             <FormField
               control={form.control}
@@ -321,7 +399,7 @@ const RegisterPage = () => {
                         <SelectValue placeholder="Année" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
+                    <SelectContent className="max-h-60 overflow-y-auto">
                       {years.map(year => (
                         <SelectItem key={year} value={year.toString()}>
                           {year}
@@ -335,7 +413,7 @@ const RegisterPage = () => {
             />
           </div>
           <FormDescription className="text-xs mt-1">
-            <Calendar className="inline-block h-3 w-3 mr-1" />
+            <Shield className="inline-block h-3 w-3 mr-1" />
             Les autres utilisateurs ne verront pas votre âge
           </FormDescription>
         </div>
@@ -344,7 +422,8 @@ const RegisterPage = () => {
           control={form.control}
           name="password"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="form-field">
+              <FormLabel className={isMobile ? "text-sm" : ""}>Mot de passe</FormLabel>
               <FormControl>
                 <div className="relative">
                   <KeyRound className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -368,8 +447,8 @@ const RegisterPage = () => {
           control={form.control}
           name="accountType"
           render={({ field }) => (
-            <FormItem className="space-y-3">
-              <FormLabel>Type de compte</FormLabel>
+            <FormItem className="space-y-3 form-field">
+              <FormLabel className={isMobile ? "text-sm" : ""}>Type de compte</FormLabel>
               <FormControl>
                 <RadioGroup
                   onValueChange={field.onChange}
@@ -405,7 +484,7 @@ const RegisterPage = () => {
           control={form.control}
           name="termsAccepted"
           render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+            <FormItem className="flex flex-row items-start space-x-3 space-y-0 form-field">
               <FormControl>
                 <Checkbox
                   checked={field.value}
@@ -422,7 +501,7 @@ const RegisterPage = () => {
           )}
         />
 
-        <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-lg" size="lg" disabled={form.formState.isSubmitting}>
+        <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-lg mobile-full-width" size="lg" disabled={form.formState.isSubmitting}>
           {form.formState.isSubmitting ? "Inscription en cours..." : "S'inscrire"}
         </Button>
       </>
@@ -439,145 +518,151 @@ const RegisterPage = () => {
           </p>
         </div>
 
-        <div className="glass-card p-6 rounded-lg shadow-md bg-card">
-          <div className="mb-6">
-            <Button 
-              variant="outline" 
-              className="w-full flex items-center justify-center gap-2"
-              onClick={handleGoogleSignIn}
-              disabled={googleLoading}
-            >
-              {googleLoading ? (
-                "Inscription en cours..."
-              ) : (
-                <>
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="w-5 h-5">
-                    <path fill="#EA4335" d="M5.26620003,9.76452941 C6.19878754,6.93863203 8.85444915,4.90909091 12,4.90909091 C13.6909091,4.90909091 15.2181818,5.50909091 16.4181818,6.49090909 L19.9090909,3 C17.7818182,1.14545455 15.0545455,0 12,0 C7.27006974,0 3.1977497,2.69829785 1.23999023,6.65002441 L5.26620003,9.76452941 Z" />
-                    <path fill="#34A853" d="M16.0407269,18.0125889 C14.9509167,18.7163016 13.5660892,19.0909091 12,19.0909091 C8.86648613,19.0909091 6.21911939,17.076871 5.27698177,14.2678769 L1.23746264,17.3349879 C3.19279051,21.2970142 7.26500293,24 12,24 C14.9328362,24 17.7353462,22.9573905 19.834192,20.9995801 L16.0407269,18.0125889 Z" />
-                    <path fill="#4A90E2" d="M19.834192,20.9995801 C22.0291676,18.9520994 23.4545455,15.903663 23.4545455,12 C23.4545455,11.2909091 23.3454545,10.5272727 23.1818182,9.81818182 L12,9.81818182 L12,14.4545455 L18.4363636,14.4545455 C18.1187732,16.013626 17.2662994,17.2212117 16.0407269,18.0125889 L19.834192,20.9995801 Z" />
-                    <path fill="#FBBC05" d="M5.27698177,14.2678769 C5.03832634,13.556323 4.90909091,12.7937589 4.90909091,12 C4.90909091,11.2182781 5.03443647,10.4668121 5.26620003,9.76452941 L1.23999023,6.65002441 C0.43658717,8.26043162 0,10.0753848 0,12 C0,13.9195484 0.444780743,15.7301709 1.23746264,17.3349879 L5.27698177,14.2678769 Z" />
-                  </svg>
-                  S'inscrire avec Google
-                </>
-              )}
-            </Button>
-          </div>
-
-          <div className="relative mb-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-border"></div>
+        <Card className="glass-card">
+          <CardContent className="p-6 tablet-container">
+            <div className="mb-6">
+              <Button 
+                variant="outline" 
+                className="w-full flex items-center justify-center gap-2 mobile-full-width"
+                onClick={handleGoogleSignIn}
+                disabled={googleLoading}
+              >
+                {googleLoading ? (
+                  "Inscription en cours..."
+                ) : (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="w-5 h-5">
+                      <path fill="#EA4335" d="M5.26620003,9.76452941 C6.19878754,6.93863203 8.85444915,4.90909091 12,4.90909091 C13.6909091,4.90909091 15.2181818,5.50909091 16.4181818,6.49090909 L19.9090909,3 C17.7818182,1.14545455 15.0545455,0 12,0 C7.27006974,0 3.1977497,2.69829785 1.23999023,6.65002441 L5.26620003,9.76452941 Z" />
+                      <path fill="#34A853" d="M16.0407269,18.0125889 C14.9509167,18.7163016 13.5660892,19.0909091 12,19.0909091 C8.86648613,19.0909091 6.21911939,17.076871 5.27698177,14.2678769 L1.23746264,17.3349879 C3.19279051,21.2970142 7.26500293,24 12,24 C14.9328362,24 17.7353462,22.9573905 19.834192,20.9995801 L16.0407269,18.0125889 Z" />
+                      <path fill="#4A90E2" d="M19.834192,20.9995801 C22.0291676,18.9520994 23.4545455,15.903663 23.4545455,12 C23.4545455,11.2909091 23.3454545,10.5272727 23.1818182,9.81818182 L12,9.81818182 L12,14.4545455 L18.4363636,14.4545455 C18.1187732,16.013626 17.2662994,17.2212117 16.0407269,18.0125889 L19.834192,20.9995801 Z" />
+                      <path fill="#FBBC05" d="M5.27698177,14.2678769 C5.03832634,13.556323 4.90909091,12.7937589 4.90909091,12 C4.90909091,11.2182781 5.03443647,10.4668121 5.26620003,9.76452941 L1.23999023,6.65002441 C0.43658717,8.26043162 0,10.0753848 0,12 C0,13.9195484 0.444780743,15.7301709 1.23746264,17.3349879 L5.27698177,14.2678769 Z" />
+                    </svg>
+                    S'inscrire avec Google
+                  </>
+                )}
+              </Button>
             </div>
-            <div className="relative flex justify-center text-xs">
-              <span className="bg-card px-2 text-muted-foreground">ou continuer avec</span>
+
+            <div className="relative mb-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-border"></div>
+              </div>
+              <div className="relative flex justify-center text-xs">
+                <span className="bg-card px-2 text-muted-foreground">ou continuer avec</span>
+              </div>
             </div>
-          </div>
 
-          <Tabs defaultValue="email" value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid grid-cols-2 mb-6 w-full">
-              <TabsTrigger value="email" className="flex items-center gap-2">
-                <Mail className="h-4 w-4" />
-                <span>Email</span>
-              </TabsTrigger>
-              <TabsTrigger value="phone" className="flex items-center gap-2">
-                <Phone className="h-4 w-4" />
-                <span>Téléphone</span>
-              </TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="email">
-              <Form {...emailForm}>
-                <form onSubmit={emailForm.handleSubmit(onEmailSubmit)} className="space-y-4">
-                  <FormField
-                    control={emailForm.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <div className="relative">
-                            <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                            <Input placeholder="Email" className="pl-10" {...field} />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+            <Tabs defaultValue="email" value={activeTab} onValueChange={setActiveTab} className="w-full tabs-container">
+              <TabsList className="grid grid-cols-2 mb-6 w-full">
+                <TabsTrigger value="email" className="flex items-center gap-2 tab-trigger">
+                  <Mail className="h-4 w-4" />
+                  <span>Email</span>
+                </TabsTrigger>
+                <TabsTrigger value="phone" className="flex items-center gap-2 tab-trigger">
+                  <Phone className="h-4 w-4" />
+                  <span>Téléphone</span>
+                </TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="email">
+                <Form {...emailForm}>
+                  <form onSubmit={emailForm.handleSubmit(onEmailSubmit)} className="space-y-4 form-container">
+                    <FormField
+                      control={emailForm.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem className="form-field">
+                          <FormLabel className={isMobile ? "text-sm" : ""}>Email</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                              <Input placeholder="Email" className="pl-10" {...field} />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={emailForm.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <PhoneNumberInput
-                            value={field.value || ""}
-                            onChange={(phone) => field.onChange(phone)}
-                            placeholder="Numéro de téléphone (optionnel)"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  {renderCommonFields("email")}
-                </form>
-              </Form>
-            </TabsContent>
-            
-            <TabsContent value="phone">
-              <Form {...phoneForm}>
-                <form onSubmit={phoneForm.handleSubmit(onPhoneSubmit)} className="space-y-4">
-                  <FormField
-                    control={phoneForm.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <PhoneNumberInput
-                            value={field.value}
-                            onChange={(phone) => field.onChange(phone)}
-                            placeholder="Numéro de téléphone"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={emailForm.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem className="form-field">
+                          <FormLabel className={isMobile ? "text-sm" : ""}>Téléphone (optionnel)</FormLabel>
+                          <FormControl>
+                            <PhoneNumberInput
+                              value={field.value || ""}
+                              onChange={(phone) => field.onChange(phone)}
+                              placeholder="Numéro de téléphone (optionnel)"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    {renderCommonFields("email")}
+                  </form>
+                </Form>
+              </TabsContent>
+              
+              <TabsContent value="phone">
+                <Form {...phoneForm}>
+                  <form onSubmit={phoneForm.handleSubmit(onPhoneSubmit)} className="space-y-4 form-container">
+                    <FormField
+                      control={phoneForm.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem className="form-field">
+                          <FormLabel className={isMobile ? "text-sm" : ""}>Téléphone</FormLabel>
+                          <FormControl>
+                            <PhoneNumberInput
+                              value={field.value}
+                              onChange={(phone) => field.onChange(phone)}
+                              placeholder="Numéro de téléphone"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={phoneForm.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <div className="relative">
-                            <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                            <Input placeholder="Email (optionnel)" className="pl-10" {...field} />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  {renderCommonFields("phone")}
-                </form>
-              </Form>
-            </TabsContent>
-          </Tabs>
+                    <FormField
+                      control={phoneForm.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem className="form-field">
+                          <FormLabel className={isMobile ? "text-sm" : ""}>Email (optionnel)</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                              <Input placeholder="Email (optionnel)" className="pl-10" {...field} />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    {renderCommonFields("phone")}
+                  </form>
+                </Form>
+              </TabsContent>
+            </Tabs>
 
-          <Separator className="my-6" />
+            <Separator className="my-6" />
 
-          <div className="text-center">
-            <p className="text-sm text-muted-foreground">
-              Vous avez déjà un compte?{" "}
-              <Link to="/login" className="text-primary font-semibold hover:underline">
-                Se connecter
-              </Link>
-            </p>
-          </div>
-        </div>
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground">
+                Vous avez déjà un compte?{" "}
+                <Link to="/login" className="text-primary font-semibold hover:underline">
+                  Se connecter
+                </Link>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
