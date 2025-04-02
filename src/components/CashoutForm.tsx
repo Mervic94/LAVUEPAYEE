@@ -1,8 +1,22 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { ConvertLvpButton } from './CashoutForm'; // This was likely causing a circular import
 
-// Renamed component to avoid circular imports
+// Define the ConvertLvpButton component first
+export const ConvertLvpButton = ({ onClick, isLoading }: { onClick: () => void, isLoading: boolean }) => {
+  return (
+    <Button 
+      type="submit" 
+      className="w-full" 
+      disabled={isLoading}
+      onClick={onClick}
+    >
+      {isLoading ? "Traitement en cours..." : "Convertir mes lvp"}
+    </Button>
+  );
+};
+
+// Then define the CashoutFormComponent
 export const CashoutFormComponent = ({ method, userPoints, onBack, onComplete }: { 
   method: any;
   userPoints: number;
@@ -56,17 +70,3 @@ export const CashoutFormComponent = ({ method, userPoints, onBack, onComplete }:
 
 // Export a default component to fix the import error
 export default CashoutFormComponent;
-
-// Keep the ConvertLvpButton component as it was
-export const ConvertLvpButton = ({ onClick, isLoading }: { onClick: () => void, isLoading: boolean }) => {
-  return (
-    <Button 
-      type="submit" 
-      className="w-full" 
-      disabled={isLoading}
-      onClick={onClick}
-    >
-      {isLoading ? "Traitement en cours..." : "Convertir mes lvp"}
-    </Button>
-  );
-};
