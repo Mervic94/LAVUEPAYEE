@@ -25,13 +25,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PhoneNumberInput } from "@/components/ui/phone-input";
-import { Building, Mail, Phone, Shield, User, KeyRound } from "lucide-react";
+import { Building, Mail, Phone, Shield, User, KeyRound, Users } from "lucide-react";
 
 const commonSchema = {
   firstName: z.string().min(2, { message: "Prénom requis" }),
   lastName: z.string().min(2, { message: "Nom de famille requis" }),
   username: z.string().min(3, { message: "Nom d'utilisateur requis (min. 3 caractères)" })
     .regex(/^[a-zA-Z0-9._-]+$/, { message: "Nom d'utilisateur invalide" }),
+  sponsorUsername: z.string().optional(),
   password: z
     .string()
     .min(8, { message: "Le mot de passe doit contenir au moins 8 caractères" })
@@ -94,6 +95,7 @@ const RegisterPage = () => {
       firstName: "",
       lastName: "",
       username: "",
+      sponsorUsername: "",
       email: "",
       phone: "",
       password: "",
@@ -111,6 +113,7 @@ const RegisterPage = () => {
       firstName: "",
       lastName: "",
       username: "",
+      sponsorUsername: "",
       email: "",
       phone: "",
       password: "",
@@ -136,6 +139,7 @@ const RegisterPage = () => {
       first_name: data.firstName,
       last_name: data.lastName,
       phone: data.phone,
+      sponsor_username: data.sponsorUsername,
       date_of_birth: dateOfBirth,
       account_type: data.accountType,
     };
@@ -151,6 +155,7 @@ const RegisterPage = () => {
       first_name: data.firstName,
       last_name: data.lastName,
       email: data.email,
+      sponsor_username: data.sponsorUsername,
       date_of_birth: dateOfBirth,
       account_type: data.accountType,
     };
@@ -222,6 +227,22 @@ const RegisterPage = () => {
                 <div className="relative">
                   <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input placeholder="Nom d'utilisateur" className="pl-10" {...field} />
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="sponsorUsername"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <div className="relative">
+                  <Users className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input placeholder="Nom d'utilisateur du parrain (optionnel)" className="pl-10" {...field} />
                 </div>
               </FormControl>
               <FormMessage />
@@ -451,8 +472,8 @@ const RegisterPage = () => {
             </div>
           </div>
 
-          <Tabs defaultValue="email" value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid grid-cols-2 mb-6">
+          <Tabs defaultValue="email" value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid grid-cols-2 mb-6 w-full">
               <TabsTrigger value="email" className="flex items-center gap-2">
                 <Mail className="h-4 w-4" />
                 <span>Email</span>

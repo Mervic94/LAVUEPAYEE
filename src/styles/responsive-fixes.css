@@ -1,0 +1,39 @@
+
+@media (max-width: 768px) {
+  /* General responsive fixes */
+  .glass-card {
+    padding: 1rem !important;
+  }
+
+  /* Harmonize form fields on mobile and tablet */
+  .form-group, .form-field {
+    margin-bottom: 1rem !important;
+  }
+
+  /* Fix button sizes on small screens */
+  .mobile-full-width {
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  /* Better spacing for mobile views */
+  .space-y-mobile {
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  /* Ensure input fields are properly sized */
+  input, select, textarea {
+    font-size: 16px !important; /* Prevents iOS zoom on focus */
+  }
+}
+
+/* Tablet specific adjustments */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .tablet-container {
+    max-width: 90% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}

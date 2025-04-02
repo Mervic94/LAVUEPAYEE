@@ -184,6 +184,26 @@ export const useAuthProvider = () => {
       
       if (error) throw error;
       
+      // Add sponsor relationship if sponsor username is provided
+      if (userData.sponsor_username) {
+        try {
+          const { data: sponsorData, error: sponsorError } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('username', userData.sponsor_username)
+            .single();
+            
+          if (sponsorError || !sponsorData) {
+            console.log('Sponsor not found, but continuing registration');
+          } else {
+            // Store this for later when profile is created
+            localStorage.setItem('sponsor_id', sponsorData.id);
+          }
+        } catch (err) {
+          console.error('Error checking sponsor:', err);
+        }
+      }
+      
       toast({
         title: "Inscription réussie!",
         description: "Un email de confirmation a été envoyé à votre adresse.",
@@ -204,6 +224,26 @@ export const useAuthProvider = () => {
   const signUpWithPhone = async (phone: string, password: string, userData: any) => {
     try {
       setIsLoading(true);
+      
+      // Check if sponsor exists if provided
+      if (userData.sponsor_username) {
+        try {
+          const { data: sponsorData, error: sponsorError } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('username', userData.sponsor_username)
+            .single();
+            
+          if (sponsorError || !sponsorData) {
+            console.log('Sponsor not found, but continuing registration');
+          } else {
+            // Store this for later when profile is created
+            localStorage.setItem('sponsor_id', sponsorData.id);
+          }
+        } catch (err) {
+          console.error('Error checking sponsor:', err);
+        }
+      }
       
       const { error } = await supabase.auth.signUp({
         phone,

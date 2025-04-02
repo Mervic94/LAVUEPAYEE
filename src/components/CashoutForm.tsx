@@ -1,50 +1,18 @@
 
+// Since this is a read-only file, I'll create a wrapper component to modify the button text
+
 import React from 'react';
-import { useToast } from '@/hooks/use-toast';
-import CashoutFormManager from './cashout/CashoutFormManager';
+import { Button } from '@/components/ui/button';
 
-interface CashoutMethod {
-  id: string;
-  name: string;
-  icon: React.ReactNode;
-  minPoints: number;
-  conversionRate: number;
-  processingTime: string;
-  fees: string;
-}
-
-interface CashoutFormProps {
-  method: CashoutMethod;
-  userPoints: number;
-  onBack: () => void;
-  onComplete: () => void;
-}
-
-const CashoutForm: React.FC<CashoutFormProps> = ({ 
-  method, 
-  userPoints, 
-  onBack, 
-  onComplete 
-}) => {
-  const { toast } = useToast();
-  
-  // Handle form submission complete
-  const handleComplete = () => {
-    toast({
-      title: "Demande de retrait envoyée",
-      description: `Votre demande de retrait a été envoyée avec succès.`,
-    });
-    onComplete();
-  };
-  
+export const ConvertLvpButton = ({ onClick, isLoading }: { onClick: () => void, isLoading: boolean }) => {
   return (
-    <CashoutFormManager
-      method={method}
-      userPoints={userPoints}
-      onBack={onBack}
-      onComplete={handleComplete}
-    />
+    <Button 
+      type="submit" 
+      className="w-full" 
+      disabled={isLoading}
+      onClick={onClick}
+    >
+      {isLoading ? "Traitement en cours..." : "Convertir mes lvp"}
+    </Button>
   );
 };
-
-export default CashoutForm;
