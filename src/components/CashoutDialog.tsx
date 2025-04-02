@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { BadgeDollarSign, X } from 'lucide-react';
 import { 
@@ -9,7 +10,7 @@ import {
   DialogClose
 } from '@/components/ui/dialog';
 import CashoutOptions from '@/components/CashoutOptions';
-import CashoutFormComponent from '@/components/CashoutForm';
+import { CashoutFormComponent } from '@/components/CashoutForm';
 
 interface CashoutMethod {
   id: string;
