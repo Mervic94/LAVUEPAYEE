@@ -1,14 +1,14 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronUp, ChevronDown, Copy, Check } from 'lucide-react';
 import SocialShareLinks from '@/components/SocialShareLinks';
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from '@/contexts/AuthContext';
+import { generateAffiliationCode, generateAffiliationLink } from '@/utils/sponsorUtils';
 
 interface AffiliationSectionProps {
   userData: {
     name: string;
-    affiliationCode: string;
     affiliationStats: {
       totalAffiliates: number;
       level1: number;
@@ -29,7 +29,8 @@ const AffiliationSection: React.FC<AffiliationSectionProps> = ({ userData }) => 
   
   // Automatiser le lien d'affiliation en fonction du nom d'utilisateur
   const username = user?.user_metadata?.username || userData.name.toLowerCase().replace(/\s+/g, '');
-  const affiliationLink = `https://lavuepayee.com/ref/${username}`;
+  const affiliationLink = generateAffiliationLink(username);
+  const affiliationCode = generateAffiliationCode(username);
 
   // Handle copy affiliation link
   const copyToClipboard = () => {
@@ -94,7 +95,7 @@ const AffiliationSection: React.FC<AffiliationSectionProps> = ({ userData }) => 
             )}
           </button>
         </div>
-        <p className="text-sm text-foreground/60 mt-2">Code: <span className="font-medium">{userData.affiliationCode}</span></p>
+        <p className="text-sm text-foreground/60 mt-2">Code: <span className="font-medium">{affiliationCode}</span></p>
       </div>
       
       {/* Affiliation Stats */}

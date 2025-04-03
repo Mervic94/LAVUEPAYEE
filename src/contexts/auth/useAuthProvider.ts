@@ -30,6 +30,14 @@ export const useAuthProvider = () => {
             title: "Déconnexion réussie", 
             description: "À bientôt!"
           });
+        } else if (event === 'PASSWORD_RECOVERY') {
+          // Rediriger vers la page de réinitialisation du mot de passe
+          navigate('/reset-password');
+        } else if (event === 'USER_UPDATED') {
+          toast({ 
+            title: "Profil mis à jour", 
+            description: "Vos informations ont été mises à jour"
+          });
         }
       }
     );
@@ -44,7 +52,7 @@ export const useAuthProvider = () => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [toast]);
+  }, [toast, navigate]);
 
   const signIn = async (email: string, password: string) => {
     try {
@@ -98,32 +106,27 @@ export const useAuthProvider = () => {
         throw new Error("Nom d'utilisateur non trouvé");
       }
 
-      const { data, error: userError } = await supabase
+      // Récupérer l'email ou le téléphone associé à ce profil
+      const { data: authUser, error: authError } = await supabase
         .from('profiles')
-        .select('id, username')
+        .select('id, username, email, phone')
         .eq('id', profiles.id)
         .single();
-
-      if (userError || !data) {
+      
+      if (authError || !authUser) {
         throw new Error("Utilisateur non trouvé");
       }
       
-      const { data: authUser, error: authError } = await supabase.auth.admin.getUserById(profiles.id);
-      
-      if (authError || !authUser || !authUser.user) {
-        throw new Error("Informations d'identification utilisateur non trouvées");
-      }
-      
-      if (authUser.user.email) {
+      if (authUser.email) {
         const { error } = await supabase.auth.signInWithPassword({
-          email: authUser.user.email,
+          email: authUser.email,
           password
         });
         
         if (error) throw error;
-      } else if (authUser.user.phone) {
+      } else if (authUser.phone) {
         const { error } = await supabase.auth.signInWithPassword({
-          phone: authUser.user.phone,
+          phone: authUser.phone,
           password
         });
         
@@ -138,6 +141,35 @@ export const useAuthProvider = () => {
         variant: "destructive",
         title: "Erreur de connexion",
         description: error.message || "Une erreur est survenue lors de la connexion",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const signInWithMagicLink = async (email: string) => {
+    try {
+      setIsLoading(true);
+      
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/dashboard`
+        }
+      });
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Lien magique envoyé",
+        description: "Vérifiez votre boîte de réception pour vous connecter",
+      });
+      
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Erreur d'envoi",
+        description: error.message || "Une erreur est survenue lors de l'envoi du lien magique",
       });
     } finally {
       setIsLoading(false);
@@ -179,6 +211,7 @@ export const useAuthProvider = () => {
         password,
         options: {
           data: userData,
+          emailRedirectTo: `${window.location.origin}/verify-email`,
         },
       });
       
@@ -315,6 +348,59 @@ export const useAuthProvider = () => {
     }
   };
 
+  const updatePassword = async (newPassword: string) => {
+    try {
+      setIsLoading(true);
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Mot de passe mis à jour",
+        description: "Votre mot de passe a été modifié avec succès.",
+      });
+      
+      navigate('/login');
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: error.message || "Une erreur est survenue lors de la mise à jour du mot de passe",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const updateEmail = async (newEmail: string) => {
+    try {
+      setIsLoading(true);
+      const { error } = await supabase.auth.updateUser({
+        email: newEmail,
+        options: {
+          emailRedirectTo: `${window.location.origin}/profile`,
+        },
+      });
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Demande de changement d'email envoyée",
+        description: "Un email de vérification a été envoyé à votre nouvelle adresse email.",
+      });
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description: error.message || "Une erreur est survenue lors de la mise à jour de l'email",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return {
     session,
     user,
@@ -322,10 +408,13 @@ export const useAuthProvider = () => {
     signIn,
     signInWithPhone,
     signInWithUsername,
+    signInWithMagicLink,
     signInWithGoogle,
     signUp,
     signUpWithPhone,
     signOut,
     resetPassword,
+    updatePassword,
+    updateEmail,
   };
 };

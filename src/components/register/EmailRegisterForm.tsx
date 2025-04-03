@@ -17,18 +17,21 @@ import { PhoneNumberInput } from "@/components/ui/phone-input";
 import CommonFormFields from "./CommonFormFields";
 import { EmailRegisterFormValues, emailRegisterSchema } from "@/schemas/registerSchemas";
 import { SponsorInfo } from "@/utils/sponsorUtils";
-import { formatDateOfBirth } from "@/utils/dateUtils";
 
 interface EmailRegisterFormProps {
   onSubmit: (data: EmailRegisterFormValues) => Promise<void>;
   sponsorInfo: SponsorInfo;
   checkingSponsor: boolean;
+  sponsorUsername?: string | null;
+  isReadOnlySponsor?: boolean;
 }
 
 const EmailRegisterForm: React.FC<EmailRegisterFormProps> = ({
   onSubmit,
   sponsorInfo,
-  checkingSponsor
+  checkingSponsor,
+  sponsorUsername = null,
+  isReadOnlySponsor = false
 }) => {
   const isMobile = useIsMobile();
   const form = useForm<EmailRegisterFormValues>({
@@ -37,7 +40,7 @@ const EmailRegisterForm: React.FC<EmailRegisterFormProps> = ({
       firstName: "",
       lastName: "",
       username: "",
-      sponsorUsername: "",
+      sponsorUsername: sponsorUsername || "",
       email: "",
       phone: "",
       password: "",
@@ -97,6 +100,7 @@ const EmailRegisterForm: React.FC<EmailRegisterFormProps> = ({
           sponsorInfo={sponsorInfo}
           checkingSponsor={checkingSponsor}
           isSubmitting={form.formState.isSubmitting}
+          isReadOnlySponsor={isReadOnlySponsor}
         />
       </form>
     </Form>

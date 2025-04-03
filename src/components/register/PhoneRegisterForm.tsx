@@ -22,12 +22,16 @@ interface PhoneRegisterFormProps {
   onSubmit: (data: PhoneRegisterFormValues) => Promise<void>;
   sponsorInfo: SponsorInfo;
   checkingSponsor: boolean;
+  sponsorUsername?: string | null;
+  isReadOnlySponsor?: boolean;
 }
 
 const PhoneRegisterForm: React.FC<PhoneRegisterFormProps> = ({
   onSubmit,
   sponsorInfo,
-  checkingSponsor
+  checkingSponsor,
+  sponsorUsername = null,
+  isReadOnlySponsor = false
 }) => {
   const isMobile = useIsMobile();
   const form = useForm<PhoneRegisterFormValues>({
@@ -36,7 +40,7 @@ const PhoneRegisterForm: React.FC<PhoneRegisterFormProps> = ({
       firstName: "",
       lastName: "",
       username: "",
-      sponsorUsername: "",
+      sponsorUsername: sponsorUsername || "",
       email: "",
       phone: "",
       password: "",
@@ -96,6 +100,7 @@ const PhoneRegisterForm: React.FC<PhoneRegisterFormProps> = ({
           sponsorInfo={sponsorInfo}
           checkingSponsor={checkingSponsor}
           isSubmitting={form.formState.isSubmitting}
+          isReadOnlySponsor={isReadOnlySponsor}
         />
       </form>
     </Form>

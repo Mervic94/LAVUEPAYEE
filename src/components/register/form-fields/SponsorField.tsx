@@ -10,9 +10,15 @@ interface SponsorFieldProps {
   form: any;
   sponsorInfo: SponsorInfo;
   checkingSponsor: boolean;
+  isReadOnly?: boolean;
 }
 
-const SponsorField: React.FC<SponsorFieldProps> = ({ form, sponsorInfo, checkingSponsor }) => {
+const SponsorField: React.FC<SponsorFieldProps> = ({ 
+  form, 
+  sponsorInfo, 
+  checkingSponsor,
+  isReadOnly = false
+}) => {
   const isMobile = useIsMobile();
 
   return (
@@ -21,13 +27,14 @@ const SponsorField: React.FC<SponsorFieldProps> = ({ form, sponsorInfo, checking
       name="sponsorUsername"
       render={({ field }) => (
         <FormItem className="form-field">
-          <FormLabel className={isMobile ? "text-sm" : ""}>Parrain (optionnel)</FormLabel>
+          <FormLabel className={isMobile ? "text-sm" : ""}>Parrain {!isReadOnly && "(optionnel)"}</FormLabel>
           <FormControl>
             <div className="relative">
               <Users className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input 
                 placeholder="Nom d'utilisateur du parrain" 
                 className="pl-10" 
+                readOnly={isReadOnly}
                 {...field} 
               />
             </div>

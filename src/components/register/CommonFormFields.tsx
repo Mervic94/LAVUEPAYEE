@@ -20,6 +20,7 @@ interface CommonFormFieldsProps {
   sponsorInfo: SponsorInfo;
   checkingSponsor: boolean;
   isSubmitting: boolean;
+  isReadOnlySponsor?: boolean;
 }
 
 const CommonFormFields: React.FC<CommonFormFieldsProps> = ({
@@ -27,7 +28,8 @@ const CommonFormFields: React.FC<CommonFormFieldsProps> = ({
   form,
   sponsorInfo,
   checkingSponsor,
-  isSubmitting
+  isSubmitting,
+  isReadOnlySponsor = false
 }) => {
   return (
     <>
@@ -37,6 +39,7 @@ const CommonFormFields: React.FC<CommonFormFieldsProps> = ({
         form={form} 
         sponsorInfo={sponsorInfo} 
         checkingSponsor={checkingSponsor} 
+        isReadOnly={isReadOnlySponsor}
       />
       <DateOfBirthFields form={form} />
       <PasswordField form={form} />

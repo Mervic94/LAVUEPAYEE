@@ -12,7 +12,7 @@ const Logo = () => {
           className="h-10 w-10 object-contain"
         />
       </div>
-      <span className="font-bold text-lg text-green-800">LAVUEPAYEE</span>
+      <span className="font-bold text-lg text-green-800 dark:text-green-200">LAVUEPAYEE</span>
     </Link>
   );
 };

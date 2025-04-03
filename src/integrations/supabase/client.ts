@@ -15,5 +15,7 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     persistSession: true,
     autoRefreshToken: true,
     flowType: 'pkce',
+    detectSessionInUrl: true,
+    debug: import.meta.env.DEV
   }
 });
