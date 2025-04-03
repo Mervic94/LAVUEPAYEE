@@ -9,7 +9,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Toggle, toggleVariants } from "@/components/ui/toggle";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 export function ThemeToggle({ variant = "dropdown" }: { variant?: "dropdown" | "toggle" }) {
@@ -17,7 +16,11 @@ export function ThemeToggle({ variant = "dropdown" }: { variant?: "dropdown" | "
 
   if (variant === "toggle") {
     return (
-      <ToggleGroup type="single" value={theme} onValueChange={(value) => value && setTheme(value)}>
+      <ToggleGroup type="single" value={theme} onValueChange={(value) => {
+        if (value === "light" || value === "dark" || value === "system") {
+          setTheme(value);
+        }
+      }}>
         <ToggleGroupItem value="light" aria-label="Mode clair">
           <Sun className="h-4 w-4" />
           <span className="sr-only">Mode clair</span>
