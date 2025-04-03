@@ -80,7 +80,7 @@ export const useAccountManagementService = (setIsLoading: (isLoading: boolean) =
       const { error } = await supabase.auth.updateUser({
         email: newEmail,
         options: {
-          emailRedirectTo: `${window.location.origin}/profile`,
+          emailRedirectTo: `${window.location.origin}/profile`
         }
       });
       

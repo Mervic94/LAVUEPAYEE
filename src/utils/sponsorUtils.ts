@@ -16,7 +16,7 @@ export async function checkSponsor(username: string): Promise<SponsorInfo> {
       .from('profiles')
       .select('username, first_name, last_name')
       .eq('username', username)
-      .single();
+      .maybeSingle();
     
     if (error || !data) {
       return null;
