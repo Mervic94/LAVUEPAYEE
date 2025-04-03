@@ -97,7 +97,7 @@ const CashoutDialog: React.FC<CashoutDialogProps> = ({ open, onOpenChange, userP
         {isComplete && (
           <div className="text-center py-8">
             <div className="h-20 w-20 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
-              <div className="h-10 w-10 rounded-full flex items-center justify-center overflow-hidden">
+              <div className="h-10 w-10 lvp-icon-container">
                 <img 
                   src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
                   alt="LVP" 

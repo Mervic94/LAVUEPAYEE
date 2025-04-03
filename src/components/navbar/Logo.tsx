@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 const Logo = () => {
   return (
     <Link to="/" className="flex items-center gap-2">
-      <div className="h-10 w-10 rounded-full flex items-center justify-center overflow-hidden">
+      <div className="h-10 w-10 lvp-icon-container">
         <img 
           src="/lovable-uploads/d82c55d8-0c83-4a02-82c0-67e854a84332.png" 
           alt="LAVUEPAYEE" 

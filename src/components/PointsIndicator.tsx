@@ -35,7 +35,7 @@ const PointsIndicator: React.FC<PointsIndicatorProps> = ({ points, size = 'md' }
                   transition-all duration-300 hover:scale-105`}
       title={`${formattedPoints} LVP = ${formattedVuecoins} Vc`}
     >
-      <div className={`${iconSizes[size]} rounded-full flex items-center justify-center`}>
+      <div className={`${iconSizes[size]} lvp-icon-container`}>
         <img 
           src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
           alt="LVP" 

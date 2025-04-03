@@ -17,7 +17,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   return (
     <div className="bg-primary text-white p-3 flex justify-between items-center">
       <div className="flex items-center gap-2">
-        <div className="h-8 w-8 bg-white rounded-full flex items-center justify-center overflow-hidden">
+        <div className="h-8 w-8 lvp-icon-container">
           <img 
             src="/lovable-uploads/d82c55d8-0c83-4a02-82c0-67e854a84332.png" 
             alt="LAVUEPAYEE" 

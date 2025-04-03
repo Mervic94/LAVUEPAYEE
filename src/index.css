@@ -78,7 +78,67 @@
   }
 }
 
-.glass-card {
-  @apply backdrop-blur-sm bg-card/95 border border-border shadow-sm dark:bg-card/80 dark:border-border/50;
+/* Animations pour le thème clair */
+:root:not(.dark) .glass-card {
+  @apply backdrop-blur-sm bg-card/95 border border-border shadow-sm;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+}
+
+:root:not(.dark) .glass-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+}
+
+:root:not(.dark) .hover-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Animations pour le thème sombre */
+.dark .glass-card {
+  @apply backdrop-blur-sm bg-card/80 border border-border/50 shadow-sm;
   transition: background-color 0.3s ease, border-color 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* Style commun pour l'icône LVP */
+.lvp-icon-container {
+  @apply rounded-full flex items-center justify-center overflow-hidden;
+  padding: 0;
+  background: transparent;
+}
+
+/* Animations communes */
+.transition-theme {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-duration: 0.3s;
+  transition-timing-function: ease;
+}
+
+/* Animation pour le thème système - utilise les styles du thème clair ou sombre en fonction des préférences système */
+@media (prefers-color-scheme: light) {
+  :root:not(.dark):not(.light) .glass-card {
+    @apply backdrop-blur-sm bg-card/95 border border-border shadow-sm;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+  }
+  
+  :root:not(.dark):not(.light) .glass-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.05);
+  }
+  
+  :root:not(.dark):not(.light) .hover-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.dark):not(.light) .glass-card {
+    @apply backdrop-blur-sm bg-card/80 border border-border/50 shadow-sm;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  }
 }

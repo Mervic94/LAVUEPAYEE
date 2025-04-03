@@ -38,11 +38,13 @@ const Index = () => {
             
             <div className="flex flex-col items-center text-center">
               <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
-                <img 
-                  src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
-                  alt="Points" 
-                  className="h-8 w-8 text-primary"
-                />
+                <div className="h-8 w-8 lvp-icon-container">
+                  <img 
+                    src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
+                    alt="Points" 
+                    className="h-8 w-8"
+                  />
+                </div>
                 <div className="absolute -right-1 -top-1 h-6 w-6 bg-primary rounded-full text-white flex items-center justify-center font-medium text-sm">2</div>
               </div>
               <h3 className="text-xl font-semibold mb-3">Gagnez des points</h3>
@@ -133,11 +135,13 @@ const Index = () => {
                         <p className="text-sm text-foreground/70">10% de commission</p>
                       </div>
                       <div className="flex items-center gap-1 font-semibold text-lg">
-                        <img 
-                          src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
-                          alt="LVP" 
-                          className="h-5 w-5" 
-                        />
+                        <div className="h-5 w-5 lvp-icon-container">
+                          <img 
+                            src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
+                            alt="LVP" 
+                            className="h-5 w-5" 
+                          />
+                        </div>
                         <span>1,500</span>
                       </div>
                     </div>
@@ -148,11 +152,13 @@ const Index = () => {
                         <p className="text-sm text-foreground/70">5% de commission</p>
                       </div>
                       <div className="flex items-center gap-1 font-semibold text-lg">
-                        <img 
-                          src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
-                          alt="LVP" 
-                          className="h-5 w-5" 
-                        />
+                        <div className="h-5 w-5 lvp-icon-container">
+                          <img 
+                            src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
+                            alt="LVP" 
+                            className="h-5 w-5" 
+                          />
+                        </div>
                         <span>3,750</span>
                       </div>
                     </div>
@@ -163,11 +169,13 @@ const Index = () => {
                         <p className="text-sm text-foreground/70">2-3% de commission</p>
                       </div>
                       <div className="flex items-center gap-1 font-semibold text-lg">
-                        <img 
-                          src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
-                          alt="LVP" 
-                          className="h-5 w-5" 
-                        />
+                        <div className="h-5 w-5 lvp-icon-container">
+                          <img 
+                            src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
+                            alt="LVP" 
+                            className="h-5 w-5" 
+                          />
+                        </div>
                         <span>5,250</span>
                       </div>
                     </div>
@@ -177,11 +185,13 @@ const Index = () => {
                         <h4 className="font-semibold text-lg">Total mensuel</h4>
                       </div>
                       <div className="flex items-center gap-1 font-bold text-lg text-primary">
-                        <img 
-                          src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
-                          alt="LVP" 
-                          className="h-5 w-5" 
-                        />
+                        <div className="h-5 w-5 lvp-icon-container">
+                          <img 
+                            src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
+                            alt="LVP" 
+                            className="h-5 w-5" 
+                          />
+                        </div>
                         <span>10,500 lvp</span>
                       </div>
                     </div>
@@ -199,7 +209,7 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <div className="h-8 w-8 rounded-full flex items-center justify-center">
+                <div className="h-8 w-8 lvp-icon-container">
                   <img 
                     src="/lovable-uploads/d82c55d8-0c83-4a02-82c0-67e854a84332.png" 
                     alt="LAVUEPAYEE"
