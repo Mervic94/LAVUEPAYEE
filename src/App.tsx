@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from "@/components/ui/toaster"
@@ -24,6 +23,7 @@ import Footer from '@/components/Footer'
 import { AuthProvider } from '@/contexts/AuthContext'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import Navbar from '@/components/navbar'
+import { ThemeProvider } from '@/hooks/use-theme'
 
 import './App.css'
 import './styles/phone-input.css'
@@ -49,46 +49,48 @@ function App() {
 
   return (
     <Router>
-      <AuthProvider>
-        <div className="flex flex-col min-h-screen">
-          <div className="flex-grow">
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/dashboard" element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              } />
-              <Route path="/marketplace" element={<Marketplace />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/verify-email" element={<VerifyEmail />} />
-              <Route path="/verify-phone" element={<VerifyPhone />} />
-              <Route path="/tasks" element={
-                <ProtectedRoute>
-                  <Tasks />
-                </ProtectedRoute>
-              } />
-              <Route path="/profile" element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              } />
-              <Route path="/view-ad/:id" element={<ViewAd />} />
-              <Route path="/messages" element={<Messages />} />
-              <Route path="/faq" element={<FAQ />} />
-              <Route path="/terms" element={<Terms />} />
-              <Route path="/privacy" element={<Privacy />} />
-              <Route path="/cookies" element={<Cookies />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+      <ThemeProvider defaultTheme="system" storageKey="lavuepayee-theme">
+        <AuthProvider>
+          <div className="flex flex-col min-h-screen">
+            <div className="flex-grow">
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/dashboard" element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                } />
+                <Route path="/marketplace" element={<Marketplace />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/verify-email" element={<VerifyEmail />} />
+                <Route path="/verify-phone" element={<VerifyPhone />} />
+                <Route path="/tasks" element={
+                  <ProtectedRoute>
+                    <Tasks />
+                  </ProtectedRoute>
+                } />
+                <Route path="/profile" element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                } />
+                <Route path="/view-ad/:id" element={<ViewAd />} />
+                <Route path="/messages" element={<Messages />} />
+                <Route path="/faq" element={<FAQ />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/privacy" element={<Privacy />} />
+                <Route path="/cookies" element={<Cookies />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </div>
+            <Footer />
+            <ClientChat />
+            <Toaster />
           </div>
-          <Footer />
-          <ClientChat />
-          <Toaster />
-        </div>
-      </AuthProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </Router>
   )
 }

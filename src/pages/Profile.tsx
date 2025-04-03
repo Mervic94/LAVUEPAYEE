@@ -112,11 +112,11 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background transition-theme">
       <Navbar />
       
-      <main className="container px-6 mx-auto max-w-7xl pt-24 pb-12">
-        <h1 className="text-3xl font-bold mb-8">Mon Profil</h1>
+      <main className="container px-4 md:px-6 mx-auto max-w-7xl pt-24 pb-12">
+        <h1 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8">Mon Profil</h1>
         
         {/* User Profile Card */}
         <ProfileHeader 
@@ -132,14 +132,14 @@ const Profile = () => {
         
         {/* Tabs for History and Settings */}
         <Tabs defaultValue="history" className="w-full">
-          <TabsList className="mb-6">
-            <TabsTrigger value="history" className="text-base">Historique</TabsTrigger>
-            <TabsTrigger value="settings" className="text-base">Paramètres</TabsTrigger>
+          <TabsList className="mb-6 flex flex-wrap md:flex-nowrap overflow-x-auto tabs-list">
+            <TabsTrigger value="history" className="text-sm md:text-base tab-trigger">Historique</TabsTrigger>
+            <TabsTrigger value="settings" className="text-sm md:text-base tab-trigger">Paramètres</TabsTrigger>
             {isAdvertiser && (
-              <TabsTrigger value="advertiser" className="text-base">Annonceur</TabsTrigger>
+              <TabsTrigger value="advertiser" className="text-sm md:text-base tab-trigger">Annonceur</TabsTrigger>
             )}
             {!isAdvertiser && (
-              <TabsTrigger value="advertiser-registration" className="text-base">Devenir Annonceur</TabsTrigger>
+              <TabsTrigger value="advertiser-registration" className="text-sm md:text-base tab-trigger">Devenir Annonceur</TabsTrigger>
             )}
           </TabsList>
           
