@@ -32,9 +32,16 @@ type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
 interface ResetPasswordFormProps {
   onSubmit: (data: ResetPasswordFormValues) => Promise<void>;
   loading: boolean;
+  onBack?: () => void;  // Added this prop
+  showBackButton?: boolean; // Added this prop
 }
 
-const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ onSubmit, loading }) => {
+const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ 
+  onSubmit, 
+  loading,
+  onBack,
+  showBackButton = false
+}) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
@@ -131,10 +138,17 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ onSubmit, loading
           )}
         />
 
-        <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? "Mise à jour en cours..." : "Mettre à jour le mot de passe"}
-          {!loading && <ArrowRight className="ml-2 h-4 w-4" />}
-        </Button>
+        <div className="flex space-x-2">
+          {showBackButton && onBack && (
+            <Button type="button" variant="outline" onClick={onBack}>
+              Retour
+            </Button>
+          )}
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? "Mise à jour en cours..." : "Mettre à jour le mot de passe"}
+            {!loading && <ArrowRight className="ml-2 h-4 w-4" />}
+          </Button>
+        </div>
       </form>
     </Form>
   );
