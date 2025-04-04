@@ -11,8 +11,10 @@ export const useAccountManagementService = (setIsLoading: (isLoading: boolean) =
     try {
       setIsLoading(true);
       const { error } = await supabase.auth.signOut();
+      
       if (error) throw error;
-      navigate('/');
+      
+      navigate('/login');
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -35,13 +37,14 @@ export const useAccountManagementService = (setIsLoading: (isLoading: boolean) =
       
       toast({
         title: "Email envoyé",
-        description: "Les instructions de réinitialisation ont été envoyées à votre adresse email",
+        description: "Vérifiez votre boîte de réception pour réinitialiser votre mot de passe",
       });
+      
     } catch (error: any) {
       toast({
         variant: "destructive",
-        title: "Erreur",
-        description: error.message || "Une erreur est survenue lors de l'envoi de l'email",
+        title: "Erreur de réinitialisation",
+        description: error.message || "Une erreur est survenue lors de l'envoi de l'email de réinitialisation",
       });
     } finally {
       setIsLoading(false);
@@ -51,22 +54,22 @@ export const useAccountManagementService = (setIsLoading: (isLoading: boolean) =
   const updatePassword = async (newPassword: string) => {
     try {
       setIsLoading(true);
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword
+      const { error } = await supabase.auth.updateUser({ 
+        password: newPassword 
       });
       
       if (error) throw error;
       
       toast({
         title: "Mot de passe mis à jour",
-        description: "Votre mot de passe a été modifié avec succès.",
+        description: "Votre mot de passe a été mis à jour avec succès",
       });
       
       navigate('/login');
     } catch (error: any) {
       toast({
         variant: "destructive",
-        title: "Erreur",
+        title: "Erreur de mise à jour",
         description: error.message || "Une erreur est survenue lors de la mise à jour du mot de passe",
       });
     } finally {
@@ -77,24 +80,21 @@ export const useAccountManagementService = (setIsLoading: (isLoading: boolean) =
   const updateEmail = async (newEmail: string) => {
     try {
       setIsLoading(true);
-      const { error } = await supabase.auth.updateUser({
-        email: newEmail,
-        // Fix the options issue by using the correct structure
-        options: {
-          emailRedirectTo: `${window.location.origin}/profile`
-        }
-      } as any); // Use type assertion as a temporary fix
+      const { error } = await supabase.auth.updateUser({ 
+        email: newEmail 
+      });
       
       if (error) throw error;
       
       toast({
-        title: "Demande de changement d'email envoyée",
-        description: "Un email de vérification a été envoyé à votre nouvelle adresse email.",
+        title: "Email mis à jour",
+        description: "Un email de confirmation a été envoyé à votre nouvelle adresse",
       });
+      
     } catch (error: any) {
       toast({
         variant: "destructive",
-        title: "Erreur",
+        title: "Erreur de mise à jour",
         description: error.message || "Une erreur est survenue lors de la mise à jour de l'email",
       });
     } finally {

@@ -10,6 +10,31 @@ export const useRegisterService = (setIsLoading: (isLoading: boolean) => void) =
   const signUp = async (email: string, password: string, userData: any) => {
     try {
       setIsLoading(true);
+      
+      // Check if email already exists
+      const { data: existingUser } = await supabase
+        .from('profiles')
+        .select('email')
+        .eq('email', email)
+        .single();
+        
+      if (existingUser) {
+        throw new Error("Cette adresse email est déjà utilisée");
+      }
+      
+      // Check if username already exists
+      if (userData.username) {
+        const { data: existingUsername } = await supabase
+          .from('profiles')
+          .select('username')
+          .eq('username', userData.username)
+          .single();
+          
+        if (existingUsername) {
+          throw new Error("Ce nom d'utilisateur est déjà pris");
+        }
+      }
+      
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -48,10 +73,20 @@ export const useRegisterService = (setIsLoading: (isLoading: boolean) => void) =
       
       navigate('/verify-email');
     } catch (error: any) {
+      console.error("Registration error:", error);
+      
+      let errorMessage = "Une erreur est survenue lors de l'inscription";
+      
+      if (error.message.includes("already registered")) {
+        errorMessage = "Cette adresse email est déjà utilisée. Essayez de vous connecter.";
+      } else if (error.message.includes("already") || error.message.includes("déjà")) {
+        errorMessage = error.message;
+      }
+      
       toast({
         variant: "destructive",
         title: "Erreur d'inscription",
-        description: error.message || "Une erreur est survenue lors de l'inscription",
+        description: errorMessage,
       });
     } finally {
       setIsLoading(false);
@@ -61,6 +96,30 @@ export const useRegisterService = (setIsLoading: (isLoading: boolean) => void) =
   const signUpWithPhone = async (phone: string, password: string, userData: any) => {
     try {
       setIsLoading(true);
+      
+      // Check if phone already exists
+      const { data: existingUser } = await supabase
+        .from('profiles')
+        .select('phone')
+        .eq('phone', phone)
+        .single();
+        
+      if (existingUser) {
+        throw new Error("Ce numéro de téléphone est déjà utilisé");
+      }
+      
+      // Check if username already exists
+      if (userData.username) {
+        const { data: existingUsername } = await supabase
+          .from('profiles')
+          .select('username')
+          .eq('username', userData.username)
+          .single();
+          
+        if (existingUsername) {
+          throw new Error("Ce nom d'utilisateur est déjà pris");
+        }
+      }
       
       // Check if sponsor exists if provided
       if (userData.sponsor_username) {
@@ -101,10 +160,20 @@ export const useRegisterService = (setIsLoading: (isLoading: boolean) => void) =
       
       navigate('/verify-phone');
     } catch (error: any) {
+      console.error("Phone registration error:", error);
+      
+      let errorMessage = "Une erreur est survenue lors de l'inscription";
+      
+      if (error.message.includes("already registered")) {
+        errorMessage = "Ce numéro de téléphone est déjà utilisé. Essayez de vous connecter.";
+      } else if (error.message.includes("already") || error.message.includes("déjà")) {
+        errorMessage = error.message;
+      }
+      
       toast({
         variant: "destructive",
         title: "Erreur d'inscription",
-        description: error.message || "Une erreur est survenue lors de l'inscription",
+        description: errorMessage,
       });
     } finally {
       setIsLoading(false);

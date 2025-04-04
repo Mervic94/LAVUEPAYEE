@@ -19,6 +19,9 @@ import FAQ from '@/pages/FAQ'
 import Terms from '@/pages/Terms'
 import Privacy from '@/pages/Privacy'
 import Cookies from '@/pages/Cookies'
+import Help from '@/pages/Help'
+import Settings from '@/pages/Settings'
+import Wallet from '@/pages/Wallet'
 import ClientChat from '@/components/client-chat'
 import Footer from '@/components/Footer'
 import { AuthProvider } from '@/contexts/AuthContext'
@@ -78,7 +81,22 @@ function App() {
                   </ProtectedRoute>
                 } />
                 <Route path="/view-ad/:id" element={<ViewAd />} />
-                <Route path="/messages" element={<Messages />} />
+                <Route path="/messages" element={
+                  <ProtectedRoute>
+                    <Messages />
+                  </ProtectedRoute>
+                } />
+                <Route path="/help" element={<Help />} />
+                <Route path="/settings" element={
+                  <ProtectedRoute>
+                    <Settings />
+                  </ProtectedRoute>
+                } />
+                <Route path="/wallet" element={
+                  <ProtectedRoute>
+                    <Wallet />
+                  </ProtectedRoute>
+                } />
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/privacy" element={<Privacy />} />

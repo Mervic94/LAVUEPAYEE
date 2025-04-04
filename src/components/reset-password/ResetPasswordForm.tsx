@@ -1,9 +1,9 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { KeyRound, ArrowRight, ArrowLeft } from "lucide-react";
+import { KeyRound, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -31,17 +31,13 @@ type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
 
 interface ResetPasswordFormProps {
   onSubmit: (data: ResetPasswordFormValues) => Promise<void>;
-  onBack?: () => void;
   loading: boolean;
-  showBackButton: boolean;
 }
 
-const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
-  onSubmit,
-  onBack,
-  loading,
-  showBackButton
-}) => {
+const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ onSubmit, loading }) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
   const form = useForm<ResetPasswordFormValues>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
@@ -49,6 +45,14 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
       confirmPassword: "",
     },
   });
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
 
   return (
     <Form {...form}>
@@ -63,11 +67,26 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
                 <div className="relative">
                   <KeyRound className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input 
-                    type="password" 
-                    placeholder="********" 
-                    className="pl-10"
+                    type={showPassword ? "text" : "password"} 
+                    placeholder="Nouveau mot de passe" 
+                    className="pl-10 pr-10" 
                     {...field}
                   />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0"
+                    onClick={togglePasswordVisibility}
+                  >
+                    {showPassword ? 
+                      <EyeOff className="h-4 w-4 text-muted-foreground" /> : 
+                      <Eye className="h-4 w-4 text-muted-foreground" />
+                    }
+                    <span className="sr-only">
+                      {showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                    </span>
+                  </Button>
                 </div>
               </FormControl>
               <FormMessage />
@@ -85,11 +104,26 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
                 <div className="relative">
                   <KeyRound className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input 
-                    type="password" 
-                    placeholder="********" 
-                    className="pl-10"
+                    type={showConfirmPassword ? "text" : "password"} 
+                    placeholder="Confirmer le mot de passe" 
+                    className="pl-10 pr-10" 
                     {...field}
                   />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0"
+                    onClick={toggleConfirmPasswordVisibility}
+                  >
+                    {showConfirmPassword ? 
+                      <EyeOff className="h-4 w-4 text-muted-foreground" /> : 
+                      <Eye className="h-4 w-4 text-muted-foreground" />
+                    }
+                    <span className="sr-only">
+                      {showConfirmPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                    </span>
+                  </Button>
                 </div>
               </FormControl>
               <FormMessage />
@@ -98,21 +132,9 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
         />
 
         <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? "Réinitialisation en cours..." : "Réinitialiser le mot de passe"}
+          {loading ? "Mise à jour en cours..." : "Mettre à jour le mot de passe"}
           {!loading && <ArrowRight className="ml-2 h-4 w-4" />}
         </Button>
-        
-        {showBackButton && (
-          <Button 
-            type="button" 
-            variant="ghost" 
-            className="w-full" 
-            onClick={onBack}
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Retour
-          </Button>
-        )}
       </form>
     </Form>
   );

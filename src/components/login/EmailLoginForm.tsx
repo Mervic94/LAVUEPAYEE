@@ -1,9 +1,9 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Mail, KeyRound } from "lucide-react";
+import { Mail, KeyRound, Eye, EyeOff } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,6 +29,8 @@ interface EmailLoginFormProps {
 }
 
 const EmailLoginForm: React.FC<EmailLoginFormProps> = ({ onSubmit, isLoading }) => {
+  const [showPassword, setShowPassword] = useState(false);
+  
   const form = useForm<EmailFormValues>({
     resolver: zodResolver(emailSchema),
     defaultValues: {
@@ -36,6 +38,10 @@ const EmailLoginForm: React.FC<EmailLoginFormProps> = ({ onSubmit, isLoading }) 
       password: "",
     },
   });
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   return (
     <Form {...form}>
@@ -67,11 +73,26 @@ const EmailLoginForm: React.FC<EmailLoginFormProps> = ({ onSubmit, isLoading }) 
                 <div className="relative">
                   <KeyRound className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     placeholder="Votre mot de passe"
-                    className="pl-10"
+                    className="pl-10 pr-10"
                     {...field}
                   />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0"
+                    onClick={togglePasswordVisibility}
+                  >
+                    {showPassword ? 
+                      <EyeOff className="h-4 w-4 text-muted-foreground" /> : 
+                      <Eye className="h-4 w-4 text-muted-foreground" />
+                    }
+                    <span className="sr-only">
+                      {showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                    </span>
+                  </Button>
                 </div>
               </FormControl>
               <FormMessage />

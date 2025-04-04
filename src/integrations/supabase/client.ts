@@ -19,3 +19,12 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     debug: import.meta.env.DEV
   }
 });
+
+// Note: SMTP Email settings must be configured in the Supabase Dashboard:
+// - Email Provider: SMTP
+// - Host: smtp.gmail.com
+// - Port: 587
+// - User: melvicsotch@gmail.com
+// - Password: [App password for melvicsotch@gmail.com]
+// - Sender Name: LaVuePayee
+// - Sender Email: melvicsotch@gmail.com

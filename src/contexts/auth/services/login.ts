@@ -16,10 +16,20 @@ export const useLoginService = (setIsLoading: (isLoading: boolean) => void) => {
       
       navigate('/dashboard');
     } catch (error: any) {
+      console.error("Login error:", error);
+      
+      let errorMessage = "Une erreur est survenue lors de la connexion";
+      
+      if (error.message.includes("Invalid login credentials")) {
+        errorMessage = "Identifiants invalides. Veuillez vérifier votre email et mot de passe.";
+      } else if (error.message.includes("Email not confirmed")) {
+        errorMessage = "Email non confirmé. Veuillez vérifier votre boîte de réception.";
+      }
+      
       toast({
         variant: "destructive",
         title: "Erreur de connexion",
-        description: error.message || "Une erreur est survenue lors de la connexion",
+        description: errorMessage,
       });
     } finally {
       setIsLoading(false);
@@ -35,10 +45,20 @@ export const useLoginService = (setIsLoading: (isLoading: boolean) => void) => {
       
       navigate('/dashboard');
     } catch (error: any) {
+      console.error("Phone login error:", error);
+      
+      let errorMessage = "Une erreur est survenue lors de la connexion";
+      
+      if (error.message.includes("Invalid login credentials")) {
+        errorMessage = "Identifiants invalides. Veuillez vérifier votre numéro et mot de passe.";
+      } else if (error.message.includes("Phone not confirmed")) {
+        errorMessage = "Téléphone non confirmé. Veuillez vérifier votre téléphone.";
+      }
+      
       toast({
         variant: "destructive",
         title: "Erreur de connexion",
-        description: error.message || "Une erreur est survenue lors de la connexion",
+        description: errorMessage,
       });
     } finally {
       setIsLoading(false);
@@ -81,10 +101,20 @@ export const useLoginService = (setIsLoading: (isLoading: boolean) => void) => {
       
       navigate('/dashboard');
     } catch (error: any) {
+      console.error("Username login error:", error);
+      
+      let errorMessage = "Une erreur est survenue lors de la connexion";
+      
+      if (error.message.includes("Invalid login credentials")) {
+        errorMessage = "Identifiants invalides. Veuillez vérifier votre nom d'utilisateur et mot de passe.";
+      } else if (error.message.includes("not found")) {
+        errorMessage = "Nom d'utilisateur non trouvé. Veuillez vérifier votre saisie.";
+      }
+      
       toast({
         variant: "destructive",
         title: "Erreur de connexion",
-        description: error.message || "Une erreur est survenue lors de la connexion",
+        description: errorMessage,
       });
     } finally {
       setIsLoading(false);
@@ -110,6 +140,7 @@ export const useLoginService = (setIsLoading: (isLoading: boolean) => void) => {
       });
       
     } catch (error: any) {
+      console.error("Magic link error:", error);
       toast({
         variant: "destructive",
         title: "Erreur d'envoi",
@@ -137,6 +168,7 @@ export const useLoginService = (setIsLoading: (isLoading: boolean) => void) => {
       if (error) throw error;
       
     } catch (error: any) {
+      console.error("Google login error:", error);
       toast({
         variant: "destructive",
         title: "Erreur de connexion",
