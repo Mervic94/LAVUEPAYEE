@@ -50,26 +50,27 @@ export const useLoginService = (setIsLoading: (isLoading: boolean) => void) => {
       setIsLoading(true);
       
       // Use the newly added columns to the profiles table
-      const { data: profile, error: profileError } = await supabase
+      // Check if profile data exists and get related email/phone
+      const { data, error: profileError } = await supabase
         .from('profiles')
-        .select('id, username, email, phone')
+        .select('username, email, phone')
         .eq('username', username)
         .maybeSingle();
       
-      if (profileError || !profile) {
+      if (profileError || !data) {
         throw new Error("Nom d'utilisateur non trouvé");
       }
       
-      if (profile.email) {
+      if (data.email) {
         const { error } = await supabase.auth.signInWithPassword({
-          email: profile.email,
+          email: data.email,
           password
         });
         
         if (error) throw error;
-      } else if (profile.phone) {
+      } else if (data.phone) {
         const { error } = await supabase.auth.signInWithPassword({
-          phone: profile.phone,
+          phone: data.phone,
           password
         });
         

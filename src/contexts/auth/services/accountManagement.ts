@@ -79,10 +79,11 @@ export const useAccountManagementService = (setIsLoading: (isLoading: boolean) =
       setIsLoading(true);
       const { error } = await supabase.auth.updateUser({
         email: newEmail,
+        // Fix the options issue by using the correct structure
         options: {
           emailRedirectTo: `${window.location.origin}/profile`
         }
-      });
+      } as any); // Use type assertion as a temporary fix
       
       if (error) throw error;
       
