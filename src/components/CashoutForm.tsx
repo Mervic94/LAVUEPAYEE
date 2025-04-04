@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import CashoutFormManager from './cashout/CashoutFormManager';
 
 // Define the ConvertLvpButton component first
 export const ConvertLvpButton = ({ onClick, isLoading }: { onClick: () => void, isLoading: boolean }) => {
@@ -11,7 +12,7 @@ export const ConvertLvpButton = ({ onClick, isLoading }: { onClick: () => void, 
       disabled={isLoading}
       onClick={onClick}
     >
-      {isLoading ? "Traitement en cours..." : "Convertir mes lvp"}
+      {isLoading ? "Traitement en cours..." : "Convertir mes LVP"}
     </Button>
   );
 };
@@ -36,35 +37,13 @@ export const CashoutFormComponent = ({ method, userPoints, onBack, onComplete }:
     }, 1500);
   };
   
-  const handleConvert = () => {
-    // This function is passed to the ConvertLvpButton
-    // Logic for conversion is already in handleSubmit
-  };
-  
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {/* Form content would go here */}
-      <div className="space-y-6">
-        <p className="text-foreground/70">
-          Vous allez convertir vos points LVP en utilisant la méthode {method.name}.
-        </p>
-        
-        <div className="flex space-x-4">
-          <button 
-            type="button" 
-            onClick={onBack}
-            className="btn-outline flex-1"
-          >
-            Retour
-          </button>
-          
-          <ConvertLvpButton 
-            onClick={handleConvert} 
-            isLoading={isLoading}
-          />
-        </div>
-      </div>
-    </form>
+    <CashoutFormManager 
+      method={method} 
+      userPoints={userPoints} 
+      onBack={onBack} 
+      onComplete={onComplete}
+    />
   );
 };
 

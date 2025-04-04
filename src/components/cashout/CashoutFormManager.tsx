@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Form } from '@/components/ui/form';
 import { Building, CreditCard, Wallet } from 'lucide-react';
@@ -11,11 +11,13 @@ import CreditCardFields from './CreditCardFields';
 import MobileMoneyFields from './MobileMoneyFields';
 import InfoSection from './InfoSection';
 import SubmitButton from './SubmitButton';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface CashoutMethod {
   id: string;
   name: string;
   icon: React.ReactNode;
+  image?: string;
   minPoints: number;
   conversionRate: number;
   processingTime: string;
@@ -35,7 +37,8 @@ const CashoutFormManager: React.FC<CashoutFormManagerProps> = ({
   onBack, 
   onComplete 
 }) => {
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [convertedAmount, setConvertedAmount] = useState(0);
   
   const maxCashValue = Math.floor(userPoints * method.conversionRate);
   const minAmount = Math.ceil(method.minPoints * method.conversionRate);
@@ -43,12 +46,27 @@ const CashoutFormManager: React.FC<CashoutFormManagerProps> = ({
   const form = useForm({
     defaultValues: {
       amount: String(Math.floor(maxCashValue / 2)), // Set default to half of max by default
+      phoneNumber: '',
+      email: '',
+      accountName: '',
+      iban: '',
+      cardNumber: '',
+      expiryDate: '',
+      cvv: ''
     },
   });
   
   const watchAmount = form.watch('amount');
   const pointsNeeded = watchAmount ? Math.ceil(parseInt(watchAmount) / method.conversionRate) : 0;
   const isAmountValid = pointsNeeded <= userPoints && parseInt(watchAmount) > 0;
+  
+  // Update converted amount when amount changes
+  React.useEffect(() => {
+    if (watchAmount) {
+      const amount = parseInt(watchAmount);
+      setConvertedAmount(amount);
+    }
+  }, [watchAmount]);
   
   const onSubmit = (values: any) => {
     setIsSubmitting(true);
@@ -66,15 +84,17 @@ const CashoutFormManager: React.FC<CashoutFormManagerProps> = ({
       
       <div className="glass-card rounded-lg p-5 mb-6">
         <div className="flex items-center gap-3 mb-4 pb-4 border-b">
-          <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center">
-            {method.id === 'bank-transfer' && <Building className="h-6 w-6 text-primary" />}
-            {method.id === 'paypal' && <Wallet className="h-6 w-6 text-primary" />}
-            {method.id === 'credit-card' && <CreditCard className="h-6 w-6 text-primary" />}
+          <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center overflow-hidden">
+            {method.image ? (
+              <img src={method.image} alt={method.name} className="w-9 h-9 object-contain" />
+            ) : (
+              method.id === 'bank-transfer' && <Building className="h-6 w-6 text-primary" />
+            )}
           </div>
           <div>
             <h3 className="font-medium text-lg">{method.name}</h3>
             <p className="text-sm text-foreground/60">
-              Taux de conversion: 1 LVP = {method.conversionRate}€
+              Taux de conversion: 1 LVP = {method.conversionRate} Vc
             </p>
           </div>
         </div>
@@ -88,6 +108,13 @@ const CashoutFormManager: React.FC<CashoutFormManagerProps> = ({
               isAmountValid={isAmountValid}
               minAmount={minAmount}
             />
+            
+            <Alert className="bg-primary/5 border-primary/20">
+              <AlertDescription className="flex justify-between">
+                <span>Montant en Vc que vous recevrez:</span>
+                <span className="font-bold">{convertedAmount} Vc</span>
+              </AlertDescription>
+            </Alert>
             
             {method.id === 'bank-transfer' && <BankTransferFields form={form} />}
             {method.id === 'paypal' && <PayPalFields form={form} />}

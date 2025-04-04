@@ -8,6 +8,7 @@ interface CashoutMethod {
   id: string;
   name: string;
   icon: React.ReactNode;
+  image?: string;
   minPoints: number;
   conversionRate: number;
   processingTime: string;
@@ -20,7 +21,7 @@ interface CashoutOptionsProps {
 }
 
 const CashoutOptions: React.FC<CashoutOptionsProps> = ({ userPoints, onSelectMethod }) => {
-  // Méthodes de paiement disponibles avec leurs seuils minimums
+  // Méthodes de paiement disponibles avec leurs seuils minimums et images
   const paymentMethods: CashoutMethod[] = [
     {
       id: 'bank-transfer',
@@ -35,6 +36,7 @@ const CashoutOptions: React.FC<CashoutOptionsProps> = ({ userPoints, onSelectMet
       id: 'paypal',
       name: 'PayPal',
       icon: <Wallet className="h-6 w-6 text-primary" />,
+      image: "/lovable-uploads/c892c565-9d8f-4485-80cd-6df03f570259.png",
       minPoints: 500,
       conversionRate: 0.00143, // 700 points = 1€
       processingTime: '24 heures',
@@ -51,8 +53,9 @@ const CashoutOptions: React.FC<CashoutOptionsProps> = ({ userPoints, onSelectMet
     },
     {
       id: 'mtn-benin',
-      name: 'MTN Bénin',
+      name: 'MTN Mobile Money',
       icon: <Smartphone className="h-6 w-6 text-primary" />,
+      image: "/lovable-uploads/b0aa622d-eb86-4629-8f6f-00b17d2ed0ea.png",
       minPoints: 300,
       conversionRate: 0.00143, // 700 points = 1€
       processingTime: 'Instantané',
@@ -60,8 +63,9 @@ const CashoutOptions: React.FC<CashoutOptionsProps> = ({ userPoints, onSelectMet
     },
     {
       id: 'moov-africa',
-      name: 'Moov Africa Bénin',
+      name: 'Moov Money',
       icon: <Smartphone className="h-6 w-6 text-primary" />,
+      image: "/lovable-uploads/6d77f100-ea2a-4ec0-8f7e-01fae52bb120.png",
       minPoints: 300,
       conversionRate: 0.00143, // 700 points = 1€
       processingTime: 'Instantané',
@@ -71,6 +75,7 @@ const CashoutOptions: React.FC<CashoutOptionsProps> = ({ userPoints, onSelectMet
       id: 'fedapay',
       name: 'FedaPay',
       icon: <Wallet className="h-6 w-6 text-primary" />,
+      image: "/lovable-uploads/d2b54c07-fa0e-465c-b21d-6321d9865345.png",
       minPoints: 400,
       conversionRate: 0.00143, // 700 points = 1€
       processingTime: '24 heures',
@@ -78,8 +83,9 @@ const CashoutOptions: React.FC<CashoutOptionsProps> = ({ userPoints, onSelectMet
     },
     {
       id: 'kikiapay',
-      name: 'KikiaPay',
+      name: 'KKIAPAY',
       icon: <Wallet className="h-6 w-6 text-primary" />,
+      image: "/lovable-uploads/eb1af938-5661-4d56-b98f-aa658853984a.png",
       minPoints: 400,
       conversionRate: 0.00143, // 700 points = 1€
       processingTime: '24 heures',
@@ -92,7 +98,7 @@ const CashoutOptions: React.FC<CashoutOptionsProps> = ({ userPoints, onSelectMet
       <Alert variant="default" className="bg-primary/5 border-primary/20">
         <AlertCircle className="h-4 w-4 text-primary" />
         <AlertDescription>
-          Vous avez actuellement <span className="font-bold">{userPoints} points LVP</span> disponibles pour un retrait.
+          Vous avez actuellement <span className="font-bold">{userPoints} LVP</span> disponibles pour un retrait.
         </AlertDescription>
       </Alert>
 
@@ -113,8 +119,12 @@ const CashoutOptions: React.FC<CashoutOptionsProps> = ({ userPoints, onSelectMet
                 onClick={() => isEligible && onSelectMethod(method)}
               >
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center">
-                    {method.icon}
+                  <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center overflow-hidden">
+                    {method.image ? (
+                      <img src={method.image} alt={method.name} className="w-9 h-9 object-contain" />
+                    ) : (
+                      method.icon
+                    )}
                   </div>
                   <div>
                     <h3 className="font-medium text-lg">{method.name}</h3>
@@ -127,7 +137,7 @@ const CashoutOptions: React.FC<CashoutOptionsProps> = ({ userPoints, onSelectMet
                 <div className="space-y-2 mb-4">
                   <div className="flex justify-between text-sm">
                     <span className="text-foreground/60">Valeur estimée:</span>
-                    <span className="font-medium">{cashValue}€</span>
+                    <span className="font-medium">{cashValue} Vc</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-foreground/60">Frais:</span>
@@ -147,7 +157,7 @@ const CashoutOptions: React.FC<CashoutOptionsProps> = ({ userPoints, onSelectMet
                   }`}
                   disabled={!isEligible}
                 >
-                  {isEligible ? 'Choisir ce moyen' : 'Points insuffisants'}
+                  {isEligible ? 'Choisir ce moyen' : 'LVP insuffisants'}
                 </button>
               </div>
             );

@@ -27,7 +27,7 @@ const AmountInput: React.FC<AmountInputProps> = ({
         name="amount"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Montant à retirer (€)</FormLabel>
+            <FormLabel>Montant à retirer (Vc)</FormLabel>
             <FormControl>
               <div className="relative">
                 <Input
@@ -37,7 +37,7 @@ const AmountInput: React.FC<AmountInputProps> = ({
                   max={maxCashValue}
                   className="pl-8"
                 />
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/60">€</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground/60">Vc</span>
               </div>
             </FormControl>
             <div className="flex justify-between text-sm">

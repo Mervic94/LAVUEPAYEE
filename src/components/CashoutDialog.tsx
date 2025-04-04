@@ -16,6 +16,7 @@ interface CashoutMethod {
   id: string;
   name: string;
   icon: React.ReactNode;
+  image?: string;
   minPoints: number;
   conversionRate: number;
   processingTime: string;
@@ -60,9 +61,15 @@ const CashoutDialog: React.FC<CashoutDialogProps> = ({ open, onOpenChange, userP
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <BadgeDollarSign className="h-5 w-5 text-primary" />
+            <div className="h-5 w-5 rounded-full flex items-center justify-center overflow-hidden">
+              <img 
+                src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
+                alt="LVP" 
+                className="w-full h-full object-contain"
+              />
+            </div>
             {!selectedMethod 
-              ? "Retirer mes points" 
+              ? "Retirer mes LVP" 
               : isComplete 
                 ? "Retrait confirmé" 
                 : `Retrait par ${selectedMethod.name}`

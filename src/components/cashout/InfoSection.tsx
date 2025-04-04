@@ -17,8 +17,8 @@ const InfoSection: React.FC<InfoSectionProps> = ({ method }) => {
       <ul className="list-disc pl-5 space-y-1 mt-2">
         <li>Délai de traitement estimé: {method.processingTime}</li>
         <li>Frais applicables: {method.fees}</li>
-        <li>Taux de conversion: 1 LVP = 0.00014 Vc</li>
-        <li>Seuil minimum de retrait: {method.minPoints} LVP ({Math.ceil(method.minPoints * method.conversionRate)}€)</li>
+        <li>Taux de conversion: 1 LVP = {method.conversionRate} Vc</li>
+        <li>Seuil minimum de retrait: {method.minPoints} LVP ({Math.ceil(method.minPoints * method.conversionRate)} Vc)</li>
       </ul>
     </div>
   );
