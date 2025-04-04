@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { CreditCard, Check } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,6 +10,9 @@ import TransactionsHistory from '@/components/profile/TransactionsHistory';
 import ProfileSettings from '@/components/profile/ProfileSettings';
 import AdvertiserRegistration from '@/components/profile/AdvertiserRegistration';
 import AdvertiserDashboard from '@/components/profile/AdvertiserDashboard';
+import AdvertiserSettings from '@/components/advertiser/AdvertiserSettings';
+import AdCreativeLibrary from '@/components/advertiser/AdCreativeLibrary';
+import CampaignsList from '@/components/advertiser/CampaignsList';
 
 const Profile = () => {
   const { toast } = useToast();
