@@ -17,6 +17,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
+// Updated schema to fix the type error
 const campaignFormSchema = z.object({
   name: z.string().min(3, "Le nom doit contenir au moins 3 caractères"),
   objective: z.enum(["awareness", "consideration", "conversion"]),
@@ -37,8 +38,9 @@ const campaignFormSchema = z.object({
   }),
   placement: z.array(z.string()),
   bidType: z.enum(["cpc", "cpm", "cpa"]),
-  termsAccepted: z.literal(true, {
-    errorMap: () => ({ message: "Vous devez accepter les conditions" }),
+  // Changed from z.literal(true) to z.boolean() with a refinement
+  termsAccepted: z.boolean().refine(val => val === true, {
+    message: "Vous devez accepter les conditions",
   }),
 });
 
@@ -76,7 +78,7 @@ const CampaignCreationForm: React.FC<CampaignCreationFormProps> = ({ onCancel })
       },
       placement: ["feed"],
       bidType: "cpc",
-      termsAccepted: false
+      termsAccepted: false  // This is fine now as we're using z.boolean().refine() instead of z.literal(true)
     }
   });
 
