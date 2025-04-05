@@ -3,8 +3,10 @@ import React, { useRef } from 'react';
 import { ArrowRight, Users, ShoppingBag, PlayCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import Navbar from '@/components/navbar';
 import Hero from '@/components/Hero';
+import TestimonialCarousel from '@/components/testimonials/TestimonialCarousel';
 
 const Index = () => {
   return (
@@ -15,13 +17,36 @@ const Index = () => {
       <Hero />
       
       {/* How It Works Section */}
-      <section id="how-it-works" className="py-20 bg-white">
+      <section id="how-it-works" className="py-20 bg-white dark:bg-gray-900">
         <div className="container px-6 mx-auto max-w-7xl">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Comment ça marche</h2>
             <p className="text-foreground/70 text-lg max-w-3xl mx-auto">
               Suivez ces étapes simples pour commencer à gagner des points et recevoir des récompenses
             </p>
+            
+            {/* Video Dialog */}
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="default" size="lg" className="mt-6 rounded-full">
+                  <PlayCircle className="mr-2 h-5 w-5" />
+                  Voir la vidéo de présentation
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[800px] max-h-[80vh] p-0 overflow-hidden">
+                <div className="aspect-video w-full">
+                  <iframe 
+                    width="100%" 
+                    height="100%" 
+                    src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                    title="Présentation de LAVUEPAYEE" 
+                    frameBorder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowFullScreen
+                  ></iframe>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
@@ -75,6 +100,9 @@ const Index = () => {
           </div>
         </div>
       </section>
+      
+      {/* Testimonial Carousel Section */}
+      <TestimonialCarousel />
       
       {/* Affiliation Section */}
       <section className="py-20 bg-secondary/50">
@@ -204,7 +232,7 @@ const Index = () => {
       </section>
       
       {/* Footer */}
-      <footer className="bg-white py-12 border-t">
+      <footer className="bg-white dark:bg-gray-900 py-12 border-t">
         <div className="container px-6 mx-auto max-w-7xl">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
             <div>
@@ -237,7 +265,7 @@ const Index = () => {
               <h4 className="font-semibold mb-4">Aide</h4>
               <ul className="space-y-2">
                 <li><Link to="/faq" className="text-foreground/70 hover:text-primary transition-colors">FAQ</Link></li>
-                <li><Link to="/contact" className="text-foreground/70 hover:text-primary transition-colors">Contact</Link></li>
+                <li><Link to="/help" className="text-foreground/70 hover:text-primary transition-colors">Centre d'aide</Link></li>
                 <li><Link to="/terms" className="text-foreground/70 hover:text-primary transition-colors">Conditions d'utilisation</Link></li>
                 <li><Link to="/privacy" className="text-foreground/70 hover:text-primary transition-colors">Politique de confidentialité</Link></li>
               </ul>
@@ -252,11 +280,37 @@ const Index = () => {
                 <input 
                   type="email" 
                   placeholder="Votre email" 
-                  className="rounded-lg border border-border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                 />
                 <Button variant="default" size="sm">
                   S'inscrire
                 </Button>
+              </div>
+              <div className="flex gap-3 mt-4">
+                <a href="https://facebook.com/lavuepayee" target="_blank" rel="noopener noreferrer" className="text-foreground/70 hover:text-primary">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                  </svg>
+                </a>
+                <a href="https://twitter.com/lavuepayee" target="_blank" rel="noopener noreferrer" className="text-foreground/70 hover:text-primary">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path>
+                  </svg>
+                </a>
+                <a href="https://instagram.com/lavuepayee" target="_blank" rel="noopener noreferrer" className="text-foreground/70 hover:text-primary">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                  </svg>
+                </a>
+                <a href="https://linkedin.com/company/lavuepayee" target="_blank" rel="noopener noreferrer" className="text-foreground/70 hover:text-primary">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                    <rect x="2" y="9" width="4" height="12"></rect>
+                    <circle cx="4" cy="4" r="2"></circle>
+                  </svg>
+                </a>
               </div>
             </div>
           </div>

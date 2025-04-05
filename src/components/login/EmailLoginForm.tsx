@@ -1,12 +1,9 @@
 
-import React, { useState } from 'react';
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Mail, KeyRound, Eye, EyeOff } from "lucide-react";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import React, { useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Mail, Lock, Loader2 } from 'lucide-react';
 import {
   Form,
   FormControl,
@@ -15,37 +12,83 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import HCaptcha from '../auth/HCaptcha';
+import HCaptchaComponent from 'hcaptcha';
 
-const emailSchema = z.object({
-  email: z.string().email({ message: "Adresse email invalide" }),
-  password: z.string().min(1, { message: "Mot de passe requis" }),
+const formSchema = z.object({
+  email: z.string().email('Adresse email invalide'),
+  password: z.string().min(6, 'Le mot de passe doit contenir au moins 6 caractères'),
+  captchaToken: z.string().optional(),
 });
 
-type EmailFormValues = z.infer<typeof emailSchema>;
-
 interface EmailLoginFormProps {
-  onSubmit: (data: EmailFormValues) => Promise<void>;
+  onSubmit: (email: string, password: string) => Promise<void>;
   isLoading: boolean;
 }
 
 const EmailLoginForm: React.FC<EmailLoginFormProps> = ({ onSubmit, isLoading }) => {
-  const [showPassword, setShowPassword] = useState(false);
-  
-  const form = useForm<EmailFormValues>({
-    resolver: zodResolver(emailSchema),
+  const { toast } = useToast();
+  const [captchaVerified, setCaptchaVerified] = useState(false);
+  const captchaRef = useRef<HCaptchaComponent>(null);
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
+      captchaToken: '',
     },
   });
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
+  const handleVerify = (token: string) => {
+    form.setValue('captchaToken', token);
+    setCaptchaVerified(true);
+    toast({
+      title: "CAPTCHA vérifié",
+      description: "Vérification humaine réussie",
+    });
+  };
+
+  const handleExpire = () => {
+    form.setValue('captchaToken', '');
+    setCaptchaVerified(false);
+    toast({
+      variant: "destructive",
+      title: "CAPTCHA expiré",
+      description: "Veuillez vérifier à nouveau que vous n'êtes pas un robot",
+    });
+  };
+
+  const handleError = () => {
+    toast({
+      variant: "destructive",
+      title: "Erreur CAPTCHA",
+      description: "Un problème est survenu lors de la vérification",
+    });
+  };
+
+  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (!captchaVerified) {
+      toast({
+        variant: "destructive",
+        title: "Vérification requise",
+        description: "Veuillez vérifier que vous n'êtes pas un robot",
+      });
+      return;
+    }
+    
+    try {
+      await onSubmit(values.email, values.password);
+    } catch (error) {
+      console.error('Login error:', error);
+    }
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="email"
@@ -54,8 +97,14 @@ const EmailLoginForm: React.FC<EmailLoginFormProps> = ({ onSubmit, isLoading }) 
               <FormLabel>Email</FormLabel>
               <FormControl>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input placeholder="Votre email" className="pl-10" {...field} />
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                  <Input
+                    placeholder="votre@email.com"
+                    type="email"
+                    className="pl-10"
+                    disabled={isLoading}
+                    {...field}
+                  />
                 </div>
               </FormControl>
               <FormMessage />
@@ -71,49 +120,42 @@ const EmailLoginForm: React.FC<EmailLoginFormProps> = ({ onSubmit, isLoading }) 
               <FormLabel>Mot de passe</FormLabel>
               <FormControl>
                 <div className="relative">
-                  <KeyRound className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                   <Input
-                    type={showPassword ? "text" : "password"}
-                    placeholder="Votre mot de passe"
-                    className="pl-10 pr-10"
+                    placeholder="••••••••"
+                    type="password"
+                    className="pl-10"
+                    disabled={isLoading}
                     {...field}
                   />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0"
-                    onClick={togglePasswordVisibility}
-                  >
-                    {showPassword ? 
-                      <EyeOff className="h-4 w-4 text-muted-foreground" /> : 
-                      <Eye className="h-4 w-4 text-muted-foreground" />
-                    }
-                    <span className="sr-only">
-                      {showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
-                    </span>
-                  </Button>
                 </div>
               </FormControl>
               <FormMessage />
-              <div className="text-right mt-1">
-                <Link
-                  to="/reset-password"
-                  className="text-sm font-medium text-primary hover:underline"
-                >
-                  Mot de passe oublié?
-                </Link>
-              </div>
             </FormItem>
           )}
+        />
+
+        <HCaptcha
+          ref={captchaRef}
+          theme={document.documentElement.classList.contains('dark') ? 'dark' : 'light'}
+          onVerify={handleVerify}
+          onExpire={handleExpire}
+          onError={handleError}
         />
 
         <Button
           type="submit"
           className="w-full"
-          disabled={isLoading}
+          disabled={isLoading || !captchaVerified}
         >
-          {isLoading ? "Connexion en cours..." : "Se connecter"}
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Connexion...
+            </>
+          ) : (
+            'Se connecter'
+          )}
         </Button>
       </form>
     </Form>

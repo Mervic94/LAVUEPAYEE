@@ -1,5 +1,6 @@
 
 import React from "react";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface SubmitButtonProps {
@@ -8,8 +9,15 @@ interface SubmitButtonProps {
 
 const SubmitButton: React.FC<SubmitButtonProps> = ({ isSubmitting }) => {
   return (
-    <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-lg mobile-full-width" size="lg" disabled={isSubmitting}>
-      {isSubmitting ? "Inscription en cours..." : "S'inscrire"}
+    <Button type="submit" className="w-full" disabled={isSubmitting}>
+      {isSubmitting ? (
+        <>
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          Inscription en cours...
+        </>
+      ) : (
+        "S'inscrire"
+      )}
     </Button>
   );
 };

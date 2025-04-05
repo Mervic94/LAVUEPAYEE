@@ -39,32 +39,32 @@
 
   .dark {
     --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
+    --foreground: 47 100% 75%;
     --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
+    --card-foreground: 47 100% 75%;
     --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
+    --popover-foreground: 47 100% 75%;
+    --primary: 47 100% 75%;
     --primary-foreground: 240 5.9% 10%;
     --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary-foreground: 47 100% 65%;
     --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
+    --muted-foreground: 47 20% 65%;
     --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
+    --accent-foreground: 47 100% 65%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive-foreground: 47 100% 75%;
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
+    --ring: 47 80% 70%;
     --sidebar-background: 240 10% 3.9%;
-    --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 0 0% 98%;
+    --sidebar-foreground: 47 100% 75%;
+    --sidebar-primary: 47 100% 75%;
     --sidebar-primary-foreground: 240 5.9% 10%;
     --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-accent-foreground: 47 100% 75%;
     --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 240 4.9% 83.9%;
+    --sidebar-ring: 47 80% 70%;
   }
 }
 
@@ -116,6 +116,45 @@
   transition-timing-function: ease;
 }
 
+/* Hover animation for buttons */
+.btn, button, [type="button"], [type="submit"], [type="reset"] {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.btn:after, button:after, [type="button"]:after, [type="submit"]:after, [type="reset"]:after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: currentColor;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  pointer-events: none;
+  border-radius: inherit;
+  z-index: -1;
+}
+
+.btn:hover:after, button:hover:after, [type="button"]:hover:after, [type="submit"]:hover:after, [type="reset"]:hover:after {
+  opacity: 0.05;
+  transform: scale(1);
+}
+
+/* Theme-specific button hover effects */
+:root:not(.dark) button:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.dark button:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 8px rgba(255, 217, 102, 0.3);
+  transform: translateY(-1px);
+}
+
 /* Animation pour le thème système - utilise les styles du thème clair ou sombre en fonction des préférences système */
 @media (prefers-color-scheme: light) {
   :root:not(.dark):not(.light) .glass-card {
@@ -141,4 +180,14 @@
     transition: background-color 0.3s ease, border-color 0.3s ease;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
   }
+}
+
+/* Make sure HCaptcha component works well with the theme */
+.h-captcha iframe {
+  display: inline-block;
+  margin: 0 auto;
+}
+
+.dark .h-captcha {
+  filter: invert(0.85) hue-rotate(180deg);
 }
