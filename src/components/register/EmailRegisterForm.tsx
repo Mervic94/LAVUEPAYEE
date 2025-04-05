@@ -10,7 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import HCaptcha from '../auth/HCaptcha';
-import HCaptchaComponent from 'hcaptcha';
+import HCaptchaComponent from '@hcaptcha/react-hcaptcha';
 
 interface EmailRegisterFormProps {
   onSubmit: (values: EmailRegisterFormValues) => Promise<void>;
@@ -31,7 +31,7 @@ const formSchema = z.object({
   birthDay: z.string().min(1, "Jour requis"),
   birthMonth: z.string().min(1, "Mois requis"),
   birthYear: z.string().min(4, "Année requise"),
-  accountType: z.enum(["personal", "business"]),
+  accountType: z.enum(["consumer", "advertiser"]),
   sponsorUsername: z.string().optional(),
   terms: z.literal(true, {
     errorMap: () => ({ message: "Vous devez accepter les termes et conditions" }),
@@ -66,7 +66,7 @@ const EmailRegisterForm: React.FC<EmailRegisterFormProps> = ({
       birthDay: "",
       birthMonth: "",
       birthYear: "",
-      accountType: "personal",
+      accountType: "consumer",
       sponsorUsername: sponsorUsername || "",
       terms: false,
       captchaToken: "",

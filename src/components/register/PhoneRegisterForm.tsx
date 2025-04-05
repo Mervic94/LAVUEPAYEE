@@ -8,10 +8,10 @@ import { SponsorInfo } from "@/utils/sponsorUtils";
 import CommonFormFields from "./CommonFormFields";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { PhoneInput } from "@/components/ui/phone-input";
+import { PhoneNumberInput } from "@/components/ui/phone-input";
 import { useToast } from "@/hooks/use-toast";
 import HCaptcha from '../auth/HCaptcha';
-import HCaptchaComponent from 'hcaptcha';
+import HCaptchaComponent from '@hcaptcha/react-hcaptcha';
 
 interface PhoneRegisterFormProps {
   onSubmit: (values: PhoneRegisterFormValues) => Promise<void>;
@@ -32,7 +32,7 @@ const formSchema = z.object({
   birthDay: z.string().min(1, "Jour requis"),
   birthMonth: z.string().min(1, "Mois requis"),
   birthYear: z.string().min(4, "Année requise"),
-  accountType: z.enum(["personal", "business"]),
+  accountType: z.enum(["consumer", "advertiser"]),
   sponsorUsername: z.string().optional(),
   terms: z.literal(true, {
     errorMap: () => ({ message: "Vous devez accepter les termes et conditions" }),
@@ -67,7 +67,7 @@ const PhoneRegisterForm: React.FC<PhoneRegisterFormProps> = ({
       birthDay: "",
       birthMonth: "",
       birthYear: "",
-      accountType: "personal",
+      accountType: "consumer",
       sponsorUsername: sponsorUsername || "",
       terms: false,
       captchaToken: "",
@@ -121,7 +121,7 @@ const PhoneRegisterForm: React.FC<PhoneRegisterFormProps> = ({
             <FormItem>
               <FormLabel>Téléphone</FormLabel>
               <FormControl>
-                <PhoneInput
+                <PhoneNumberInput
                   defaultCountry="FR"
                   placeholder="Votre numéro de téléphone"
                   value={field.value}

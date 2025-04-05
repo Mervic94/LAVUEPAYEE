@@ -21,6 +21,7 @@ const commonSchema = {
   termsAccepted: z.boolean().refine(val => val === true, {
     message: "Vous devez accepter les conditions d'utilisation",
   }),
+  captchaToken: z.string().min(1, { message: "Veuillez compléter le captcha" }),
 };
 
 export const emailRegisterSchema = z.object({

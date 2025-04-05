@@ -1,6 +1,6 @@
 
 import React, { forwardRef } from 'react';
-import HCaptchaComponent from 'hcaptcha';
+import HCaptchaComponent from '@hcaptcha/react-hcaptcha';
 
 interface HCaptchaProps {
   sitekey?: string;

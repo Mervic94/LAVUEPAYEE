@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import HCaptcha from '../auth/HCaptcha';
-import HCaptchaComponent from 'hcaptcha';
+import HCaptchaComponent from '@hcaptcha/react-hcaptcha';
 
 const formSchema = z.object({
   email: z.string().email('Adresse email invalide'),
@@ -25,7 +25,7 @@ const formSchema = z.object({
 });
 
 interface EmailLoginFormProps {
-  onSubmit: (email: string, password: string) => Promise<void>;
+  onSubmit: (data: { email: string, password: string }) => Promise<void>;
   isLoading: boolean;
 }
 
@@ -80,7 +80,7 @@ const EmailLoginForm: React.FC<EmailLoginFormProps> = ({ onSubmit, isLoading }) 
     }
     
     try {
-      await onSubmit(values.email, values.password);
+      await onSubmit({ email: values.email, password: values.password });
     } catch (error) {
       console.error('Login error:', error);
     }
