@@ -17,12 +17,12 @@ const SocialLinks: React.FC<SocialLinksProps> = ({ size = 'md' }) => {
       <a href="https://instagram.com/lavuepayee" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-pink-600 transition-colors">
         <Instagram size={iconSize} />
       </a>
-      <a href="https://x.com/lavuepayee" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-blue-400 transition-colors">
+      <a href="https://twitter.com/lavuepayee" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-blue-400 transition-colors">
         <Twitter size={iconSize} />
       </a>
       {size === 'md' && (
         <>
-          <a href="https://telegram/lavuepayee" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-blue-500 transition-colors">
+          <a href="https://t.me/lavuepayee" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-blue-500 transition-colors">
             <MessageCircle size={iconSize} />
           </a>
           <a href="tel:+2290190069561" className="text-gray-500 hover:text-green-600 transition-colors">

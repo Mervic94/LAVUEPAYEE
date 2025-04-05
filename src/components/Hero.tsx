@@ -64,10 +64,11 @@ const Hero = () => {
                     <iframe
                       width="100%" 
                       height="550" 
-                      src="https://www.videoindexer.ai/embed/insights/b0bd1b5c-8366-48fe-9b6f-4a9012c0ae89/2tamhshut2/?accessToken=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJWZXJzaW9uIjoiMi4wLjAuMCIsIktleVZlcnNpb24iOiI3NTExMjE1MGMzNDg0ZjI1ODdhNGFiMWE2OTMyMjE1OCIsIkFjY291bnRJZCI6ImIwYmQxYjVjLTgzNjYtNDhmZS05YjZmLTRhOTAxMmMwYWU4OSIsIkFjY291bnRUeXBlIjoiVHJpYWwiLCJWaWRlb0lkIjoiMnRhbWhzaHV0MiIsIlBlcm1pc3Npb24iOiJSZWFkZXIiLCJFeHRlcm5hbFVzZXJJZCI6IjExMTIwMDg1MjM5MTg2Nzg5OTA5MyIsIlVzZXJUeXBlIjoiR29vZ2xlIiwiSXNzdWVyTG9jYXRpb24iOiJUcmlhbCIsIm5iZiI6MTc0MzUzMTIzNiwiZXhwIjoxNzQzNTM1MTM2LCJpc3MiOiJodHRwczovL2FwaS52aWRlb2luZGV4ZXIuYWkvIiwiYXVkIjoiaHR0cHM6Ly9hcGkudmlkZW9pbmRleGVyLmFpLyJ9.ZBW68WEb64Bw9unasnDQpNn5G2LFVtG5oi-NMPc-hsfqpoaDyp1oNZt7g9PHprqmfSlNEwJ_3cq3G7s7dqHuMQlbseIy5YUyIoYWFtg9uZrf6KMTR80DrhOq4Kh75WnWeQ4A3-Gf8DhTQNRRbh7Ez4aQK77-1THCZBwtPgxWfj6unEeK1vgBfwAYVJTMQgoDk2f9X-BT8ncgJ2nbkm3irkrdq86zMDl1QcW55DtQIANucImsHdm-HF8-7fMlsnicF3cC--xCnoMkHlUyKEWsl1mryYxE4yWh7bG9hF7L_C6pmXoxV1by0V--tzsxfe1qdl7kZlUlNlhZqdHSfhWJRg&locale=fr&location=trial" 
+                      src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1" 
+                      title="Présentation LAVUEPAYEE" 
                       frameBorder="0" 
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                       allowFullScreen
-                      title="Comment ça marche LAVUEPAYEE"
                     ></iframe>
                   </div>
                 </div>
