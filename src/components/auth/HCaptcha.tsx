@@ -6,7 +6,7 @@ interface HCaptchaProps {
   sitekey?: string;
   onVerify: (token: string) => void;
   onExpire?: () => void;
-  onError?: (error: Error) => void;
+  onError?: (event: string) => void; // Changed from Error to string
   theme?: 'light' | 'dark';
   size?: 'normal' | 'compact' | 'invisible';
 }

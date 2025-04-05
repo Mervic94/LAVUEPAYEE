@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Search, MessageCircle, FileQuestion, BookOpen, HelpCircle, LifeBuoy, Settings, Tool } from 'lucide-react';
+import { ArrowLeft, Search, MessageCircle, FileQuestion, BookOpen, HelpCircle, LifeBuoy, Settings, Wrench } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -45,7 +45,7 @@ const Help = () => {
     { 
       id: 'tasks', 
       title: 'Tâches et missions',
-      icon: Tool,
+      icon: Wrench,
       color: 'bg-amber-100 text-amber-700',
       topics: [
         'Comment fonctionnent les tâches',
