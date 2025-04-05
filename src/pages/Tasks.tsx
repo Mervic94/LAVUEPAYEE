@@ -5,10 +5,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Check, Calendar, Timer, ArrowRight, Gift, Clock, CalendarDays, CalendarClock } from 'lucide-react';
+import { Check, Calendar, Timer, ArrowRight, Gift, Clock, CalendarDays, CalendarClock, BarChart3 } from 'lucide-react';
 import PointsIndicator from '@/components/PointsIndicator';
 import OnlineTraining from '@/components/OnlineTraining';
 import TaskPackages from '@/components/TaskPackages';
+import AutoTaskAssigner from '@/components/dashboards/consumer/AutoTaskAssigner';
 
 const Tasks = () => {
   const [activePackage, setActivePackage] = useState<string | null>('premium');
@@ -153,8 +154,12 @@ const Tasks = () => {
               <Button variant="outline">Renouveler</Button>
             </div>
             
-            <Tabs defaultValue="daily" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 mb-8">
+            <Tabs defaultValue="auto" className="w-full">
+              <TabsList className="grid w-full grid-cols-4 mb-8">
+                <TabsTrigger value="auto" className="flex items-center gap-2">
+                  <BarChart3 className="h-4 w-4" />
+                  Auto-Tâches
+                </TabsTrigger>
                 <TabsTrigger value="daily" className="flex items-center gap-2">
                   <Timer className="h-4 w-4" />
                   Quotidiennes
@@ -168,6 +173,10 @@ const Tasks = () => {
                   Mensuelles
                 </TabsTrigger>
               </TabsList>
+              
+              <TabsContent value="auto">
+                <AutoTaskAssigner userPackage={activePackage} />
+              </TabsContent>
               
               <TabsContent value="daily">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { BadgeDollarSign, BarChart2, PlusCircle, FileText, Settings, TrendingUp, Users, Clock } from 'lucide-react';
+import { BadgeDollarSign, BarChart2, PlusCircle, FileText, Settings, TrendingUp, Users, Clock, Share2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Alert } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,6 +9,7 @@ import CampaignCreationForm from '@/components/advertiser/CampaignCreationForm';
 import CampaignsList from '@/components/advertiser/CampaignsList';
 import StatisticsPanel from '@/components/advertiser/StatisticsPanel';
 import BillingSection from '@/components/advertiser/BillingSection';
+import SocialMediaAdsIntegration from '@/components/advertiser/SocialMediaAdsIntegration';
 
 interface AdvertiserDashboardProps {
   isVerified: boolean;
@@ -61,9 +62,10 @@ const AdvertiserDashboard: React.FC<AdvertiserDashboardProps> = ({ isVerified })
       )}
       
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid grid-cols-4 mb-6">
+        <TabsList className="grid grid-cols-5 mb-6">
           <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
           <TabsTrigger value="campaigns">Campagnes</TabsTrigger>
+          <TabsTrigger value="social">Réseaux Sociaux</TabsTrigger>
           <TabsTrigger value="stats">Statistiques</TabsTrigger>
           <TabsTrigger value="billing">Facturation</TabsTrigger>
         </TabsList>
@@ -156,11 +158,11 @@ const AdvertiserDashboard: React.FC<AdvertiserDashboardProps> = ({ isVerified })
                 </a>
                 <a href="#" className="block p-3 rounded-lg hover:bg-secondary/10 transition-all flex items-start gap-3">
                   <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <BadgeDollarSign className="h-4 w-4 text-primary" />
+                    <Share2 className="h-4 w-4 text-primary" />
                   </div>
                   <div>
-                    <p className="font-medium text-sm">Maximisez votre budget</p>
-                    <p className="text-xs text-foreground/60">Comment obtenir le meilleur ROI pour vos campagnes</p>
+                    <p className="font-medium text-sm">Intégration réseaux sociaux</p>
+                    <p className="text-xs text-foreground/60">Comment étendre vos campagnes sur les réseaux sociaux</p>
                   </div>
                 </a>
               </div>
@@ -189,6 +191,10 @@ const AdvertiserDashboard: React.FC<AdvertiserDashboardProps> = ({ isVerified })
         
         <TabsContent value="campaigns">
           <CampaignsList />
+        </TabsContent>
+        
+        <TabsContent value="social">
+          <SocialMediaAdsIntegration />
         </TabsContent>
         
         <TabsContent value="stats">
