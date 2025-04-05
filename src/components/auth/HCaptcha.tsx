@@ -6,7 +6,7 @@ interface HCaptchaProps {
   sitekey?: string;
   onVerify: (token: string) => void;
   onExpire?: () => void;
-  onError?: (event: string) => void; // Changed from Error to string
+  onError?: (event: string) => void;
   theme?: 'light' | 'dark';
   size?: 'normal' | 'compact' | 'invisible';
 }
@@ -23,7 +23,7 @@ const HCaptcha = forwardRef<HCaptchaComponent, HCaptchaProps>((props, ref) => {
   } = props;
 
   return (
-    <div className="hcaptcha-container my-4">
+    <div className="hcaptcha-container my-4 flex justify-center items-center w-full">
       <HCaptchaComponent
         sitekey={sitekey}
         onVerify={onVerify}

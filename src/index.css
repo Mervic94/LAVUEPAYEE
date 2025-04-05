@@ -75,6 +75,56 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    position: relative;
+    overflow-x: hidden;
+  }
+  
+  /* Background animations for light and dark themes */
+  body:before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    opacity: 0.1;
+    pointer-events: none;
+  }
+  
+  /* Light theme background animation */
+  body:not(.dark):before {
+    background: url('data:image/svg+xml;charset=utf8,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"%3E%3Cg fill="none" stroke="%23304352" stroke-width="1"%3E%3Ccircle r="100" cx="400" cy="400"%3E%3CanimateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 400 400" to="360 400 400" dur="30s" repeatCount="indefinite"/%3E%3C/circle%3E%3Ccircle r="150" cx="400" cy="400"%3E%3CanimateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 400 400" to="-360 400 400" dur="40s" repeatCount="indefinite"/%3E%3C/circle%3E%3Ccircle r="200" cx="400" cy="400"%3E%3CanimateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 400 400" to="360 400 400" dur="50s" repeatCount="indefinite"/%3E%3C/circle%3E%3Ccircle r="250" cx="400" cy="400"%3E%3CanimateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 400 400" to="-360 400 400" dur="60s" repeatCount="indefinite"/%3E%3C/circle%3E%3Ccircle r="300" cx="400" cy="400"%3E%3CanimateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 400 400" to="360 400 400" dur="70s" repeatCount="indefinite"/%3E%3C/circle%3E%3C/g%3E%3C/svg%3E') 
+      center center no-repeat;
+    background-size: cover;
+    animation: pulse 10s ease-in-out infinite alternate;
+  }
+  
+  /* Dark theme background animation */
+  body.dark:before {
+    background: url('data:image/svg+xml;charset=utf8,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"%3E%3Cg fill="none" stroke="%23ffd966" stroke-width="1"%3E%3Ccircle r="100" cx="400" cy="400"%3E%3CanimateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 400 400" to="360 400 400" dur="30s" repeatCount="indefinite"/%3E%3C/circle%3E%3Ccircle r="150" cx="400" cy="400"%3E%3CanimateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 400 400" to="-360 400 400" dur="40s" repeatCount="indefinite"/%3E%3C/circle%3E%3Ccircle r="200" cx="400" cy="400"%3E%3CanimateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 400 400" to="360 400 400" dur="50s" repeatCount="indefinite"/%3E%3C/circle%3E%3Ccircle r="250" cx="400" cy="400"%3E%3CanimateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 400 400" to="-360 400 400" dur="60s" repeatCount="indefinite"/%3E%3C/circle%3E%3Ccircle r="300" cx="400" cy="400"%3E%3CanimateTransform attributeName="transform" attributeType="XML" type="rotate" from="0 400 400" to="360 400 400" dur="70s" repeatCount="indefinite"/%3E%3C/circle%3E%3C/g%3E%3C/svg%3E') 
+      center center no-repeat;
+    background-size: cover;
+    animation: pulse-gold 10s ease-in-out infinite alternate;
+    opacity: 0.2;
+  }
+  
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    100% {
+      transform: scale(1.05);
+    }
+  }
+  
+  @keyframes pulse-gold {
+    0% {
+      transform: scale(1);
+    }
+    100% {
+      transform: scale(1.05);
+    }
   }
 }
 
@@ -140,22 +190,23 @@
 }
 
 .btn:hover:after, button:hover:after, [type="button"]:hover:after, [type="submit"]:hover:after, [type="reset"]:hover:after {
-  opacity: 0.05;
+  opacity: 0.15;
   transform: scale(1);
 }
 
 /* Theme-specific button hover effects */
 :root:not(.dark) button:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 .dark button:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 8px rgba(255, 217, 102, 0.3);
-  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 8px rgba(255, 217, 102, 0.5);
+  transform: translateY(-2px);
+  border-color: rgba(255, 217, 102, 0.5);
 }
 
-/* Animation pour le thème système - utilise les styles du thème clair ou sombre en fonction des préférences système */
+/* Animation pour le thème système */
 @media (prefers-color-scheme: light) {
   :root:not(.dark):not(.light) .glass-card {
     @apply backdrop-blur-sm bg-card/95 border border-border shadow-sm;
@@ -190,4 +241,12 @@
 
 .dark .h-captcha {
   filter: invert(0.85) hue-rotate(180deg);
+}
+
+/* Center hCaptcha */
+.hcaptcha-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }

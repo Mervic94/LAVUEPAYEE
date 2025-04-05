@@ -125,6 +125,14 @@ export default {
 				'glow': {
 					'0%, 100%': { boxShadow: '0 0 5px rgba(0, 0, 0, 0.1)' },
 					'50%': { boxShadow: '0 0 15px rgba(0, 0, 0, 0.2)' }
+				},
+				'glow-gold': {
+					'0%, 100%': { boxShadow: '0 0 5px rgba(255, 217, 102, 0.3)' },
+					'50%': { boxShadow: '0 0 15px rgba(255, 217, 102, 0.6)' }
+				},
+				'button-hover': {
+					'0%': { transform: 'translateY(0)' },
+					'100%': { transform: 'translateY(-2px)' }
 				}
 			},
 			animation: {
@@ -140,6 +148,8 @@ export default {
 				'float': 'float 3s ease-in-out infinite',
 				'pulse-light': 'pulse-light 2s ease-in-out infinite',
 				'glow': 'glow 2s ease-in-out infinite',
+				'glow-gold': 'glow-gold 2s ease-in-out infinite',
+				'button-hover': 'button-hover 0.3s ease-in-out',
 				'enter': 'fade-in 0.3s ease-out, scale-in 0.2s ease-out',
 				'exit': 'fade-out 0.3s ease-out, scale-out 0.2s ease-out'
 			},

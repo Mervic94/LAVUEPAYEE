@@ -3,7 +3,7 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = "https://dfgvpaauwcbnmeitbxdx.supabase.co";
+const SUPABASE_URL = "https://lavuepayee.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmZ3ZwYWF1d2Nibm1laXRieGR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI1NTg4MTAsImV4cCI6MjA1ODEzNDgxMH0.XbdWmYcVeXS9BPqTUko7jqhYL4cw35YJcn_kFJFpjLw";
 
 // Import the supabase client like this:

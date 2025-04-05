@@ -19,13 +19,25 @@ import { useToast } from "@/hooks/use-toast";
 import { emailRegisterSchema, EmailRegisterFormValues } from '@/schemas/registerSchemas';
 import HCaptcha from '../auth/HCaptcha';
 import HCaptchaComponent from '@hcaptcha/react-hcaptcha';
+import { SponsorInfo } from '@/utils/sponsorUtils';
 
 interface EmailRegisterFormProps {
   onSubmit: (data: EmailRegisterFormValues) => Promise<void>;
-  isLoading: boolean;
+  isLoading?: boolean;
+  sponsorInfo?: SponsorInfo;
+  checkingSponsor?: boolean;
+  sponsorUsername?: string | null;
+  isReadOnlySponsor?: boolean;
 }
 
-const EmailRegisterForm: React.FC<EmailRegisterFormProps> = ({ onSubmit, isLoading }) => {
+const EmailRegisterForm: React.FC<EmailRegisterFormProps> = ({ 
+  onSubmit,
+  isLoading = false,
+  sponsorInfo,
+  checkingSponsor,
+  sponsorUsername,
+  isReadOnlySponsor 
+}) => {
   const { toast } = useToast();
   const [captchaVerified, setCaptchaVerified] = useState(false);
   const captchaRef = useRef<HCaptchaComponent>(null);
@@ -37,7 +49,7 @@ const EmailRegisterForm: React.FC<EmailRegisterFormProps> = ({ onSubmit, isLoadi
       firstName: '',
       lastName: '',
       username: '',
-      sponsorUsername: '',
+      sponsorUsername: sponsorUsername || '',
       birthDay: '',
       birthMonth: '',
       birthYear: '',
@@ -66,12 +78,13 @@ const EmailRegisterForm: React.FC<EmailRegisterFormProps> = ({ onSubmit, isLoadi
     });
   };
 
-  const handleError = () => {
+  const handleError = (error: string) => {
     toast({
       variant: "destructive",
       title: "Erreur CAPTCHA",
       description: "Un problème est survenu lors de la vérification",
     });
+    console.error("HCaptcha error:", error);
   };
 
   const handleSubmit = async (values: EmailRegisterFormValues) => {
@@ -317,11 +330,21 @@ const EmailRegisterForm: React.FC<EmailRegisterFormProps> = ({ onSubmit, isLoadi
                   <Input
                     placeholder="Nom d'utilisateur du parrain"
                     className="pl-10"
-                    disabled={isLoading}
+                    disabled={isLoading || isReadOnlySponsor}
                     {...field}
                   />
                 </div>
               </FormControl>
+              {sponsorInfo && (
+                <div className="text-sm font-medium text-green-600">
+                  Parrain: {sponsorInfo.fullName || sponsorInfo.username}
+                </div>
+              )}
+              {checkingSponsor && (
+                <div className="text-sm text-muted-foreground">
+                  Vérification du parrain...
+                </div>
+              )}
               <FormMessage />
             </FormItem>
           )}
@@ -349,13 +372,15 @@ const EmailRegisterForm: React.FC<EmailRegisterFormProps> = ({ onSubmit, isLoadi
           )}
         />
 
-        <HCaptcha
-          ref={captchaRef}
-          theme={document.documentElement.classList.contains('dark') ? 'dark' : 'light'}
-          onVerify={handleVerify}
-          onExpire={handleExpire}
-          onError={handleError}
-        />
+        <div className="flex justify-center w-full">
+          <HCaptcha
+            ref={captchaRef}
+            theme={document.documentElement.classList.contains('dark') ? 'dark' : 'light'}
+            onVerify={handleVerify}
+            onExpire={handleExpire}
+            onError={handleError}
+          />
+        </div>
 
         <Button
           type="submit"

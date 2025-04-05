@@ -1,8 +1,9 @@
+
 # Welcome to your Lovable project
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/8c1dded9-0ec3-4d98-8f9d-13b8a429bc0b
+**URL**: https://lovable.dev/projects/lavuepayee
 
 ## How can I edit this code?
 
@@ -10,7 +11,7 @@ There are several ways of editing your application.
 
 **Use Lovable**
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/8c1dded9-0ec3-4d98-8f9d-13b8a429bc0b) and start prompting.
+Simply visit the [Lovable Project](https://lovable.dev/projects/lavuepayee) and start prompting.
 
 Changes made via Lovable will be committed automatically to this repo.
 
@@ -62,7 +63,7 @@ This project is built with .
 
 ## How can I deploy this project?
 
-Simply open [Lovable](https://lovable.dev/projects/8c1dded9-0ec3-4d98-8f9d-13b8a429bc0b) and click on Share -> Publish.
+Simply open [Lovable](https://lovable.dev/projects/lavuepayee) and click on Share -> Publish.
 
 ## I want to use a custom domain - is that possible?
 
