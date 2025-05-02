@@ -1,4 +1,4 @@
 
-import Navbar from './index.tsx';
+import Navbar from './NavbarComponent';
 
 export default Navbar;

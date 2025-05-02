@@ -3,9 +3,9 @@ import React, { lazy, Suspense, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { Navbar } from "@/components/navbar";
+import Navbar from "@/components/navbar";
 import { ScrollToTop } from "@/components/ui/scroll-to-top";
-import { Footer } from "@/components/Footer";
+import Footer from "@/components/Footer";
 import { AnimatedBackground } from "@/components/ui/animated-background";
 import "./App.css";
 
