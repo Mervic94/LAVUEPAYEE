@@ -19,6 +19,7 @@ const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { user, signIn, signInWithPhone, signInWithUsername, isLoading } = useAuth();
   const [activeTab, setActiveTab] = useState<string>("email");
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   // Redirect already authenticated users
   useEffect(() => {
@@ -62,7 +63,11 @@ const LoginPage: React.FC = () => {
         <Card className="glass-card">
           <CardContent className="p-6 tablet-container">
             <div className="mb-6">
-              <GoogleAuthButton />
+              <GoogleAuthButton 
+                isLoading={isLoading}
+                setGoogleLoading={setGoogleLoading}
+                googleLoading={googleLoading}
+              />
             </div>
 
             <LoginDivider />
