@@ -1,96 +1,106 @@
 
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Mail, Phone, User } from "lucide-react";
-import {
-  Tabs, 
-  TabsContent, 
-  TabsList, 
-  TabsTrigger 
-} from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
-
-// Import components
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
 import GoogleAuthButton from "@/components/login/GoogleAuthButton";
 import EmailLoginForm from "@/components/login/EmailLoginForm";
 import PhoneLoginForm from "@/components/login/PhoneLoginForm";
 import UsernameLoginForm from "@/components/login/UsernameLoginForm";
-import LoginHeader from "@/components/login/LoginHeader";
 import LoginDivider from "@/components/login/LoginDivider";
+import LoginHeader from "@/components/login/LoginHeader";
 import LoginFooter from "@/components/login/LoginFooter";
+import DemoAccounts from "@/components/login/DemoAccounts";
 
-const LoginPage = () => {
+const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const { signIn, signInWithPhone, signInWithUsername, user, isLoading } = useAuth();
+  const { user, signIn, signInWithPhone, signInWithUsername, isLoading } = useAuth();
   const [activeTab, setActiveTab] = useState<string>("email");
-  const [googleLoading, setGoogleLoading] = useState(false);
 
+  // Redirect already authenticated users
   useEffect(() => {
     if (user) {
       navigate("/dashboard");
     }
   }, [user, navigate]);
-  
-  // Handler functions
-  const onEmailSubmit = async (data: { email: string, password: string }) => {
-    await signIn(data.email, data.password);
+
+  // Handle different form submissions
+  const handleEmailLogin = async (data: { email: string; password: string }) => {
+    try {
+      await signIn(data.email, data.password);
+    } catch (error) {
+      console.error("Login error:", error);
+    }
   };
 
-  const onPhoneSubmit = async (data: { phone: string, password: string }) => {
-    await signInWithPhone(data.phone, data.password);
+  const handlePhoneLogin = async (data: { phone: string; password: string }) => {
+    try {
+      await signInWithPhone(data.phone, data.password);
+    } catch (error) {
+      console.error("Phone login error:", error);
+    }
   };
 
-  const onUsernameSubmit = async (data: { username: string, password: string }) => {
-    await signInWithUsername(data.username, data.password);
+  const handleUsernameLogin = async (data: { username: string; password: string }) => {
+    try {
+      await signInWithUsername(data.username, data.password);
+    } catch (error) {
+      console.error("Username login error:", error);
+    }
   };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
       <div className="w-full max-w-md space-y-6">
-        <LoginHeader />
+        <LoginHeader title="Se connecter" subtitle="Accédez à votre compte" />
 
-        <div className="glass-card p-6 rounded-lg shadow-md bg-card">
-          <div className="mb-6">
-            <GoogleAuthButton 
-              isLoading={isLoading} 
-              setGoogleLoading={setGoogleLoading} 
-              googleLoading={googleLoading} 
-            />
-          </div>
+        <DemoAccounts />
+        
+        <Card className="glass-card">
+          <CardContent className="p-6 tablet-container">
+            <div className="mb-6">
+              <GoogleAuthButton />
+            </div>
 
-          <LoginDivider />
+            <LoginDivider />
 
-          <Tabs defaultValue="email" value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid grid-cols-3 mb-6">
-              <TabsTrigger value="email" className="flex items-center gap-2">
-                <Mail className="h-4 w-4" />
-                <span className="hidden sm:inline">Email</span>
-              </TabsTrigger>
-              <TabsTrigger value="phone" className="flex items-center gap-2">
-                <Phone className="h-4 w-4" />
-                <span className="hidden sm:inline">Téléphone</span>
-              </TabsTrigger>
-              <TabsTrigger value="username" className="flex items-center gap-2">
-                <User className="h-4 w-4" />
-                <span className="hidden sm:inline">Utilisateur</span>
-              </TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="email">
-              <EmailLoginForm onSubmit={onEmailSubmit} isLoading={isLoading} />
-            </TabsContent>
-            
-            <TabsContent value="phone">
-              <PhoneLoginForm onSubmit={onPhoneSubmit} isLoading={isLoading} />
-            </TabsContent>
-            
-            <TabsContent value="username">
-              <UsernameLoginForm onSubmit={onUsernameSubmit} isLoading={isLoading} />
-            </TabsContent>
-          </Tabs>
+            <Tabs defaultValue={activeTab} value={activeTab} onValueChange={setActiveTab} className="w-full tabs-container">
+              <TabsList className="grid grid-cols-3 mb-6 w-full">
+                <TabsTrigger value="email" className="flex items-center gap-2 tab-trigger">
+                  <Mail className="h-4 w-4" />
+                  <span>Email</span>
+                </TabsTrigger>
+                <TabsTrigger value="phone" className="flex items-center gap-2 tab-trigger">
+                  <Phone className="h-4 w-4" />
+                  <span>Téléphone</span>
+                </TabsTrigger>
+                <TabsTrigger value="username" className="flex items-center gap-2 tab-trigger">
+                  <User className="h-4 w-4" />
+                  <span>Identifiant</span>
+                </TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="email">
+                <EmailLoginForm onSubmit={handleEmailLogin} isLoading={isLoading} />
+              </TabsContent>
+              
+              <TabsContent value="phone">
+                <PhoneLoginForm onSubmit={handlePhoneLogin} isLoading={isLoading} />
+              </TabsContent>
+              
+              <TabsContent value="username">
+                <UsernameLoginForm onSubmit={handleUsernameLogin} isLoading={isLoading} />
+              </TabsContent>
+            </Tabs>
 
-          <LoginFooter />
-        </div>
+            <Separator className="my-6" />
+
+            <LoginFooter />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

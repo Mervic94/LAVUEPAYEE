@@ -1,0 +1,138 @@
+
+/* Animated backgrounds for light and dark themes */
+.app-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Light theme animated background */
+.app-background.light {
+  background: linear-gradient(40deg, rgba(240, 249, 255, 0.6) 0%, rgba(230, 245, 255, 0.6) 25%, rgba(220, 237, 252, 0.6) 50%, rgba(211, 236, 255, 0.6) 75%, rgba(235, 248, 255, 0.6) 100%);
+  animation: gradientLight 15s ease infinite;
+}
+
+.app-background.light::before {
+  content: '';
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  right: -10%;
+  bottom: -10%;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="%23FFFFFF" opacity="0.6" /></svg>'),
+              url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1.5" fill="%23E0F0FF" opacity="0.5" /></svg>'),
+              url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="%23C8E0FF" opacity="0.4" /></svg>');
+  animation: moveStarsLight 120s linear infinite;
+}
+
+/* Dark theme animated background */
+.app-background.dark {
+  background: linear-gradient(40deg, rgba(13, 17, 23, 0.9) 0%, rgba(17, 23, 35, 0.9) 25%, rgba(20, 29, 47, 0.9) 50%, rgba(24, 35, 55, 0.9) 75%, rgba(15, 23, 42, 0.9) 100%);
+  animation: gradientDark 15s ease infinite;
+}
+
+.app-background.dark::before {
+  content: '';
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  right: -10%;
+  bottom: -10%;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="%23FFFFFF" opacity="0.6" /></svg>'),
+              url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1.5" fill="%239BA8C2" opacity="0.5" /></svg>'),
+              url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="%235D7299" opacity="0.4" /></svg>');
+  animation: moveStarsDark 120s linear infinite;
+}
+
+/* Animation keyframes */
+@keyframes gradientLight {
+  0% {
+    background-position: 0% 50%
+  }
+  50% {
+    background-position: 100% 50%
+  }
+  100% {
+    background-position: 0% 50%
+  }
+}
+
+@keyframes gradientDark {
+  0% {
+    background-position: 0% 50%
+  }
+  50% {
+    background-position: 100% 50%
+  }
+  100% {
+    background-position: 0% 50%
+  }
+}
+
+@keyframes moveStarsLight {
+  0% {
+    transform: rotate(0) scale(1.5);
+  }
+  100% {
+    transform: rotate(360deg) scale(1.5);
+  }
+}
+
+@keyframes moveStarsDark {
+  0% {
+    transform: rotate(0) scale(1.5);
+  }
+  100% {
+    transform: rotate(360deg) scale(1.5);
+  }
+}
+
+/* Additional styling for forms */
+.glass-card {
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Center HCaptcha */
+.hcaptcha-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 1rem 0;
+}
+
+/* Custom button animations */
+.button-primary {
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.button-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: all 0.5s ease;
+}
+
+.button-primary:hover::before {
+  left: 100%;
+}

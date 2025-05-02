@@ -20,6 +20,10 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
   }
 });
 
+// Make sure URL Configuration is set in Supabase Authentication settings:
+// - Site URL: https://lavuepayee.lovable.dev
+// - Redirect URLs: https://lavuepayee.lovable.dev/*, https://lovable.dev/projects/lavuepayee/*
+
 // Note: SMTP Email settings must be configured in the Supabase Dashboard:
 // - Email Provider: SMTP
 // - Host: smtp.gmail.com

@@ -14,11 +14,14 @@ import { formatDateOfBirth } from "@/utils/dateUtils";
 import EmailRegisterForm from "@/components/register/EmailRegisterForm";
 import PhoneRegisterForm from "@/components/register/PhoneRegisterForm";
 import SocialAuth from "@/components/register/SocialAuth";
+import { useDemoAccounts } from "@/utils/demoUsers";
+import { Button } from "@/components/ui/button";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { signUp, signUpWithPhone, user, isLoading } = useAuth();
+  const { signInWithDemoAccount } = useDemoAccounts();
   const [activeTab, setActiveTab] = useState<string>("email");
   const [sponsorInfo, setSponsorInfo] = useState<SponsorInfo>(null);
   const [checkingSponsor, setCheckingSponsor] = useState(false);
@@ -103,6 +106,10 @@ const RegisterPage = () => {
     await signUpWithPhone(data.phone, data.password, userData);
   };
 
+  const handleDemoLogin = async (type: "consumer" | "advertiser" | "admin") => {
+    await signInWithDemoAccount(type);
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
       <div className="w-full max-w-md space-y-6">
@@ -116,6 +123,18 @@ const RegisterPage = () => {
               </span>
             )}
           </p>
+          
+          <div className="flex flex-wrap gap-2 mt-4 justify-center">
+            <Button variant="outline" size="sm" onClick={() => handleDemoLogin("consumer")}>
+              Essai Consommateur
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => handleDemoLogin("advertiser")}>
+              Essai Annonceur
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => handleDemoLogin("admin")}>
+              Essai Admin
+            </Button>
+          </div>
         </div>
 
         <Card className="glass-card">
@@ -152,6 +171,7 @@ const RegisterPage = () => {
                   checkingSponsor={checkingSponsor}
                   sponsorUsername={referralSponsor}
                   isReadOnlySponsor={!!referralSponsor}
+                  isLoading={isLoading}
                 />
               </TabsContent>
               
@@ -162,6 +182,7 @@ const RegisterPage = () => {
                   checkingSponsor={checkingSponsor}
                   sponsorUsername={referralSponsor}
                   isReadOnlySponsor={!!referralSponsor}
+                  isLoading={isLoading}
                 />
               </TabsContent>
             </Tabs>

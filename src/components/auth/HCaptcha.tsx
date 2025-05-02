@@ -23,16 +23,18 @@ const HCaptcha = forwardRef<HCaptchaComponent, HCaptchaProps>((props, ref) => {
   } = props;
 
   return (
-    <div className="hcaptcha-container my-4 flex justify-center items-center w-full">
-      <HCaptchaComponent
-        sitekey={sitekey}
-        onVerify={onVerify}
-        onExpire={onExpire}
-        onError={onError}
-        theme={theme}
-        size={size}
-        ref={ref}
-      />
+    <div className="hcaptcha-container my-4">
+      <div className="flex justify-center items-center w-full">
+        <HCaptchaComponent
+          sitekey={sitekey}
+          onVerify={onVerify}
+          onExpire={onExpire}
+          onError={onError}
+          theme={theme}
+          size={size}
+          ref={ref}
+        />
+      </div>
     </div>
   );
 });

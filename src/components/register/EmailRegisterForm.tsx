@@ -1,31 +1,30 @@
+
 import React, { useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { KeyRound, Mail, User, User2, Calendar, Lock, Users, CheckCircle, Loader2 } from 'lucide-react';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Loader2, CheckCircle } from 'lucide-react';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { emailRegisterSchema, EmailRegisterFormValues } from '@/schemas/registerSchemas';
 import HCaptcha from '../auth/HCaptcha';
 import HCaptchaComponent from '@hcaptcha/react-hcaptcha';
 import { SponsorInfo } from '@/utils/sponsorUtils';
+import { 
+  NameFields, 
+  UsernameField, 
+  SponsorField, 
+  DateOfBirthFields, 
+  PasswordField, 
+  AccountTypeField, 
+  TermsCheckbox 
+} from './form-fields';
 
 interface EmailRegisterFormProps {
   onSubmit: (data: EmailRegisterFormValues) => Promise<void>;
   isLoading?: boolean;
-  sponsorInfo?: SponsorInfo;
-  checkingSponsor?: boolean;
+  sponsorInfo: SponsorInfo;
+  checkingSponsor: boolean;
   sponsorUsername?: string | null;
   isReadOnlySponsor?: boolean;
 }
@@ -104,81 +103,13 @@ const EmailRegisterForm: React.FC<EmailRegisterFormProps> = ({
     }
   };
 
-  const years = Array.from({ length: 100 }, (_, i) => String(new Date().getFullYear() - i));
-  const days = Array.from({ length: 31 }, (_, i) => String(i + 1));
-  const months = Array.from({ length: 12 }, (_, i) => String(i + 1));
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="firstName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Prénom</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                    <Input
-                      placeholder="Votre prénom"
-                      className="pl-10"
-                      disabled={isLoading}
-                      {...field}
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="lastName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Nom de famille</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <User2 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                    <Input
-                      placeholder="Votre nom de famille"
-                      className="pl-10"
-                      disabled={isLoading}
-                      {...field}
-                    />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <FormField
-          control={form.control}
-          name="username"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nom d'utilisateur</FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                  <Input
-                    placeholder="Votre nom d'utilisateur"
-                    className="pl-10"
-                    disabled={isLoading}
-                    {...field}
-                  />
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
+        <NameFields form={form} />
+        <UsernameField form={form} />
+        
+        {/* Email Field */}
         <FormField
           control={form.control}
           name="email"
@@ -187,14 +118,17 @@ const EmailRegisterForm: React.FC<EmailRegisterFormProps> = ({
               <FormLabel>Email</FormLabel>
               <FormControl>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                  <Input
-                    placeholder="votre@email.com"
+                  <input
                     type="email"
-                    className="pl-10"
+                    placeholder="votre@email.com"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 pl-10"
                     disabled={isLoading}
                     {...field}
                   />
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-mail absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4">
+                    <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                  </svg>
                 </div>
               </FormControl>
               <FormMessage />
@@ -202,184 +136,29 @@ const EmailRegisterForm: React.FC<EmailRegisterFormProps> = ({
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Mot de passe</FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                  <Input
-                    placeholder="••••••••"
-                    type="password"
-                    className="pl-10"
-                    disabled={isLoading}
-                    {...field}
-                  />
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+        <PasswordField form={form} />
+        <DateOfBirthFields form={form} />
+        <AccountTypeField form={form} />
+        
+        <SponsorField 
+          form={form} 
+          sponsorInfo={sponsorInfo} 
+          checkingSponsor={checkingSponsor} 
+          isReadOnly={isReadOnlySponsor}
         />
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <FormField
-            control={form.control}
-            name="birthDay"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Jour</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Jour" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {days.map((day) => (
-                      <SelectItem key={day} value={day}>{day}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="birthMonth"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Mois</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Mois" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {months.map((month) => (
-                      <SelectItem key={month} value={month}>{month}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="birthYear"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Année</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Année" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {years.map((year) => (
-                      <SelectItem key={year} value={year}>{year}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <FormField
-          control={form.control}
-          name="accountType"
-          render={({ field }) => (
-            <FormItem className="space-y-1.5">
-              <FormLabel>Type de compte</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionner un type de compte" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="consumer">Consommateur</SelectItem>
-                  <SelectItem value="advertiser">Annonceur</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="sponsorUsername"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nom d'utilisateur du parrain (optionnel)</FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <KeyRound className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                  <Input
-                    placeholder="Nom d'utilisateur du parrain"
-                    className="pl-10"
-                    disabled={isLoading || isReadOnlySponsor}
-                    {...field}
-                  />
-                </div>
-              </FormControl>
-              {sponsorInfo && (
-                <div className="text-sm font-medium text-green-600">
-                  Parrain: {sponsorInfo.fullName || sponsorInfo.username}
-                </div>
-              )}
-              {checkingSponsor && (
-                <div className="text-sm text-muted-foreground">
-                  Vérification du parrain...
-                </div>
-              )}
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="termsAccepted"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-              <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                  disabled={isLoading}
-                />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel>
-                  J'accepte les <a href="/terms" target="_blank" rel="noopener noreferrer" className="text-primary underline underline-offset-2">conditions d'utilisation</a>
-                </FormLabel>
-                <FormMessage />
-              </div>
-            </FormItem>
-          )}
-        />
+        
+        <TermsCheckbox form={form} />
 
         <div className="flex justify-center w-full">
-          <HCaptcha
-            ref={captchaRef}
-            theme={document.documentElement.classList.contains('dark') ? 'dark' : 'light'}
-            onVerify={handleVerify}
-            onExpire={handleExpire}
-            onError={handleError}
-          />
+          <div className="w-full max-w-md">
+            <HCaptcha
+              ref={captchaRef}
+              theme={document.documentElement.classList.contains('dark') ? 'dark' : 'light'}
+              onVerify={handleVerify}
+              onExpire={handleExpire}
+              onError={handleError}
+            />
+          </div>
         </div>
 
         <Button
