@@ -3,13 +3,11 @@ import { useState, useEffect } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { useNavigate } from 'react-router-dom';
 
 export const useAuthState = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -31,8 +29,12 @@ export const useAuthState = () => {
             description: "À bientôt!"
           });
         } else if (event === 'PASSWORD_RECOVERY') {
-          // Rediriger vers la page de réinitialisation du mot de passe
-          navigate('/reset-password');
+          // Instead of directly navigating, we'll set a flag in the return value
+          // that the component using this hook can use for navigation
+          toast({
+            title: "Récupération de mot de passe",
+            description: "Vous allez être redirigé vers la page de réinitialisation"
+          });
         } else if (event === 'USER_UPDATED') {
           toast({ 
             title: "Profil mis à jour", 
@@ -52,7 +54,7 @@ export const useAuthState = () => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [toast, navigate]);
+  }, [toast]);
 
   return {
     session,

@@ -32,6 +32,7 @@ const LoginPage: React.FC = () => {
   const handleEmailLogin = async (data: { email: string; password: string }) => {
     try {
       await signIn(data.email, data.password);
+      // Auth state change will trigger the useEffect above to redirect
     } catch (error) {
       console.error("Login error:", error);
     }
@@ -40,6 +41,7 @@ const LoginPage: React.FC = () => {
   const handlePhoneLogin = async (data: { phone: string; password: string }) => {
     try {
       await signInWithPhone(data.phone, data.password);
+      // Auth state change will trigger the useEffect above to redirect
     } catch (error) {
       console.error("Phone login error:", error);
     }
@@ -48,6 +50,7 @@ const LoginPage: React.FC = () => {
   const handleUsernameLogin = async (data: { username: string; password: string }) => {
     try {
       await signInWithUsername(data.username, data.password);
+      // Auth state change will trigger the useEffect above to redirect
     } catch (error) {
       console.error("Username login error:", error);
     }

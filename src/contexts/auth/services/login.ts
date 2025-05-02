@@ -1,11 +1,9 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { useNavigate } from 'react-router-dom';
 
 export const useLoginService = (setIsLoading: (isLoading: boolean) => void) => {
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   const signIn = async (email: string, password: string) => {
     try {
@@ -14,7 +12,7 @@ export const useLoginService = (setIsLoading: (isLoading: boolean) => void) => {
       
       if (error) throw error;
       
-      navigate('/dashboard');
+      // Navigation will be handled through onAuthStateChange
     } catch (error: any) {
       console.error("Login error:", error);
       
@@ -43,7 +41,7 @@ export const useLoginService = (setIsLoading: (isLoading: boolean) => void) => {
       
       if (error) throw error;
       
-      navigate('/dashboard');
+      // Navigation will be handled through onAuthStateChange
     } catch (error: any) {
       console.error("Phone login error:", error);
       
@@ -99,7 +97,7 @@ export const useLoginService = (setIsLoading: (isLoading: boolean) => void) => {
         throw new Error("Aucune méthode de connexion disponible pour cet utilisateur");
       }
       
-      navigate('/dashboard');
+      // Navigation will be handled through onAuthStateChange
     } catch (error: any) {
       console.error("Username login error:", error);
       

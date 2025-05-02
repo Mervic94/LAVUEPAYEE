@@ -1,11 +1,9 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { useNavigate } from 'react-router-dom';
 
 export const useAccountManagementService = (setIsLoading: (isLoading: boolean) => void) => {
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   const signOut = async () => {
     try {
@@ -14,7 +12,8 @@ export const useAccountManagementService = (setIsLoading: (isLoading: boolean) =
       
       if (error) throw error;
       
-      navigate('/login');
+      // Let the navigation be handled by the component using this hook
+      // or by the auth state change listener
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -65,7 +64,7 @@ export const useAccountManagementService = (setIsLoading: (isLoading: boolean) =
         description: "Votre mot de passe a été mis à jour avec succès",
       });
       
-      navigate('/login');
+      // Navigation will be handled by the component
     } catch (error: any) {
       toast({
         variant: "destructive",

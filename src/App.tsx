@@ -43,8 +43,8 @@ const ScrollToTopOnNavigate = () => {
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
+    <Router>
+      <AuthProvider>
         <AnimatedBackground>
           <ScrollToTopOnNavigate />
           <ScrollToTop />
@@ -76,8 +76,8 @@ function App() {
           <Footer />
           <Toaster />
         </AnimatedBackground>
-      </Router>
-    </AuthProvider>
+      </AuthProvider>
+    </Router>
   );
 }
 
