@@ -1,2 +1,94 @@
 
-project_id = "lavuepayee"
+# This file controls the configuration of the local development setup
+# Check https://supabase.com/docs/guides/cli/config for more info
+
+project_id = "dfgvpaauwcbnmeitbxdx"
+
+[api]
+# Port to use for the API URL.
+port = 54321
+# Schemas to expose in your API. Tables, views and stored procedures in this schema will get API
+# endpoints. public and storage are always included.
+schemas = ["public", "storage", "graphql_public"]
+# Extra schemas to add to the search_path of every request. public is always included.
+extra_search_path = ["public", "extensions"]
+# The maximum number of rows returns from a view, table, or stored procedure. Limits payload size
+# for accidental or malicious requests.
+max_rows = 1000
+
+[db]
+# Port to use for the local database URL.
+port = 54322
+# The database major version to use. This has to be the same as your remote database's. Run `SHOW
+# server_version;` on the remote database to check.
+major_version = 15
+
+[studio]
+# Port to use for Supabase Studio.
+port = 54323
+
+# Email testing server. Emails sent with the local dev setup are not actually sent - the emails are
+# monitored and accessible from the dashboard.
+[inbucket]
+# Port to use for the email testing server web interface.
+port = 54324
+smtp_port = 54325
+pop3_port = 54326
+
+[storage]
+# The maximum file size allowed (e.g. "5MB", "500KB").
+file_size_limit = "50MiB"
+
+[auth]
+# The base URL of your website. Used as an allow-list for redirects and for constructing URLs used
+# in emails.
+site_url = "http://localhost:3000"
+# A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
+additional_redirect_urls = ["https://localhost:3000"]
+# How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
+jwt_expiry = 3600
+# Allow/disallow new user signups to your project.
+enable_signup = true
+# If disabled, the user will need to confirm their email before being able to sign in.
+enable_confirmations = true
+# Require users to confirm their email for various actions.
+enable_email_confirmations = true
+# Check for weak passwords using the HaveIBeenPwned service.
+enable_weak_password_check = true
+# Detecting if search_path is properly set to avoid security issues
+enable_search_path_detection = true
+# Enforce RLS policies on all tables
+enforce_row_level_security = true
+
+[auth.email]
+# Allow/disallow new user signups via email to your project.
+enable_signup = true
+# If enabled, a user will be required to confirm any email change on both the old, and new email
+# addresses. If disabled, only the new email is required to confirm.
+double_confirm_changes = true
+# If enabled, users need to confirm their email address before signing in.
+enable_confirmations = true
+
+[auth.sms]
+# Allow/disallow new user signups via SMS to your project.
+enable_signup = true
+# If enabled, users need to confirm their phone number before signing in.
+enable_confirmations = true
+
+# Configure one of the supported SMS providers: `twilio`, `twilio_verify`, `messagebird`, `textlocal`, `vonage`.
+[auth.sms.twilio]
+enabled = false
+account_sid = ""
+message_service_sid = ""
+auth_token = ""
+
+[auth.sms.twilio_verify]
+enabled = false
+account_sid = ""
+auth_token = ""
+verify_service_sid = ""
+
+[analytics]
+enabled = false
+port = 54327
+vector_port = 54328
