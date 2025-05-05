@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin } from 'lucide-react';
+import { Facebook, Twitter, Instagram, Youtube, Linkedin, Mail, Phone, MapPin, Copyright } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const Footer = () => {
   return (
@@ -9,22 +10,31 @@ const Footer = () => {
       <div className="container mx-auto px-6 max-w-7xl">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div>
-            <h3 className="font-bold text-lg mb-4">LAVUEPAYEE</h3>
+            <div className="flex items-center gap-2 mb-4">
+              <div className="h-8 w-8">
+                <img 
+                  src="/lovable-uploads/d82c55d8-0c83-4a02-82c0-67e854a84332.png" 
+                  alt="LAVUEPAYEE"
+                  className="h-full w-full object-contain"
+                />
+              </div>
+              <h3 className="font-bold text-lg">LAVUEPAYEE</h3>
+            </div>
             <p className="text-gray-600 mb-4">
               Transformez votre temps de visionnage en opportunité de revenus. Une expérience publicitaire révolutionnaire.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-600 hover:text-primary transition-colors">
+              <a href="https://facebook.com/lavuepayee" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-primary transition-colors">
                 <Facebook className="h-5 w-5" />
               </a>
-              <a href="#" className="text-gray-600 hover:text-primary transition-colors">
+              <a href="https://twitter.com/lavuepayee" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-primary transition-colors">
                 <Twitter className="h-5 w-5" />
               </a>
-              <a href="#" className="text-gray-600 hover:text-primary transition-colors">
+              <a href="https://instagram.com/lavuepayee" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-primary transition-colors">
                 <Instagram className="h-5 w-5" />
               </a>
-              <a href="#" className="text-gray-600 hover:text-primary transition-colors">
-                <Youtube className="h-5 w-5" />
+              <a href="https://linkedin.com/company/lavuepayee" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-primary transition-colors">
+                <Linkedin className="h-5 w-5" />
               </a>
             </div>
           </div>
@@ -74,6 +84,11 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
+                <Link to="/help" className="text-gray-600 hover:text-primary transition-colors">
+                  Centre d'aide
+                </Link>
+              </li>
+              <li>
                 <Link to="/terms" className="text-gray-600 hover:text-primary transition-colors">
                   Conditions d'utilisation
                 </Link>
@@ -93,16 +108,26 @@ const Footer = () => {
                   Blog
                 </a>
               </li>
-              <li>
-                <a href="#" className="text-gray-600 hover:text-primary transition-colors">
-                  Affiliés
-                </a>
-              </li>
             </ul>
           </div>
           
           <div>
-            <h3 className="font-bold text-lg mb-4">Contact</h3>
+            <h3 className="font-bold text-lg mb-4">Restez connecté</h3>
+            <p className="text-gray-600 mb-4">
+              Inscrivez-vous à notre newsletter pour recevoir les dernières nouvelles et mises à jour.
+            </p>
+            <div className="flex gap-2 mb-6">
+              <input 
+                type="email" 
+                placeholder="Votre email" 
+                className="rounded-lg border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary flex-1"
+              />
+              <Button variant="default" size="sm">
+                S'inscrire
+              </Button>
+            </div>
+            
+            <h3 className="font-bold text-lg mb-2">Contact</h3>
             <ul className="space-y-2">
               <li className="flex items-center">
                 <Mail className="h-4 w-4 mr-2 text-primary" />
@@ -129,8 +154,8 @@ const Footer = () => {
         </div>
         
         <div className="border-t border-gray-200 pt-6 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-gray-600 text-sm mb-4 md:mb-0">
-            &copy; {new Date().getFullYear()} LAVUEPAYEE. Tous droits réservés.
+          <p className="text-gray-600 text-sm mb-4 md:mb-0 flex items-center">
+            <Copyright className="h-4 w-4 mr-1" /> {new Date().getFullYear()} LAVUEPAYEE. Tous droits réservés.
           </p>
           
           <div className="flex items-center">
