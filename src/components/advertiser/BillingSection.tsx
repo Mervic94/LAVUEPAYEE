@@ -25,6 +25,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 // Type pour les transactions
 interface Transaction {
@@ -88,14 +89,22 @@ const demoTransactions: Transaction[] = [
 
 const BillingSection: React.FC = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [addFundsOpen, setAddFundsOpen] = useState(false);
   const [amount, setAmount] = useState('100');
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [transactions, setTransactions] = useState<Transaction[]>(demoTransactions);
+  const [fedaPayModalOpen, setFedaPayModalOpen] = useState(false);
   
   const accountBalance = transactions.reduce((sum, tx) => sum + tx.amount, 0);
   
   const handleAddFunds = () => {
+    if (paymentMethod === 'fedapay') {
+      setFedaPayModalOpen(true);
+      setAddFundsOpen(false);
+      return;
+    }
+    
     // Simuler l'ajout de fonds
     const newTransaction: Transaction = {
       id: `tr-${Math.floor(Math.random() * 1000)}`,
@@ -116,6 +125,71 @@ const BillingSection: React.FC = () => {
     
     setAddFundsOpen(false);
   };
+
+  // Gestion du message de succès après retour de FedaPay
+  React.useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const status = urlParams.get('status');
+    const transactionId = urlParams.get('transaction_id');
+    
+    if (status === 'success' && transactionId) {
+      // Créer la nouvelle transaction
+      const newTransaction: Transaction = {
+        id: `tr-${Math.floor(Math.random() * 1000)}`,
+        date: new Date().toISOString().split('T')[0],
+        description: "Dépôt de fonds via FedaPay",
+        amount: Number(amount),
+        type: 'deposit',
+        status: 'completed',
+        reference: `feda-${transactionId}`
+      };
+      
+      setTransactions([newTransaction, ...transactions]);
+      
+      toast({
+        title: "Paiement réussi",
+        description: `Votre dépôt via FedaPay a été traité avec succès.`,
+      });
+      
+      // Nettoyer l'URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
+
+  // Gestion du retour de FedaPay
+  const handleFedaPayMessage = (event: MessageEvent) => {
+    if (event.origin === 'https://me.fedapay.com' && event.data?.status === 'success') {
+      setFedaPayModalOpen(false);
+      
+      // Créer la nouvelle transaction
+      const newTransaction: Transaction = {
+        id: `tr-${Math.floor(Math.random() * 1000)}`,
+        date: new Date().toISOString().split('T')[0],
+        description: "Dépôt de fonds via FedaPay",
+        amount: Number(amount),
+        type: 'deposit',
+        status: 'completed',
+        reference: `feda-${event.data.transaction_id || 'unknown'}`
+      };
+      
+      setTransactions([newTransaction, ...transactions]);
+      
+      toast({
+        title: "Paiement réussi",
+        description: `Votre dépôt de ${amount} LVC via FedaPay a été traité avec succès.`,
+      });
+      
+      // Rediriger vers wallet
+      navigate('/wallet');
+    }
+  };
+
+  React.useEffect(() => {
+    window.addEventListener('message', handleFedaPayMessage);
+    return () => {
+      window.removeEventListener('message', handleFedaPayMessage);
+    };
+  }, [amount, transactions]);
 
   return (
     <div className="space-y-6">
@@ -188,6 +262,17 @@ const BillingSection: React.FC = () => {
                           Cryptomonnaie
                         </Label>
                       </div>
+                      <div className="flex items-center space-x-2 border rounded-md p-3">
+                        <RadioGroupItem value="fedapay" id="fedapay" />
+                        <Label htmlFor="fedapay" className="flex items-center">
+                          <img 
+                            src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
+                            alt="FedaPay" 
+                            className="h-4 w-4 mr-2"
+                          />
+                          FedaPay
+                        </Label>
+                      </div>
                     </RadioGroup>
                   </div>
                   
@@ -227,6 +312,17 @@ const BillingSection: React.FC = () => {
                       </p>
                     </div>
                   )}
+                  
+                  {paymentMethod === 'fedapay' && (
+                    <div className="space-y-2">
+                      <p className="text-sm">
+                        Vous allez être redirigé vers FedaPay pour finaliser votre paiement.
+                      </p>
+                      <p className="text-sm font-medium">
+                        Après le paiement, vous serez redirigé vers votre portefeuille.
+                      </p>
+                    </div>
+                  )}
                 </div>
                 
                 <DialogFooter>
@@ -242,6 +338,22 @@ const BillingSection: React.FC = () => {
             </Dialog>
           </CardFooter>
         </Card>
+        
+        {/* Modal pour FedaPay */}
+        <Dialog open={fedaPayModalOpen} onOpenChange={setFedaPayModalOpen}>
+          <DialogContent className="sm:max-w-md max-h-[80vh] p-0 overflow-hidden">
+            <div className="aspect-video w-full h-[600px]">
+              <iframe 
+                src="https://me.fedapay.com/3i0DOiZr" 
+                title="Paiement FedaPay" 
+                width="100%" 
+                height="100%" 
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              ></iframe>
+            </div>
+          </DialogContent>
+        </Dialog>
         
         <Card className="md:col-span-2">
           <CardHeader>
