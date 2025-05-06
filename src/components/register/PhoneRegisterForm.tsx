@@ -1,5 +1,5 @@
 
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
@@ -7,8 +7,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from 'react-router-dom';
-import HCaptcha from '../auth/HCaptcha';
-import HCaptchaComponent from '@hcaptcha/react-hcaptcha';
 import { PhoneRegisterFormValues, phoneRegisterSchema } from '@/schemas/registerSchemas';
 import { PhoneNumberInput } from '@/components/ui/phone-input';
 import { SponsorInfo } from '@/utils/sponsorUtils';
@@ -39,10 +37,7 @@ const PhoneRegisterForm: React.FC<PhoneRegisterFormProps> = ({
   sponsorUsername,
   isReadOnlySponsor 
 }) => {
-  const { toast } = useToast();
   const navigate = useNavigate();
-  const [captchaVerified, setCaptchaVerified] = useState(false);
-  const captchaRef = useRef<HCaptchaComponent>(null);
   const form = useForm<PhoneRegisterFormValues>({
     resolver: zodResolver(phoneRegisterSchema),
     defaultValues: {
@@ -57,48 +52,10 @@ const PhoneRegisterForm: React.FC<PhoneRegisterFormProps> = ({
       birthYear: '',
       accountType: 'consumer',
       termsAccepted: false,
-      captchaToken: '',
     },
   });
 
-  const handleVerify = (token: string) => {
-    form.setValue('captchaToken', token);
-    setCaptchaVerified(true);
-    toast({
-      title: "CAPTCHA vérifié",
-      description: "Vérification humaine réussie",
-    });
-  };
-
-  const handleExpire = () => {
-    form.setValue('captchaToken', '');
-    setCaptchaVerified(false);
-    toast({
-      variant: "destructive",
-      title: "CAPTCHA expiré",
-      description: "Veuillez vérifier à nouveau que vous n'êtes pas un robot",
-    });
-  };
-
-  const handleError = (error: string) => {
-    toast({
-      variant: "destructive",
-      title: "Erreur CAPTCHA",
-      description: "Un problème est survenu lors de la vérification",
-    });
-    console.error("HCaptcha error:", error);
-  };
-
   const handleSubmit = async (values: PhoneRegisterFormValues) => {
-    if (!captchaVerified) {
-      toast({
-        variant: "destructive",
-        title: "Vérification requise",
-        description: "Veuillez vérifier que vous n'êtes pas un robot",
-      });
-      return;
-    }
-
     try {
       await onSubmit(values);
     } catch (error) {
@@ -149,22 +106,10 @@ const PhoneRegisterForm: React.FC<PhoneRegisterFormProps> = ({
         
         <TermsCheckbox form={form} />
 
-        <div className="flex justify-center w-full">
-          <div className="w-full max-w-md">
-            <HCaptcha
-              ref={captchaRef}
-              theme={document.documentElement.classList.contains('dark') ? 'dark' : 'light'}
-              onVerify={handleVerify}
-              onExpire={handleExpire}
-              onError={handleError}
-            />
-          </div>
-        </div>
-
         <Button
           type="submit"
           className="w-full"
-          disabled={isLoading || !captchaVerified}
+          disabled={isLoading}
         >
           {isLoading ? (
             <>

@@ -1,49 +1,24 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { useGoogleAuth } from "@/hooks/useGoogleAuth";
+import { Loader2 } from "lucide-react";
 
 const SocialAuth = () => {
-  const { toast } = useToast();
-  const [googleLoading, setGoogleLoading] = useState(false);
-
-  const handleGoogleSignIn = async () => {
-    try {
-      setGoogleLoading(true);
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/dashboard`,
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          }
-        }
-      });
-      
-      if (error) throw error;
-      
-    } catch (error: any) {
-      console.error("Google signup error:", error);
-      toast({
-        variant: "destructive",
-        title: "Erreur d'inscription",
-        description: error.message || "Une erreur est survenue lors de l'inscription avec Google",
-      });
-      setGoogleLoading(false);
-    }
-  };
+  const { googleLoading, signInWithGoogle } = useGoogleAuth();
 
   return (
     <Button 
       variant="outline" 
       className="w-full flex items-center justify-center gap-2 mobile-full-width"
-      onClick={handleGoogleSignIn}
+      onClick={signInWithGoogle}
       disabled={googleLoading}
     >
       {googleLoading ? (
-        "Inscription en cours..."
+        <>
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          Inscription en cours...
+        </>
       ) : (
         <>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="w-5 h-5">
