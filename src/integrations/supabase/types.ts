@@ -9,6 +9,116 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      bank_accounts: {
+        Row: {
+          account_name: string
+          account_number: string | null
+          balance: number
+          bank_name: string
+          bic: string
+          created_at: string | null
+          currency: string
+          iban: string
+          id: string
+          is_default: boolean
+          status: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          account_name: string
+          account_number?: string | null
+          balance?: number
+          bank_name: string
+          bic: string
+          created_at?: string | null
+          currency?: string
+          iban: string
+          id?: string
+          is_default?: boolean
+          status?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          account_name?: string
+          account_number?: string | null
+          balance?: number
+          bank_name?: string
+          bic?: string
+          created_at?: string | null
+          currency?: string
+          iban?: string
+          id?: string
+          is_default?: boolean
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      bank_transfers: {
+        Row: {
+          amount: number
+          completed_at: string | null
+          created_at: string | null
+          currency: string
+          description: string | null
+          error_message: string | null
+          id: string
+          recipient_bic: string
+          recipient_iban: string
+          recipient_name: string
+          source_account_id: string
+          status: string
+          transaction_reference: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          completed_at?: string | null
+          created_at?: string | null
+          currency?: string
+          description?: string | null
+          error_message?: string | null
+          id?: string
+          recipient_bic: string
+          recipient_iban: string
+          recipient_name: string
+          source_account_id: string
+          status?: string
+          transaction_reference?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          completed_at?: string | null
+          created_at?: string | null
+          currency?: string
+          description?: string | null
+          error_message?: string | null
+          id?: string
+          recipient_bic?: string
+          recipient_iban?: string
+          recipient_name?: string
+          source_account_id?: string
+          status?: string
+          transaction_reference?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bank_transfers_source_account_id_fkey"
+            columns: ["source_account_id"]
+            isOneToOne: false
+            referencedRelation: "bank_accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lavuepayee: {
         Row: {
           created_at: string
