@@ -9,6 +9,71 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      ads: {
+        Row: {
+          campaign_id: string
+          clicks_count: number | null
+          content: string
+          created_at: string | null
+          id: string
+          image_url: string | null
+          link_url: string | null
+          reward_amount: number | null
+          reward_points: number
+          shares_count: number | null
+          status: string | null
+          title: string
+          type: string
+          updated_at: string | null
+          video_url: string | null
+          views_count: number | null
+        }
+        Insert: {
+          campaign_id: string
+          clicks_count?: number | null
+          content: string
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          link_url?: string | null
+          reward_amount?: number | null
+          reward_points?: number
+          shares_count?: number | null
+          status?: string | null
+          title: string
+          type: string
+          updated_at?: string | null
+          video_url?: string | null
+          views_count?: number | null
+        }
+        Update: {
+          campaign_id?: string
+          clicks_count?: number | null
+          content?: string
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          link_url?: string | null
+          reward_amount?: number | null
+          reward_points?: number
+          shares_count?: number | null
+          status?: string | null
+          title?: string
+          type?: string
+          updated_at?: string | null
+          video_url?: string | null
+          views_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ads_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bank_accounts: {
         Row: {
           account_name: string
@@ -119,6 +184,59 @@ export type Database = {
           },
         ]
       }
+      campaigns: {
+        Row: {
+          advertiser_id: string
+          budget: number
+          created_at: string | null
+          description: string | null
+          end_date: string | null
+          id: string
+          spent: number | null
+          start_date: string | null
+          status: string | null
+          target_audience: Json | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          advertiser_id: string
+          budget: number
+          created_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          spent?: number | null
+          start_date?: string | null
+          status?: string | null
+          target_audience?: Json | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          advertiser_id?: string
+          budget?: number
+          created_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          spent?: number | null
+          start_date?: string | null
+          status?: string | null
+          target_audience?: Json | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaigns_advertiser_id_fkey"
+            columns: ["advertiser_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lavuepayee: {
         Row: {
           created_at: string
@@ -133,6 +251,57 @@ export type Database = {
           id?: number
         }
         Relationships: []
+      }
+      messages: {
+        Row: {
+          attachment_url: string | null
+          content: string
+          created_at: string | null
+          id: string
+          read_at: string | null
+          recipient_id: string
+          sender_id: string
+          type: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          attachment_url?: string | null
+          content: string
+          created_at?: string | null
+          id?: string
+          read_at?: string | null
+          recipient_id: string
+          sender_id: string
+          type?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          attachment_url?: string | null
+          content?: string
+          created_at?: string | null
+          id?: string
+          read_at?: string | null
+          recipient_id?: string
+          sender_id?: string
+          type?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -169,6 +338,397 @@ export type Database = {
           username?: string | null
         }
         Relationships: []
+      }
+      referrals: {
+        Row: {
+          created_at: string | null
+          id: string
+          level: number | null
+          referred_id: string
+          referrer_id: string
+          reward_amount: number | null
+          reward_points: number | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          level?: number | null
+          referred_id: string
+          referrer_id: string
+          reward_amount?: number | null
+          reward_points?: number | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          level?: number | null
+          referred_id?: string
+          referrer_id?: string
+          reward_amount?: number | null
+          reward_points?: number | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_referred_id_fkey"
+            columns: ["referred_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_referrer_id_fkey"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tasks: {
+        Row: {
+          ad_id: string
+          completed_at: string | null
+          created_at: string | null
+          id: string
+          proof_url: string | null
+          reward_amount: number | null
+          reward_points: number
+          status: string | null
+          type: string
+          updated_at: string | null
+          user_id: string
+          verified_at: string | null
+        }
+        Insert: {
+          ad_id: string
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          proof_url?: string | null
+          reward_amount?: number | null
+          reward_points: number
+          status?: string | null
+          type: string
+          updated_at?: string | null
+          user_id: string
+          verified_at?: string | null
+        }
+        Update: {
+          ad_id?: string
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          proof_url?: string | null
+          reward_amount?: number | null
+          reward_points?: number
+          status?: string | null
+          type?: string
+          updated_at?: string | null
+          user_id?: string
+          verified_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_ad_id_fkey"
+            columns: ["ad_id"]
+            isOneToOne: false
+            referencedRelation: "ads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      transactions: {
+        Row: {
+          amount: number
+          created_at: string | null
+          description: string | null
+          id: string
+          payment_details: Json | null
+          payment_method: string | null
+          points: number | null
+          processed_at: string | null
+          reference_id: string | null
+          status: string | null
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          payment_details?: Json | null
+          payment_method?: string | null
+          points?: number | null
+          processed_at?: string | null
+          reference_id?: string | null
+          status?: string | null
+          type: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          payment_details?: Json | null
+          payment_method?: string | null
+          points?: number | null
+          processed_at?: string | null
+          reference_id?: string | null
+          status?: string | null
+          type?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_settings: {
+        Row: {
+          created_at: string | null
+          id: string
+          language: string | null
+          notifications_email: boolean | null
+          notifications_push: boolean | null
+          notifications_sms: boolean | null
+          privacy_activity: boolean | null
+          privacy_profile: string | null
+          theme: string | null
+          timezone: string | null
+          two_factor_enabled: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          language?: string | null
+          notifications_email?: boolean | null
+          notifications_push?: boolean | null
+          notifications_sms?: boolean | null
+          privacy_activity?: boolean | null
+          privacy_profile?: string | null
+          theme?: string | null
+          timezone?: string | null
+          two_factor_enabled?: boolean | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          language?: string | null
+          notifications_email?: boolean | null
+          notifications_push?: boolean | null
+          notifications_sms?: boolean | null
+          privacy_activity?: boolean | null
+          privacy_profile?: string | null
+          theme?: string | null
+          timezone?: string | null
+          two_factor_enabled?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_settings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          email: string
+          email_verified: boolean | null
+          first_name: string | null
+          id: string
+          last_name: string | null
+          phone: string | null
+          phone_verified: boolean | null
+          points: number | null
+          referral_code: string | null
+          referred_by: string | null
+          role: string | null
+          status: string | null
+          total_earned: number | null
+          updated_at: string | null
+          username: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email: string
+          email_verified?: boolean | null
+          first_name?: string | null
+          id: string
+          last_name?: string | null
+          phone?: string | null
+          phone_verified?: boolean | null
+          points?: number | null
+          referral_code?: string | null
+          referred_by?: string | null
+          role?: string | null
+          status?: string | null
+          total_earned?: number | null
+          updated_at?: string | null
+          username: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email?: string
+          email_verified?: boolean | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          phone?: string | null
+          phone_verified?: boolean | null
+          points?: number | null
+          referral_code?: string | null
+          referred_by?: string | null
+          role?: string | null
+          status?: string | null
+          total_earned?: number | null
+          updated_at?: string | null
+          username?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "users_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wallets: {
+        Row: {
+          balance: number | null
+          created_at: string | null
+          currency: string | null
+          id: string
+          pending_balance: number | null
+          total_earned: number | null
+          total_withdrawn: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          balance?: number | null
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          pending_balance?: number | null
+          total_earned?: number | null
+          total_withdrawn?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          balance?: number | null
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          pending_balance?: number | null
+          total_earned?: number | null
+          total_withdrawn?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wallets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      withdrawals: {
+        Row: {
+          amount: number
+          created_at: string | null
+          fee: number | null
+          id: string
+          method: string
+          net_amount: number
+          notes: string | null
+          payment_details: Json
+          processed_at: string | null
+          status: string | null
+          transaction_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          fee?: number | null
+          id?: string
+          method: string
+          net_amount: number
+          notes?: string | null
+          payment_details: Json
+          processed_at?: string | null
+          status?: string | null
+          transaction_id?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          fee?: number | null
+          id?: string
+          method?: string
+          net_amount?: number
+          notes?: string | null
+          payment_details?: Json
+          processed_at?: string | null
+          status?: string | null
+          transaction_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "withdrawals_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
