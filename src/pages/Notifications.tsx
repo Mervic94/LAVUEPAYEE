@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Bell, BellOff, Mail, MessageSquare, DollarSign, Users, Settings, Trash2, MarkAsRead } from 'lucide-react';
+import { Bell, BellOff, Mail, MessageSquare, DollarSign, Users, Settings, Trash2, CheckCheck } from 'lucide-react';
 import Navbar from '@/components/navbar';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from "@/hooks/use-toast";
@@ -214,7 +213,7 @@ const Notifications = () => {
           
           {unreadCount > 0 && (
             <Button onClick={markAllAsRead} variant="outline">
-              <MarkAsRead className="h-4 w-4 mr-2" />
+              <CheckCheck className="h-4 w-4 mr-2" />
               Tout marquer comme lu
             </Button>
           )}
@@ -267,7 +266,7 @@ const Notifications = () => {
                             variant="ghost"
                             onClick={() => markAsRead(notification.id)}
                           >
-                            <MarkAsRead className="h-4 w-4" />
+                            <CheckCheck className="h-4 w-4" />
                           </Button>
                         )}
                         <Button
@@ -319,7 +318,7 @@ const Notifications = () => {
                           variant="ghost"
                           onClick={() => markAsRead(notification.id)}
                         >
-                          <MarkAsRead className="h-4 w-4" />
+                          <CheckCheck className="h-4 w-4" />
                         </Button>
                         <Button
                           size="sm"
@@ -365,7 +364,7 @@ const Notifications = () => {
                           variant="ghost"
                           onClick={() => markAsRead(notification.id)}
                         >
-                          <MarkAsRead className="h-4 w-4" />
+                          <CheckCheck className="h-4 w-4" />
                         </Button>
                       )}
                       <Button
@@ -411,7 +410,7 @@ const Notifications = () => {
                           variant="ghost"
                           onClick={() => markAsRead(notification.id)}
                         >
-                          <MarkAsRead className="h-4 w-4" />
+                          <CheckCheck className="h-4 w-4" />
                         </Button>
                       )}
                       <Button
@@ -457,7 +456,7 @@ const Notifications = () => {
                           variant="ghost"
                           onClick={() => markAsRead(notification.id)}
                         >
-                          <MarkAsRead className="h-4 w-4" />
+                          <CheckCheck className="h-4 w-4" />
                         </Button>
                       )}
                       <Button
