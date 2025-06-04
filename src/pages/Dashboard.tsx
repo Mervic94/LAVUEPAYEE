@@ -1,13 +1,16 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowUpRight, TrendingUp, Calendar, Clock, Users, User, UserCog, Store } from 'lucide-react';
+import { ArrowUpRight, TrendingUp, Calendar, Clock, Users, User, UserCog, Store, Plus, Eye } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Navbar from '@/components/navbar';
 import AdCard from '@/components/AdCard';
 import PointsIndicator from '@/components/PointsIndicator';
 import AdminDashboard from '@/components/dashboards/AdminDashboard';
 import AdvertiserDashboard from '@/components/dashboards/AdvertiserDashboard';
 import ConsumerDashboard from '@/components/dashboards/ConsumerDashboard';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 // Mock data for ads
@@ -35,46 +38,47 @@ const mockAds = [
     thumbnail: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YWlycGxhbmV8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=800&q=60',
     duration: 30,
     reward: 40
-  },
-  {
-    id: '4',
-    title: 'Des cosmétiques naturels pour une peau parfaite',
-    description: 'Ingrédients biologiques et formules sans produits chimiques nocifs.',
-    thumbnail: 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8Y29zbWV0aWNzfGVufDB8fDB8fHww&auto=format&fit=crop&w=800&q=60',
-    duration: 25,
-    reward: 35
-  },
-  {
-    id: '5',
-    title: 'Abonnement streaming à prix réduit',
-    description: 'Accédez à des milliers de films et séries en streaming HD pour un prix imbattable.',
-    thumbnail: 'https://images.unsplash.com/photo-1522869635100-187f6605241d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c3RyZWFtaW5nfGVufDB8fDB8fHww&auto=format&fit=crop&w=800&q=60',
-    duration: 40,
-    reward: 45
-  },
-  {
-    id: '6',
-    title: 'Révolutionnez votre cuisine avec ce robot multifonction',
-    description: 'Préparez des repas délicieux en quelques minutes avec cet appareil innovant.',
-    thumbnail: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8a2l0Y2hlbiUyMGFwcGxpYW5jZXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=800&q=60',
-    duration: 55,
-    reward: 65
   }
 ];
 
-// Define predefined ad types to use
 const adTypes: Array<"banner" | "interstitial" | "video" | "native" | "popup" | "audio"> = ['popup', 'audio', 'native'];
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  // In a real application, this would be determined by the authenticated user's role
   const [userRole, setUserRole] = useState<'admin' | 'advertiser' | 'consumer'>('consumer');
   
-  // In a demo application, we allow role switching, but in production this would be determined by user's actual role
-  // For admin users, all tabs would be visible
-  // For regular users, only their role's dashboard would be visible
-  const isAdmin = userRole === 'admin';
-  
+  // Quick actions based on user role
+  const quickActions = [
+    {
+      title: 'Voir les tâches',
+      description: 'Gérez vos tâches en cours',
+      action: () => navigate('/tasks'),
+      icon: Clock,
+      color: 'bg-blue-500'
+    },
+    {
+      title: 'Marketplace',
+      description: 'Découvrez les offres',
+      action: () => navigate('/marketplace'),
+      icon: Store,
+      color: 'bg-green-500'
+    },
+    {
+      title: 'Mon portefeuille',
+      description: 'Gérez vos gains',
+      action: () => navigate('/wallet'),
+      icon: TrendingUp,
+      color: 'bg-purple-500'
+    },
+    {
+      title: 'Parrainage',
+      description: 'Invitez des amis',
+      action: () => navigate('/affiliates'),
+      icon: Users,
+      color: 'bg-orange-500'
+    }
+  ];
+
   // Mock statistics for the dashboard
   const stats = [
     { 
@@ -97,7 +101,7 @@ const Dashboard = () => {
       value: '28', 
       change: '+3 cette semaine', 
       positive: true,
-      icon: Clock
+      icon: Eye
     },
     { 
       title: 'Temps total', 
@@ -115,51 +119,55 @@ const Dashboard = () => {
     }
   ];
 
-  // Check if user is authenticated
-  const isAuthenticated = true;
-
-  // In a real app, redirect unauthenticated users to login
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login');
-    }
-  }, [isAuthenticated, navigate]);
-
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      
-      <main className="container px-6 mx-auto max-w-7xl pt-24 pb-12">
-        <h1 className="text-3xl font-bold mb-4">Tableau de bord</h1>
+    <ProtectedRoute>
+      <div className="min-h-screen bg-background">
+        <Navbar />
         
-        {/* Role switcher - only visible for demo or admin users */}
-        {isAdmin && (
-          <div className="mb-8">
-            <Tabs defaultValue={userRole} onValueChange={(value) => setUserRole(value as any)}>
-              <TabsList className="grid grid-cols-3 w-full max-w-md">
-                <TabsTrigger value="consumer" className="flex items-center gap-2">
-                  <User className="h-4 w-4" />
-                  Consommateur
-                </TabsTrigger>
-                <TabsTrigger value="advertiser" className="flex items-center gap-2">
-                  <Store className="h-4 w-4" />
-                  Annonceur
-                </TabsTrigger>
-                <TabsTrigger value="admin" className="flex items-center gap-2">
-                  <UserCog className="h-4 w-4" />
-                  Admin
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
+        <main className="container px-6 mx-auto max-w-7xl pt-24 pb-12">
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h1 className="text-3xl font-bold mb-2">Tableau de bord</h1>
+              <p className="text-muted-foreground">Bienvenue sur LAVUEPAYEE ! Voici un aperçu de votre activité.</p>
+            </div>
+            <div className="flex gap-2">
+              <Button onClick={() => navigate('/marketplace')} variant="outline">
+                <Plus className="h-4 w-4 mr-2" />
+                Nouvelle tâche
+              </Button>
+              <Button onClick={() => navigate('/analytics')}>
+                <TrendingUp className="h-4 w-4 mr-2" />
+                Analytiques
+              </Button>
+            </div>
           </div>
-        )}
-        
-        {/* Display appropriate dashboard based on user role */}
-        {userRole === 'admin' && <AdminDashboard />}
-        {userRole === 'advertiser' && <AdvertiserDashboard />}
-        {userRole === 'consumer' && <ConsumerDashboard stats={stats} mockAds={mockAds} adTypes={adTypes} />}
-      </main>
-    </div>
+
+          {/* Quick Actions */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            {quickActions.map((action, index) => (
+              <Card key={index} className="cursor-pointer hover:shadow-md transition-shadow" onClick={action.action}>
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2 rounded-lg ${action.color} text-white`}>
+                      <action.icon className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-sm">{action.title}</h3>
+                      <p className="text-xs text-muted-foreground">{action.description}</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          
+          {/* Display appropriate dashboard based on user role */}
+          {userRole === 'admin' && <AdminDashboard />}
+          {userRole === 'advertiser' && <AdvertiserDashboard />}
+          {userRole === 'consumer' && <ConsumerDashboard stats={stats} mockAds={mockAds} adTypes={adTypes} />}
+        </main>
+      </div>
+    </ProtectedRoute>
   );
 };
 

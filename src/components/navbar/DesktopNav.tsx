@@ -26,8 +26,14 @@ const DesktopNav: React.FC<DesktopNavProps> = ({ user }) => {
           <Link to="/tasks" className={`nav-link ${isActive('/tasks') ? 'text-primary after:scale-x-100' : ''}`}>
             Tâches
           </Link>
-          <Link to="/messages" className={`nav-link ${isActive('/messages') ? 'text-primary after:scale-x-100' : ''}`}>
-            Messages
+          <Link to="/affiliates" className={`nav-link ${isActive('/affiliates') ? 'text-primary after:scale-x-100' : ''}`}>
+            Parrainage
+          </Link>
+          <Link to="/leaderboard" className={`nav-link ${isActive('/leaderboard') ? 'text-primary after:scale-x-100' : ''}`}>
+            Classement
+          </Link>
+          <Link to="/courses" className={`nav-link ${isActive('/courses') ? 'text-primary after:scale-x-100' : ''}`}>
+            Formation
           </Link>
         </>
       ) : (
@@ -37,6 +43,9 @@ const DesktopNav: React.FC<DesktopNavProps> = ({ user }) => {
           </a>
           <Link to="/marketplace" className={`nav-link ${isActive('/marketplace') ? 'text-primary after:scale-x-100' : ''}`}>
             Marketplace
+          </Link>
+          <Link to="/leaderboard" className={`nav-link ${isActive('/leaderboard') ? 'text-primary after:scale-x-100' : ''}`}>
+            Classement
           </Link>
         </>
       )}

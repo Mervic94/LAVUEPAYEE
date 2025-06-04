@@ -13,7 +13,6 @@ import UsernameLoginForm from "@/components/login/UsernameLoginForm";
 import LoginDivider from "@/components/login/LoginDivider";
 import LoginHeader from "@/components/login/LoginHeader";
 import LoginFooter from "@/components/login/LoginFooter";
-import DemoAccounts from "@/components/login/DemoAccounts";
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -59,8 +58,6 @@ const LoginPage: React.FC = () => {
     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
       <div className="w-full max-w-md space-y-6">
         <LoginHeader title="Se connecter" subtitle="Accédez à votre compte" />
-
-        <DemoAccounts />
         
         <Card className="glass-card">
           <CardContent className="p-6 tablet-container">

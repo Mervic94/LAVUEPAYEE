@@ -12,59 +12,162 @@ const MobileNavLinks: React.FC<MobileNavLinksProps> = ({ user, onItemClick }) =>
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <>
-      <Link to="/" onClick={onItemClick} className="w-full">
-        <div className={`py-3 px-4 rounded-lg transition-colors ${isActive('/') ? 'bg-primary/10 text-primary' : ''}`}>
-          Accueil
-        </div>
+    <nav className="flex flex-col gap-1 w-full px-4">
+      <Link
+        to="/"
+        className={`py-3 px-4 rounded-lg text-center transition-colors ${
+          isActive('/') ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-accent'
+        }`}
+        onClick={onItemClick}
+      >
+        Accueil
       </Link>
       
       {user ? (
         <>
-          <Link to="/dashboard" onClick={onItemClick} className="w-full">
-            <div className={`py-3 px-4 rounded-lg transition-colors ${isActive('/dashboard') ? 'bg-primary/10 text-primary' : ''}`}>
-              Tableau de bord
-            </div>
+          <Link
+            to="/dashboard"
+            className={`py-3 px-4 rounded-lg text-center transition-colors ${
+              isActive('/dashboard') ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-accent'
+            }`}
+            onClick={onItemClick}
+          >
+            Tableau de bord
           </Link>
-          
-          <Link to="/marketplace" onClick={onItemClick} className="w-full">
-            <div className={`py-3 px-4 rounded-lg transition-colors ${isActive('/marketplace') ? 'bg-primary/10 text-primary' : ''}`}>
-              Marketplace
-            </div>
+          <Link
+            to="/marketplace"
+            className={`py-3 px-4 rounded-lg text-center transition-colors ${
+              isActive('/marketplace') ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-accent'
+            }`}
+            onClick={onItemClick}
+          >
+            Marketplace
           </Link>
-          
-          <Link to="/tasks" onClick={onItemClick} className="w-full">
-            <div className={`py-3 px-4 rounded-lg transition-colors ${isActive('/tasks') ? 'bg-primary/10 text-primary' : ''}`}>
-              Tâches
-            </div>
+          <Link
+            to="/tasks"
+            className={`py-3 px-4 rounded-lg text-center transition-colors ${
+              isActive('/tasks') ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-accent'
+            }`}
+            onClick={onItemClick}
+          >
+            Tâches
           </Link>
-          
-          <Link to="/messages" onClick={onItemClick} className="w-full">
-            <div className={`py-3 px-4 rounded-lg transition-colors ${isActive('/messages') ? 'bg-primary/10 text-primary' : ''}`}>
-              Messages
-            </div>
+          <Link
+            to="/wallet"
+            className={`py-3 px-4 rounded-lg text-center transition-colors ${
+              isActive('/wallet') ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-accent'
+            }`}
+            onClick={onItemClick}
+          >
+            Portefeuille
           </Link>
-          
-          <Link to="/profile" onClick={onItemClick} className="w-full">
-            <div className={`py-3 px-4 rounded-lg transition-colors ${isActive('/profile') ? 'bg-primary/10 text-primary' : ''}`}>
-              Profil
-            </div>
+          <Link
+            to="/affiliates"
+            className={`py-3 px-4 rounded-lg text-center transition-colors ${
+              isActive('/affiliates') ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-accent'
+            }`}
+            onClick={onItemClick}
+          >
+            Parrainage
+          </Link>
+          <Link
+            to="/leaderboard"
+            className={`py-3 px-4 rounded-lg text-center transition-colors ${
+              isActive('/leaderboard') ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-accent'
+            }`}
+            onClick={onItemClick}
+          >
+            Classement
+          </Link>
+          <Link
+            to="/courses"
+            className={`py-3 px-4 rounded-lg text-center transition-colors ${
+              isActive('/courses') ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-accent'
+            }`}
+            onClick={onItemClick}
+          >
+            Formation
+          </Link>
+          <Link
+            to="/analytics"
+            className={`py-3 px-4 rounded-lg text-center transition-colors ${
+              isActive('/analytics') ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-accent'
+            }`}
+            onClick={onItemClick}
+          >
+            Analytiques
+          </Link>
+          <Link
+            to="/messages"
+            className={`py-3 px-4 rounded-lg text-center transition-colors ${
+              isActive('/messages') ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-accent'
+            }`}
+            onClick={onItemClick}
+          >
+            Messages
+          </Link>
+          <Link
+            to="/settings"
+            className={`py-3 px-4 rounded-lg text-center transition-colors ${
+              isActive('/settings') ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-accent'
+            }`}
+            onClick={onItemClick}
+          >
+            Paramètres
           </Link>
         </>
       ) : (
-        <a href="#how-it-works" onClick={onItemClick} className="w-full">
-          <div className={`py-3 px-4 rounded-lg transition-colors`}>
-            Comment ça marche
-          </div>
-        </a>
+        <>
+          <Link
+            to="/register"
+            className={`py-3 px-4 rounded-lg text-center transition-colors ${
+              isActive('/register') ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-accent'
+            }`}
+            onClick={onItemClick}
+          >
+            S'inscrire
+          </Link>
+          <Link
+            to="/marketplace"
+            className={`py-3 px-4 rounded-lg text-center transition-colors ${
+              isActive('/marketplace') ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-accent'
+            }`}
+            onClick={onItemClick}
+          >
+            Marketplace
+          </Link>
+          <Link
+            to="/leaderboard"
+            className={`py-3 px-4 rounded-lg text-center transition-colors ${
+              isActive('/leaderboard') ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-accent'
+            }`}
+            onClick={onItemClick}
+          >
+            Classement
+          </Link>
+        </>
       )}
       
-      <Link to="/faq" onClick={onItemClick} className="w-full">
-        <div className={`py-3 px-4 rounded-lg transition-colors ${isActive('/faq') ? 'bg-primary/10 text-primary' : ''}`}>
-          FAQ
-        </div>
+      <Link
+        to="/faq"
+        className={`py-3 px-4 rounded-lg text-center transition-colors ${
+          isActive('/faq') ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-accent'
+        }`}
+        onClick={onItemClick}
+      >
+        FAQ
       </Link>
-    </>
+      
+      <Link
+        to="/help"
+        className={`py-3 px-4 rounded-lg text-center transition-colors ${
+          isActive('/help') ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-accent'
+        }`}
+        onClick={onItemClick}
+      >
+        Aide
+      </Link>
+    </nav>
   );
 };
 

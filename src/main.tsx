@@ -42,34 +42,37 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+    errorElement: <NotFound />,
     children: [
       { index: true, element: <Index /> },
       { path: "login", element: <Login /> },
       { path: "register", element: <Register /> },
+      { path: "reset-password", element: <ResetPassword /> },
+      { path: "verify-email", element: <VerifyEmail /> },
+      { path: "verify-phone", element: <VerifyPhone /> },
+      
+      // Pages publiques (accessible sans authentification)
+      { path: "marketplace", element: <Marketplace /> },
+      { path: "leaderboard", element: <Leaderboard /> },
+      { path: "faq", element: <FAQ /> },
+      { path: "help", element: <Help /> },
+      { path: "terms", element: <Terms /> },
+      { path: "privacy", element: <Privacy /> },
+      { path: "cookies", element: <Cookies /> },
+      
+      // Pages protégées (nécessitent une authentification)
       { path: "dashboard", element: <Dashboard /> },
       { path: "profile", element: <Profile /> },
       { path: "tasks", element: <Tasks /> },
       { path: "wallet", element: <Wallet /> },
       { path: "messages", element: <Messages /> },
       { path: "settings", element: <Settings /> },
-      { path: "marketplace", element: <Marketplace /> },
       { path: "view-ad/:id", element: <ViewAd /> },
-      { path: "help", element: <Help /> },
-      { path: "faq", element: <FAQ /> },
-      { path: "terms", element: <Terms /> },
-      { path: "privacy", element: <Privacy /> },
-      { path: "cookies", element: <Cookies /> },
-      { path: "reset-password", element: <ResetPassword /> },
-      { path: "verify-email", element: <VerifyEmail /> },
-      { path: "verify-phone", element: <VerifyPhone /> },
-      
-      // Nouvelles pages
       { path: "analytics", element: <Analytics /> },
       { path: "kyc", element: <KYC /> },
       { path: "support", element: <Support /> },
       { path: "notifications", element: <Notifications /> },
       { path: "affiliates", element: <Affiliates /> },
-      { path: "leaderboard", element: <Leaderboard /> },
       { path: "courses", element: <Courses /> },
       
       { path: "*", element: <NotFound /> }
