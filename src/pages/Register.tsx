@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Mail, Phone } from "lucide-react";
@@ -14,7 +13,6 @@ import { formatDateOfBirth } from "@/utils/dateUtils";
 import EmailRegisterForm from "@/components/register/EmailRegisterForm";
 import PhoneRegisterForm from "@/components/register/PhoneRegisterForm";
 import SocialAuth from "@/components/register/SocialAuth";
-import DemoAccounts from "@/components/login/DemoAccounts";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -117,8 +115,6 @@ const RegisterPage = () => {
               </span>
             )}
           </p>
-          
-          <DemoAccounts />
         </div>
 
         <Card className="glass-card">
