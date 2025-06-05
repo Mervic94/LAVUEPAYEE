@@ -90,14 +90,16 @@ const Hero = () => {
               </div>
             </div>
 
-            {/* Right Content - Hero Image/Video */}
+            {/* Right Content - Hero Image with Logo */}
             <div className="relative">
               <div className="relative bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl p-8 backdrop-blur-sm">
-                <img 
-                  src="/lovable-uploads/eb1af938-5661-4d56-b98f-aa658853984a.png"
-                  alt="LAVUEPAYEE Dashboard Preview"
-                  className="w-full h-auto rounded-lg shadow-2xl"
-                />
+                <div className="flex items-center justify-center h-64 w-full">
+                  <img 
+                    src="/lovable-uploads/d82c55d8-0c83-4a02-82c0-67e854a84332.png"
+                    alt="LAVUEPAYEE Logo"
+                    className="h-32 w-32 object-contain"
+                  />
+                </div>
                 <div className="absolute -top-4 -right-4 bg-green-500 text-white px-4 py-2 rounded-full text-sm font-medium">
                   En ligne maintenant
                 </div>

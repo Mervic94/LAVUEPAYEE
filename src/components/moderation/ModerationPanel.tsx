@@ -24,26 +24,8 @@ const ModerationPanel = () => {
   const loadReports = async () => {
     setIsLoading(true);
     try {
-      // Simuler le chargement des rapports
-      const mockReports: ContentReport[] = [
-        {
-          id: '1',
-          reportedBy: 'user123',
-          contentType: 'ad',
-          contentId: 'ad456',
-          reason: 'Contenu inapproprié',
-          status: 'pending'
-        },
-        {
-          id: '2',
-          reportedBy: 'user789',
-          contentType: 'user_profile',
-          contentId: 'user456',
-          reason: 'Spam',
-          status: 'pending'
-        }
-      ];
-      setReports(mockReports);
+      const fetchedReports = await moderationService.getReports();
+      setReports(fetchedReports);
     } catch (error) {
       console.error('Erreur chargement rapports:', error);
       toast({
@@ -58,19 +40,22 @@ const ModerationPanel = () => {
 
   const handleReportAction = async (reportId: string, action: 'approve' | 'reject') => {
     try {
-      // Logique pour approuver ou rejeter un rapport
-      const updatedReports = reports.map(report => 
-        report.id === reportId 
-          ? { ...report, status: action === 'approve' ? 'resolved' : 'dismissed' as const }
-          : report
-      );
-      setReports(updatedReports);
+      const success = await moderationService.moderateReport(reportId, action === 'approve' ? 'approve' : 'dismiss', 'current_moderator');
+      
+      if (success) {
+        const updatedReports = reports.map(report => 
+          report.id === reportId 
+            ? { ...report, status: action === 'approve' ? 'resolved' as const : 'dismissed' as const }
+            : report
+        );
+        setReports(updatedReports);
 
-      toast({
-        title: "Action exécutée",
-        description: `Rapport ${action === 'approve' ? 'approuvé' : 'rejeté'} avec succès`,
-        variant: "default"
-      });
+        toast({
+          title: "Action exécutée",
+          description: `Rapport ${action === 'approve' ? 'approuvé' : 'rejeté'} avec succès`,
+          variant: "default"
+        });
+      }
     } catch (error) {
       console.error('Erreur action rapport:', error);
       toast({
@@ -81,7 +66,7 @@ const ModerationPanel = () => {
     }
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: ContentReport['status']) => {
     switch (status) {
       case 'pending':
         return <Badge variant="secondary">En attente</Badge>;

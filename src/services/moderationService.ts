@@ -1,15 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
 
-export interface ModerationAction {
-  id: string;
-  type: 'warning' | 'suspension' | 'ban' | 'content_removal';
-  reason: string;
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  duration?: number; // en heures
-  appealable: boolean;
-}
-
 export interface ContentReport {
   id: string;
   reportedBy: string;
@@ -18,6 +9,27 @@ export interface ContentReport {
   reason: string;
   status: 'pending' | 'reviewed' | 'resolved' | 'dismissed';
   evidence?: string[];
+  createdAt?: string;
+  reviewedBy?: string;
+  reviewedAt?: string;
+}
+
+export interface ModerationAction {
+  id: string;
+  type: 'warning' | 'content_removal' | 'account_suspension' | 'account_ban';
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  reason: string;
+  targetUserId: string;
+  moderatorId: string;
+  createdAt: string;
+  expiresAt?: string;
+}
+
+export interface AutoModerationResult {
+  action: 'allow' | 'flag' | 'block';
+  confidence: number;
+  reasons: string[];
+  suggestedAction?: ModerationAction['type'];
 }
 
 export class ModerationService {
@@ -30,364 +42,246 @@ export class ModerationService {
     return ModerationService.instance;
   }
 
-  // Auto-modération basée sur l'IA et des règles
-  async autoModerate(content: any, contentType: string): Promise<ModerationAction | null> {
-    try {
-      const moderationResult = await this.analyzeContent(content, contentType);
+  // Auto-modération basique
+  async autoModerateContent(content: string, contentType: string): Promise<AutoModerationResult> {
+    const suspiciousWords = ['spam', 'scam', 'fake', 'fraud', 'hack', 'cheat'];
+    const bannedWords = ['fuck', 'shit', 'damn'];
+    
+    const lowerContent = content.toLowerCase();
+    let flagged = false;
+    let blocked = false;
+    const reasons: string[] = [];
 
-      if (moderationResult.requiresAction) {
-        return await this.createModerationAction({
-          type: moderationResult.actionType,
-          reason: moderationResult.reason,
-          severity: moderationResult.severity,
-          appealable: moderationResult.severity !== 'critical'
-        });
-      }
-
-      return null;
-    } catch (error) {
-      console.error('Erreur auto-modération:', error);
-      return null;
+    // Vérifier les mots suspects
+    if (suspiciousWords.some(word => lowerContent.includes(word))) {
+      flagged = true;
+      reasons.push('Contenu potentiellement suspect détecté');
     }
-  }
 
-  private async analyzeContent(content: any, contentType: string) {
-    const analysis = {
-      requiresAction: false,
-      actionType: 'warning' as const,
-      reason: '',
-      severity: 'low' as const
+    // Vérifier les mots interdits
+    if (bannedWords.some(word => lowerContent.includes(word))) {
+      blocked = true;
+      reasons.push('Langage inapproprié détecté');
+    }
+
+    // Vérifier la longueur excessive (possible spam)
+    if (content.length > 1000 && contentType === 'comment') {
+      flagged = true;
+      reasons.push('Commentaire excessivement long');
+    }
+
+    // Détection de liens suspects
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const urls = content.match(urlRegex);
+    if (urls && urls.length > 3) {
+      flagged = true;
+      reasons.push('Trop de liens détectés');
+    }
+
+    if (blocked) {
+      return {
+        action: 'block',
+        confidence: 0.9,
+        reasons,
+        suggestedAction: 'content_removal'
+      };
+    }
+
+    if (flagged) {
+      return {
+        action: 'flag',
+        confidence: 0.7,
+        reasons,
+        suggestedAction: 'warning'
+      };
+    }
+
+    return {
+      action: 'allow',
+      confidence: 0.9,
+      reasons: ['Contenu approuvé automatiquement']
     };
-
-    // Analyse du contenu textuel
-    if (content.text) {
-      const toxicityScore = await this.checkTextToxicity(content.text);
-      if (toxicityScore > 0.8) {
-        analysis.requiresAction = true;
-        analysis.actionType = 'content_removal';
-        analysis.reason = 'Contenu toxique détecté';
-        analysis.severity = 'high';
-      } else if (toxicityScore > 0.6) {
-        analysis.requiresAction = true;
-        analysis.actionType = 'warning';
-        analysis.reason = 'Contenu potentiellement inapproprié';
-        analysis.severity = 'medium';
-      }
-    }
-
-    // Analyse des images (si présentes)
-    if (content.images && content.images.length > 0) {
-      const imageAnalysis = await this.analyzeImages(content.images);
-      if (imageAnalysis.inappropriate) {
-        analysis.requiresAction = true;
-        analysis.actionType = 'content_removal';
-        analysis.reason = 'Contenu visuel inapproprié';
-        analysis.severity = 'high';
-      }
-    }
-
-    // Détection de spam
-    if (await this.isSpam(content)) {
-      analysis.requiresAction = true;
-      analysis.actionType = 'warning';
-      analysis.reason = 'Contenu spam détecté';
-      analysis.severity = 'medium';
-    }
-
-    // Vérification des liens malveillants
-    if (content.links) {
-      const maliciousLinks = await this.checkMaliciousLinks(content.links);
-      if (maliciousLinks.length > 0) {
-        analysis.requiresAction = true;
-        analysis.actionType = 'content_removal';
-        analysis.reason = 'Liens malveillants détectés';
-        analysis.severity = 'critical';
-      }
-    }
-
-    return analysis;
   }
 
-  private async checkTextToxicity(text: string): Promise<number> {
-    // Simulation d'une API de détection de toxicité
-    const toxicWords = [
-      'spam', 'scam', 'fraude', 'arnaque', 'fake', 'faux',
-      'idiot', 'stupide', 'nul', 'débile'
-    ];
-
-    let toxicityScore = 0;
-    const words = text.toLowerCase().split(' ');
-    
-    for (const word of words) {
-      if (toxicWords.includes(word)) {
-        toxicityScore += 0.3;
-      }
-    }
-
-    // Vérifier la répétition excessive (spam)
-    const uniqueWords = new Set(words);
-    if (words.length > 10 && uniqueWords.size / words.length < 0.3) {
-      toxicityScore += 0.4;
-    }
-
-    return Math.min(toxicityScore, 1);
-  }
-
-  private async analyzeImages(images: string[]): Promise<{ inappropriate: boolean }> {
-    // Simulation d'analyse d'images
-    // En production, vous utiliseriez une API comme Google Vision API ou AWS Rekognition
-    
-    for (const imageUrl of images) {
-      // Vérifier la taille et le format
-      if (!this.isValidImageFormat(imageUrl)) {
-        return { inappropriate: true };
-      }
-    }
-
-    return { inappropriate: false };
-  }
-
-  private isValidImageFormat(url: string): boolean {
-    const validExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
-    return validExtensions.some(ext => url.toLowerCase().endsWith(ext));
-  }
-
-  private async isSpam(content: any): Promise<boolean> {
-    // Détecter la répétition excessive
-    if (content.text) {
-      const words = content.text.split(' ');
-      const wordCount = new Map();
-      
-      for (const word of words) {
-        wordCount.set(word, (wordCount.get(word) || 0) + 1);
-      }
-
-      // Si un mot apparaît plus de 5 fois dans un texte court
-      for (const count of wordCount.values()) {
-        if (count > 5 && words.length < 50) {
-          return true;
-        }
-      }
-    }
-
-    return false;
-  }
-
-  private async checkMaliciousLinks(links: string[]): Promise<string[]> {
-    const maliciousLinks: string[] = [];
-    const suspiciousDomains = [
-      'bit.ly', 'tinyurl.com', 'short.link', // Raccourcisseurs d'URL suspects
-      'phishing-site.com', 'malware-host.com' // Domaines connus malveillants
-    ];
-
-    for (const link of links) {
-      try {
-        const url = new URL(link);
-        if (suspiciousDomains.some(domain => url.hostname.includes(domain))) {
-          maliciousLinks.push(link);
-        }
-      } catch {
-        // URL invalide
-        maliciousLinks.push(link);
-      }
-    }
-
-    return maliciousLinks;
-  }
-
-  async reportContent(report: Omit<ContentReport, 'id' | 'status'>): Promise<string> {
+  // Signaler du contenu
+  async reportContent(report: Omit<ContentReport, 'id' | 'createdAt'>): Promise<string | null> {
     try {
-      const { data, error } = await supabase
-        .from('content_reports')
-        .insert({
-          reported_by: report.reportedBy,
-          content_type: report.contentType,
-          content_id: report.contentId,
-          reason: report.reason,
-          evidence: report.evidence,
-          status: 'pending',
-          created_at: new Date().toISOString()
-        })
-        .select()
-        .single();
+      // Pour l'instant, utiliser un stockage local en attendant la table Supabase
+      const reportId = `report_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      // Simuler le stockage
+      const reportData = {
+        ...report,
+        id: reportId,
+        createdAt: new Date().toISOString()
+      };
 
-      if (error) throw error;
-
-      // Déclencher une analyse automatique
-      await this.triggerAutoReview(data.id);
-
-      return data.id;
+      console.log('Rapport créé:', reportData);
+      
+      return reportId;
     } catch (error) {
-      console.error('Erreur signalement contenu:', error);
-      throw error;
+      console.error('Erreur création rapport:', error);
+      return null;
     }
   }
 
-  private async triggerAutoReview(reportId: string) {
-    // Implémenter la logique de révision automatique
-    setTimeout(async () => {
-      try {
-        const { data: report } = await supabase
-          .from('content_reports')
-          .select('*')
-          .eq('id', reportId)
-          .single();
-
-        if (report) {
-          // Analyser le contenu signalé
-          const content = await this.getReportedContent(report.content_type, report.content_id);
-          const moderationAction = await this.autoModerate(content, report.content_type);
-
-          if (moderationAction) {
-            await this.executeModerationAction(moderationAction, report.content_id);
-            
-            // Marquer le rapport comme résolu
-            await supabase
-              .from('content_reports')
-              .update({ 
-                status: 'resolved',
-                reviewed_at: new Date().toISOString()
-              })
-              .eq('id', reportId);
-          }
-        }
-      } catch (error) {
-        console.error('Erreur révision automatique:', error);
+  // Récupérer les rapports (mock pour l'instant)
+  async getReports(): Promise<ContentReport[]> {
+    // Mock data en attendant la vraie base de données
+    return [
+      {
+        id: '1',
+        reportedBy: 'user123',
+        contentType: 'ad',
+        contentId: 'ad456',
+        reason: 'Contenu inapproprié',
+        status: 'pending',
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: '2',
+        reportedBy: 'user789',
+        contentType: 'user_profile',
+        contentId: 'user456',
+        reason: 'Spam',
+        status: 'pending',
+        createdAt: new Date().toISOString()
       }
-    }, 5000); // Délai de 5 secondes pour la démonstration
+    ];
   }
 
-  private async getReportedContent(contentType: string, contentId: string) {
-    switch (contentType) {
-      case 'ad':
-        const { data: ad } = await supabase
-          .from('ads')
-          .select('*')
-          .eq('id', contentId)
-          .single();
-        return ad;
-      
-      case 'user_profile':
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', contentId)
-          .single();
-        return profile;
-      
-      default:
-        return null;
-    }
-  }
-
-  private async createModerationAction(action: Omit<ModerationAction, 'id'>): Promise<ModerationAction> {
-    const { data, error } = await supabase
-      .from('moderation_actions')
-      .insert({
-        type: action.type,
-        reason: action.reason,
-        severity: action.severity,
-        duration: action.duration,
-        appealable: action.appealable,
-        created_at: new Date().toISOString()
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
-  }
-
-  async executeModerationAction(action: ModerationAction, targetId: string) {
+  // Modérer un rapport
+  async moderateReport(reportId: string, action: 'approve' | 'dismiss', moderatorId: string): Promise<boolean> {
     try {
-      switch (action.type) {
-        case 'content_removal':
-          await this.removeContent(targetId);
-          break;
-        
-        case 'warning':
-          await this.issueWarning(targetId, action.reason);
-          break;
-        
-        case 'suspension':
-          await this.suspendUser(targetId, action.duration || 24);
-          break;
-        
-        case 'ban':
-          await this.banUser(targetId);
-          break;
+      console.log(`Rapport ${reportId} ${action === 'approve' ? 'approuvé' : 'rejeté'} par ${moderatorId}`);
+      
+      if (action === 'approve') {
+        // Appliquer l'action de modération
+        await this.applyModerationAction(reportId, 'warning', 'low', 'Rapport approuvé', 'target_user', moderatorId);
       }
 
-      // Enregistrer l'action
-      await supabase
-        .from('moderation_actions')
-        .update({
-          executed_at: new Date().toISOString(),
-          target_id: targetId
-        })
-        .eq('id', action.id);
-
-    } catch (error) {
-      console.error('Erreur exécution action modération:', error);
-    }
-  }
-
-  private async removeContent(contentId: string) {
-    // Marquer le contenu comme supprimé
-    await supabase
-      .from('ads')
-      .update({ status: 'removed' })
-      .eq('id', contentId);
-  }
-
-  private async issueWarning(userId: string, reason: string) {
-    // Créer un avertissement
-    await supabase
-      .from('user_warnings')
-      .insert({
-        user_id: userId,
-        reason: reason,
-        issued_at: new Date().toISOString()
-      });
-  }
-
-  private async suspendUser(userId: string, duration: number) {
-    const suspendUntil = new Date(Date.now() + duration * 3600000); // duration en heures
-    
-    await supabase
-      .from('users')
-      .update({
-        status: 'suspended',
-        suspended_until: suspendUntil.toISOString()
-      })
-      .eq('id', userId);
-  }
-
-  private async banUser(userId: string) {
-    await supabase
-      .from('users')
-      .update({ status: 'banned' })
-      .eq('id', userId);
-  }
-
-  // Système d'appel
-  async submitAppeal(actionId: string, reason: string, evidence?: string[]) {
-    try {
-      const { error } = await supabase
-        .from('moderation_appeals')
-        .insert({
-          action_id: actionId,
-          reason: reason,
-          evidence: evidence,
-          status: 'pending',
-          submitted_at: new Date().toISOString()
-        });
-
-      if (error) throw error;
       return true;
     } catch (error) {
-      console.error('Erreur soumission appel:', error);
+      console.error('Erreur modération rapport:', error);
       return false;
+    }
+  }
+
+  // Appliquer une action de modération
+  async applyModerationAction(
+    reportId: string,
+    actionType: ModerationAction['type'],
+    severity: ModerationAction['severity'],
+    reason: string,
+    targetUserId: string,
+    moderatorId: string
+  ): Promise<boolean> {
+    try {
+      const actionData: ModerationAction = {
+        id: `action_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        type: actionType,
+        severity,
+        reason,
+        targetUserId,
+        moderatorId,
+        createdAt: new Date().toISOString()
+      };
+
+      // Calculer l'expiration pour les suspensions
+      if (actionType === 'account_suspension') {
+        const expirationDays = severity === 'low' ? 1 : severity === 'medium' ? 7 : 30;
+        actionData.expiresAt = new Date(Date.now() + expirationDays * 24 * 60 * 60 * 1000).toISOString();
+      }
+
+      console.log('Action de modération appliquée:', actionData);
+      
+      return true;
+    } catch (error) {
+      console.error('Erreur application action modération:', error);
+      return false;
+    }
+  }
+
+  // Vérifier le statut de modération d'un utilisateur
+  async getUserModerationStatus(userId: string): Promise<{
+    isBanned: boolean;
+    isSuspended: boolean;
+    warnings: number;
+    suspensionExpiresAt?: string;
+  }> {
+    try {
+      // Mock data - dans un vrai système, on interrogerait la base de données
+      return {
+        isBanned: false,
+        isSuspended: false,
+        warnings: 0
+      };
+    } catch (error) {
+      console.error('Erreur vérification statut modération:', error);
+      return {
+        isBanned: false,
+        isSuspended: false,
+        warnings: 0
+      };
+    }
+  }
+
+  // Calculer un score de confiance pour un utilisateur
+  async calculateUserTrustScore(userId: string): Promise<number> {
+    try {
+      // Facteurs à considérer :
+      // - Ancienneté du compte
+      // - Nombre de tâches complétées avec succès
+      // - Rapports reçus
+      // - Actions de modération passées
+      
+      // Mock calculation
+      const baseScore = 50;
+      const completedTasks = 25; // À récupérer de la DB
+      const reportsReceived = 2; // À récupérer de la DB
+      const accountAge = 30; // jours
+      
+      let score = baseScore;
+      score += Math.min(completedTasks * 2, 40); // Max +40 pour les tâches
+      score -= reportsReceived * 10; // -10 par rapport
+      score += Math.min(accountAge, 10); // Max +10 pour l'ancienneté
+      
+      return Math.max(0, Math.min(100, score));
+    } catch (error) {
+      console.error('Erreur calcul score confiance:', error);
+      return 50; // Score neutre par défaut
+    }
+  }
+
+  // Détecter les comportements suspects
+  async detectSuspiciousActivity(userId: string): Promise<{
+    suspicious: boolean;
+    reasons: string[];
+    riskLevel: 'low' | 'medium' | 'high';
+  }> {
+    try {
+      const reasons: string[] = [];
+      let riskLevel: 'low' | 'medium' | 'high' = 'low';
+
+      // Mock detection logic
+      // Dans un vrai système, on analyserait :
+      // - Fréquence de connexion
+      // - Patterns de clic suspects
+      // - Temps passé sur les tâches
+      // - Géolocalisation incohérente
+      
+      return {
+        suspicious: false,
+        reasons,
+        riskLevel
+      };
+    } catch (error) {
+      console.error('Erreur détection activité suspecte:', error);
+      return {
+        suspicious: false,
+        reasons: [],
+        riskLevel: 'low'
+      };
     }
   }
 }
