@@ -93,11 +93,11 @@ const Hero = () => {
             {/* Right Content - Hero Image with Logo */}
             <div className="relative">
               <div className="relative bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl p-8 backdrop-blur-sm">
-                <div className="flex items-center justify-center h-64 w-full">
+                <div className="flex items-center justify-center w-full h-80">
                   <img 
                     src="/lovable-uploads/d82c55d8-0c83-4a02-82c0-67e854a84332.png"
                     alt="LAVUEPAYEE Logo"
-                    className="h-32 w-32 object-contain"
+                    className="max-w-full max-h-full object-contain"
                   />
                 </div>
                 <div className="absolute -top-4 -right-4 bg-green-500 text-white px-4 py-2 rounded-full text-sm font-medium">

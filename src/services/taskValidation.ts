@@ -1,18 +1,28 @@
+import { ProofData, TaskSubmission, TaskType } from '@/types';
 
-import { supabase } from '@/integrations/supabase/client';
-
-export interface TaskValidationResult {
+export interface ValidationResult {
   isValid: boolean;
   score: number;
   reasons: string[];
-  approved: boolean;
+  fraudRisk: 'low' | 'medium' | 'high';
+  requiresManualReview: boolean;
 }
 
-export interface ValidationCriteria {
-  minViewDuration: number;
-  requiredInteractions: string[];
-  fraudDetection: boolean;
-  geoValidation: boolean;
+export interface FraudDetectionResult {
+  riskLevel: 'low' | 'medium' | 'high';
+  riskScore: number;
+  indicators: string[];
+  recommended: 'approve' | 'review' | 'reject';
+}
+
+export interface TaskValidation {
+  id: string;
+  taskId: string;
+  userId: string;
+  status: 'approved' | 'rejected' | 'pending';
+  score: number;
+  validatedAt: string;
+  validatedBy: string;
 }
 
 export class TaskValidationService {
@@ -25,262 +35,201 @@ export class TaskValidationService {
     return TaskValidationService.instance;
   }
 
-  async validateTask(taskId: string, proofData: any): Promise<TaskValidationResult> {
+  async validateTaskCompletion(submission: TaskSubmission): Promise<ValidationResult> {
     try {
-      // Récupérer les détails de la tâche
-      const { data: task, error: taskError } = await supabase
-        .from('tasks')
-        .select(`
-          *,
-          ads (
-            type,
-            title,
-            content
-          )
-        `)
-        .eq('id', taskId)
-        .single();
-
-      if (taskError || !task) {
-        throw new Error('Tâche introuvable');
-      }
-
-      const validationResult: TaskValidationResult = {
-        isValid: true,
-        score: 100,
+      const result: ValidationResult = {
+        isValid: false,
+        score: 0,
         reasons: [],
-        approved: false
+        fraudRisk: 'low',
+        requiresManualReview: false
       };
 
-      // Validation selon le type de tâche
-      switch (task.type) {
-        case 'view_ad':
-          await this.validateViewTask(proofData, validationResult);
-          break;
-        case 'click_ad':
-          await this.validateClickTask(proofData, validationResult);
-          break;
-        case 'share_ad':
-          await this.validateShareTask(proofData, validationResult);
-          break;
-        case 'survey':
-          await this.validateSurveyTask(proofData, validationResult);
-          break;
-        default:
-          validationResult.isValid = false;
-          validationResult.reasons.push('Type de tâche non reconnu');
+      // Validation de base
+      if (!submission.proof || submission.proof.length === 0) {
+        result.reasons.push('Aucune preuve fournie');
+        return result;
       }
 
-      // Détection de fraude générale
-      await this.detectFraud(taskId, proofData, validationResult);
+      // Validation du temps
+      const timeSpent = submission.completionTime - submission.startTime;
+      if (timeSpent < 5000) { // Moins de 5 secondes
+        result.reasons.push('Temps de completion suspect');
+        result.fraudRisk = 'high';
+        result.requiresManualReview = true;
+      }
 
-      // Validation géographique
-      await this.validateGeolocation(proofData, validationResult);
+      // Validation des preuves
+      const proofValidation = await this.validateProof(submission.proof, submission.taskType);
+      result.score += proofValidation.score;
+      result.reasons.push(...proofValidation.reasons);
 
       // Calcul du score final
-      validationResult.approved = validationResult.isValid && validationResult.score >= 70;
+      if (result.score >= 70 && result.fraudRisk !== 'high') {
+        result.isValid = true;
+      }
 
-      return validationResult;
+      // Enregistrer la validation (mock)
+      console.log('Validation de tâche:', { 
+        taskId: submission.taskId, 
+        userId: submission.userId,
+        result 
+      });
+
+      return result;
     } catch (error) {
       console.error('Erreur validation tâche:', error);
       return {
         isValid: false,
         score: 0,
-        reasons: ['Erreur technique lors de la validation'],
-        approved: false
+        reasons: ['Erreur système lors de la validation'],
+        fraudRisk: 'low',
+        requiresManualReview: true
       };
     }
   }
 
-  private async validateViewTask(proofData: any, result: TaskValidationResult) {
-    const { viewDuration, interactionEvents, timestamp } = proofData;
+  async validateProof(proof: ProofData[], taskType: TaskType): Promise<{ score: number; reasons: string[] }> {
+    let score = 0;
+    const reasons: string[] = [];
 
-    // Vérifier la durée minimale de visionnage
-    if (viewDuration < 15) {
-      result.score -= 30;
-      result.reasons.push('Durée de visionnage insuffisante');
-    }
+    for (const item of proof) {
+      switch (item.type) {
+        case 'screenshot':
+          if (item.data && item.data.length > 1000) { // Vérifier la taille minimale
+            score += 30;
+            reasons.push('Capture d\'écran valide');
+          } else {
+            reasons.push('Capture d\'écran invalide ou trop petite');
+          }
+          break;
 
-    // Vérifier les interactions (clics, mouvements de souris)
-    if (!interactionEvents || interactionEvents.length < 3) {
-      result.score -= 20;
-      result.reasons.push('Interactions insuffisantes détectées');
-    }
+        case 'click_tracking':
+          if (item.metadata?.clickCount && item.metadata.clickCount > 0) {
+            score += 20;
+            reasons.push('Clics trackés correctement');
+          }
+          break;
 
-    // Vérifier la cohérence temporelle
-    const now = Date.now();
-    if (Math.abs(now - timestamp) > 300000) { // 5 minutes
-      result.score -= 40;
-      result.reasons.push('Horodatage suspect');
-    }
-  }
+        case 'time_spent':
+          const timeSpent = item.metadata?.timeSpent || 0;
+          if (timeSpent >= 10000) { // Au moins 10 secondes
+            score += 25;
+            reasons.push('Temps de visionnage suffisant');
+          } else {
+            reasons.push('Temps de visionnage insuffisant');
+          }
+          break;
 
-  private async validateClickTask(proofData: any, result: TaskValidationResult) {
-    const { clickCoordinates, targetUrl, referrer } = proofData;
+        case 'geolocation':
+          if (item.metadata?.latitude && item.metadata?.longitude) {
+            score += 15;
+            reasons.push('Géolocalisation confirmée');
+          }
+          break;
 
-    // Vérifier les coordonnées du clic
-    if (!clickCoordinates || clickCoordinates.x < 0 || clickCoordinates.y < 0) {
-      result.score -= 50;
-      result.reasons.push('Coordonnées de clic invalides');
-    }
-
-    // Vérifier l'URL de destination
-    if (!targetUrl || !this.isValidUrl(targetUrl)) {
-      result.score -= 30;
-      result.reasons.push('URL de destination invalide');
-    }
-
-    // Vérifier le referrer
-    if (!referrer || !referrer.includes(window.location.hostname)) {
-      result.score -= 20;
-      result.reasons.push('Referrer suspect');
-    }
-  }
-
-  private async validateShareTask(proofData: any, result: TaskValidationResult) {
-    const { platform, shareUrl, engagementMetrics } = proofData;
-
-    // Vérifier la plateforme de partage
-    const allowedPlatforms = ['facebook', 'twitter', 'linkedin', 'instagram', 'whatsapp'];
-    if (!allowedPlatforms.includes(platform)) {
-      result.score -= 40;
-      result.reasons.push('Plateforme de partage non autorisée');
-    }
-
-    // Vérifier l'URL partagée
-    if (!shareUrl || !this.isValidUrl(shareUrl)) {
-      result.score -= 50;
-      result.reasons.push('URL de partage invalide');
-    }
-
-    // Analyser les métriques d'engagement (si disponibles)
-    if (engagementMetrics && engagementMetrics.likes > 1000) {
-      result.score += 10; // Bonus pour engagement élevé
-      result.reasons.push('Engagement élevé détecté');
-    }
-  }
-
-  private async validateSurveyTask(proofData: any, result: TaskValidationResult) {
-    const { responses, completionTime, consistencyScore } = proofData;
-
-    // Vérifier la complétude des réponses
-    if (!responses || Object.keys(responses).length < 5) {
-      result.score -= 30;
-      result.reasons.push('Réponses incomplètes');
-    }
-
-    // Vérifier le temps de completion
-    if (completionTime < 30) { // Moins de 30 secondes
-      result.score -= 40;
-      result.reasons.push('Temps de completion trop rapide');
-    }
-
-    // Vérifier la cohérence des réponses
-    if (consistencyScore < 0.7) {
-      result.score -= 25;
-      result.reasons.push('Réponses incohérentes détectées');
-    }
-  }
-
-  private async detectFraud(taskId: string, proofData: any, result: TaskValidationResult) {
-    const { userAgent, ipAddress, deviceFingerprint } = proofData;
-
-    // Vérifier les tentatives multiples du même utilisateur
-    const { data: recentTasks } = await supabase
-      .from('tasks')
-      .select('id')
-      .eq('user_id', proofData.userId)
-      .gte('created_at', new Date(Date.now() - 3600000).toISOString()) // 1 heure
-      .neq('id', taskId);
-
-    if (recentTasks && recentTasks.length > 10) {
-      result.score -= 30;
-      result.reasons.push('Activité suspecte: trop de tâches en peu de temps');
-    }
-
-    // Vérifier l'empreinte digitale de l'appareil
-    if (deviceFingerprint) {
-      const { data: duplicateDevices } = await supabase
-        .from('task_validations')
-        .select('id')
-        .eq('device_fingerprint', deviceFingerprint)
-        .gte('created_at', new Date(Date.now() - 86400000).toISOString()); // 24 heures
-
-      if (duplicateDevices && duplicateDevices.length > 5) {
-        result.score -= 40;
-        result.reasons.push('Appareil utilisé par plusieurs comptes');
+        default:
+          reasons.push(`Type de preuve non reconnu: ${item.type}`);
       }
     }
 
-    // Vérifier la cohérence du User-Agent
-    if (!userAgent || userAgent.includes('bot') || userAgent.includes('crawler')) {
-      result.score -= 60;
-      result.reasons.push('User-Agent suspect détecté');
-    }
+    return { score: Math.min(score, 100), reasons };
   }
 
-  private async validateGeolocation(proofData: any, result: TaskValidationResult) {
-    const { latitude, longitude, country } = proofData.geolocation || {};
-
-    if (!latitude || !longitude) {
-      result.score -= 10;
-      result.reasons.push('Géolocalisation manquante');
-      return;
-    }
-
-    // Vérifier que la localisation est cohérente avec le pays déclaré
-    // (Ici vous pourriez utiliser une API de géocodage)
-    
-    // Vérifier les coordonnées suspectes (0,0 ou valeurs par défaut)
-    if (latitude === 0 && longitude === 0) {
-      result.score -= 30;
-      result.reasons.push('Coordonnées géographiques suspectes');
-    }
-  }
-
-  private isValidUrl(url: string): boolean {
+  async calculateUserTrustScore(userId: string): Promise<number> {
     try {
-      new URL(url);
-      return true;
-    } catch {
-      return false;
+      // Mock calculation - dans un vrai système, analyser l'historique
+      const baseScore = 50;
+      const completedTasks = 25; // Récupérer de la DB
+      const successRate = 0.85; // Taux de succès
+      const accountAge = 30; // Jours
+
+      let score = baseScore;
+      score += Math.min(completedTasks * 1.5, 30); // Max +30 pour les tâches
+      score += successRate * 15; // Max +15 pour le taux de succès
+      score += Math.min(accountAge * 0.5, 10); // Max +10 pour l'ancienneté
+
+      return Math.max(0, Math.min(100, score));
+    } catch (error) {
+      console.error('Erreur calcul score confiance:', error);
+      return 50;
     }
   }
 
-  async saveValidationResult(taskId: string, result: TaskValidationResult, proofData: any) {
-    try {
-      const { error } = await supabase
-        .from('task_validations')
-        .insert({
-          task_id: taskId,
-          is_valid: result.isValid,
-          score: result.score,
-          reasons: result.reasons,
-          approved: result.approved,
-          proof_data: proofData,
-          validated_at: new Date().toISOString()
-        });
+  async detectFraud(submission: TaskSubmission): Promise<FraudDetectionResult> {
+    const indicators: string[] = [];
+    let riskScore = 0;
 
-      if (error) throw error;
+    // Analyse du timing
+    const timeSpent = submission.completionTime - submission.startTime;
+    if (timeSpent < 3000) {
+      indicators.push('Completion extrêmement rapide');
+      riskScore += 40;
+    } else if (timeSpent < 5000) {
+      indicators.push('Completion très rapide');
+      riskScore += 20;
+    }
 
-      // Mettre à jour le statut de la tâche
-      if (result.approved) {
-        await supabase
-          .from('tasks')
-          .update({
-            status: 'completed',
-            verified_at: new Date().toISOString()
-          })
-          .eq('id', taskId);
-      } else {
-        await supabase
-          .from('tasks')
-          .update({
-            status: 'rejected',
-            verified_at: new Date().toISOString()
-          })
-          .eq('id', taskId);
+    // Analyse des patterns
+    if (submission.proof.length === 0) {
+      indicators.push('Aucune preuve fournie');
+      riskScore += 50;
+    }
+
+    // Analyse géographique (mock)
+    const userTrustScore = await this.calculateUserTrustScore(submission.userId);
+    if (userTrustScore < 30) {
+      indicators.push('Score de confiance utilisateur faible');
+      riskScore += 25;
+    }
+
+    let riskLevel: 'low' | 'medium' | 'high' = 'low';
+    if (riskScore >= 60) riskLevel = 'high';
+    else if (riskScore >= 30) riskLevel = 'medium';
+
+    return {
+      riskLevel,
+      riskScore,
+      indicators,
+      recommended: riskLevel === 'high' ? 'reject' : riskLevel === 'medium' ? 'review' : 'approve'
+    };
+  }
+
+  async getValidationHistory(userId: string): Promise<TaskValidation[]> {
+    // Mock data - dans un vrai système, récupérer depuis la base de données
+    return [
+      {
+        id: '1',
+        taskId: 'task_123',
+        userId,
+        status: 'approved',
+        score: 85,
+        validatedAt: new Date().toISOString(),
+        validatedBy: 'auto'
+      },
+      {
+        id: '2',
+        taskId: 'task_124',
+        userId,
+        status: 'rejected',
+        score: 25,
+        validatedAt: new Date(Date.now() - 86400000).toISOString(),
+        validatedBy: 'moderator_1'
       }
+    ];
+  }
+
+  async submitTaskValidation(taskId: string, userId: string, result: ValidationResult): Promise<boolean> {
+    try {
+      // Mock - dans un vrai projet, sauvegarder en base de données
+      console.log('Validation sauvegardée:', {
+        taskId,
+        userId,
+        status: result.isValid ? 'approved' : 'rejected',
+        score: result.score,
+        reasons: result.reasons,
+        timestamp: new Date().toISOString()
+      });
 
       return true;
     } catch (error) {

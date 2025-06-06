@@ -1,23 +1,15 @@
 
-import { supabase } from '@/integrations/supabase/client';
-
-export interface NotificationPayload {
+export interface NotificationData {
   title: string;
   body: string;
   icon?: string;
   badge?: string;
   data?: any;
-  actions?: NotificationAction[];
-}
-
-export interface NotificationAction {
-  action: string;
-  title: string;
-  icon?: string;
+  tag?: string;
+  requireInteraction?: boolean;
 }
 
 export interface PushSubscription {
-  userId: string;
   endpoint: string;
   keys: {
     p256dh: string;
@@ -25,9 +17,17 @@ export interface PushSubscription {
   };
 }
 
+export interface NotificationPreferences {
+  newTasks: boolean;
+  taskReminders: boolean;
+  pointsEarned: boolean;
+  withdrawalUpdates: boolean;
+  marketingEmails: boolean;
+}
+
 export class NotificationService {
   private static instance: NotificationService;
-  private vapidPublicKey = 'BKs3s9g_M8QmQrBZr6QZr_aY3mL7Hv8XBh0uH4Fq4N9g3L2qA8Xs5Rt6Y_aEt3'; // Exemple
+  private sw: ServiceWorker | null = null;
 
   static getInstance(): NotificationService {
     if (!NotificationService.instance) {
@@ -36,41 +36,149 @@ export class NotificationService {
     return NotificationService.instance;
   }
 
-  // Initialiser les notifications push
   async initializePushNotifications(): Promise<boolean> {
     try {
-      // Vérifier le support des notifications
       if (!('Notification' in window) || !('serviceWorker' in navigator)) {
-        console.log('Les notifications push ne sont pas supportées');
+        console.warn('Push notifications not supported');
         return false;
       }
 
       // Demander la permission
       const permission = await Notification.requestPermission();
       if (permission !== 'granted') {
-        console.log('Permission refusée pour les notifications');
+        console.warn('Notification permission denied');
         return false;
       }
 
       // Enregistrer le service worker
       const registration = await navigator.serviceWorker.register('/sw.js');
-      
-      // S'abonner aux notifications push
-      const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: this.urlBase64ToUint8Array(this.vapidPublicKey)
-      });
-
-      // Sauvegarder l'abonnement
-      await this.savePushSubscription(subscription);
+      console.log('Service Worker registered:', registration);
 
       return true;
     } catch (error) {
-      console.error('Erreur initialisation notifications push:', error);
+      console.error('Erreur initialisation notifications:', error);
       return false;
     }
   }
 
+  async showLocalNotification(data: NotificationData): Promise<void> {
+    try {
+      if (Notification.permission !== 'granted') {
+        console.warn('Permission notification non accordée');
+        return;
+      }
+
+      const notification = new Notification(data.title, {
+        body: data.body,
+        icon: data.icon || '/favicon.ico',
+        badge: data.badge || '/favicon.ico',
+        tag: data.tag,
+        requireInteraction: data.requireInteraction || false,
+        data: data.data
+      });
+
+      notification.onclick = () => {
+        window.focus();
+        notification.close();
+        
+        if (data.data?.url) {
+          window.location.href = data.data.url;
+        }
+      };
+
+    } catch (error) {
+      console.error('Erreur affichage notification:', error);
+    }
+  }
+
+  async subscribeToPush(userId: string): Promise<PushSubscription | null> {
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      
+      const subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: this.urlBase64ToUint8Array(
+          'BEl62iUYgUivxIkv69yViEuiBIa40HI0YiqbN-nYcN2-z7I8MklqObRTW0W6s1p12-b1FG2c1q0JeRu7sKLqAgo' // Clé publique VAPID temporaire
+        )
+      });
+
+      console.log('Push subscription created:', subscription);
+      
+      // Dans un vrai projet, sauvegarder en base de données
+      const subscriptionData: PushSubscription = {
+        endpoint: subscription.endpoint,
+        keys: {
+          p256dh: this.arrayBufferToBase64(subscription.getKey('p256dh')),
+          auth: this.arrayBufferToBase64(subscription.getKey('auth'))
+        }
+      };
+
+      return subscriptionData;
+    } catch (error) {
+      console.error('Erreur souscription push:', error);
+      return null;
+    }
+  }
+
+  async getNotificationPreferences(userId: string): Promise<NotificationPreferences> {
+    try {
+      // Mock data - dans un vrai projet, récupérer depuis la base de données
+      return {
+        newTasks: true,
+        taskReminders: true,
+        pointsEarned: true,
+        withdrawalUpdates: true,
+        marketingEmails: false
+      };
+    } catch (error) {
+      console.error('Erreur récupération préférences:', error);
+      return {
+        newTasks: false,
+        taskReminders: false,
+        pointsEarned: false,
+        withdrawalUpdates: false,
+        marketingEmails: false
+      };
+    }
+  }
+
+  async updateNotificationPreferences(userId: string, preferences: NotificationPreferences): Promise<boolean> {
+    try {
+      // Mock - dans un vrai projet, sauvegarder en base de données
+      console.log('Préférences mises à jour:', { userId, preferences });
+      return true;
+    } catch (error) {
+      console.error('Erreur mise à jour préférences:', error);
+      return false;
+    }
+  }
+
+  async scheduleNotification(data: NotificationData, delayMinutes: number): Promise<string> {
+    try {
+      const notificationId = `scheduled_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      setTimeout(() => {
+        this.showLocalNotification(data);
+      }, delayMinutes * 60 * 1000);
+
+      console.log(`Notification programmée dans ${delayMinutes} minutes:`, data);
+      return notificationId;
+    } catch (error) {
+      console.error('Erreur programmation notification:', error);
+      throw error;
+    }
+  }
+
+  async trackNotificationInteraction(notificationId: string, action: 'delivered' | 'opened' | 'clicked'): Promise<void> {
+    try {
+      // Mock analytics - dans un vrai projet, envoyer vers un service d'analytics
+      console.log('Interaction notification trackée:', { notificationId, action, timestamp: new Date().toISOString() });
+    } catch (error) {
+      console.error('Erreur tracking interaction:', error);
+    }
+  }
+
+  // Fonctions utilitaires
   private urlBase64ToUint8Array(base64String: string): Uint8Array {
     const padding = '='.repeat((4 - base64String.length % 4) % 4);
     const base64 = (base64String + padding)
@@ -86,212 +194,16 @@ export class NotificationService {
     return outputArray;
   }
 
-  private async savePushSubscription(subscription: any) {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      const { error } = await supabase
-        .from('push_subscriptions')
-        .upsert({
-          user_id: user.id,
-          endpoint: subscription.endpoint,
-          p256dh_key: subscription.keys.p256dh,
-          auth_key: subscription.keys.auth,
-          updated_at: new Date().toISOString()
-        });
-
-      if (error) throw error;
-    } catch (error) {
-      console.error('Erreur sauvegarde abonnement push:', error);
+  private arrayBufferToBase64(buffer: ArrayBuffer | null): string {
+    if (!buffer) return '';
+    
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    
+    for (let i = 0; i < bytes.byteLength; i++) {
+      binary += String.fromCharCode(bytes[i]);
     }
-  }
-
-  // Envoyer une notification locale
-  async showLocalNotification(payload: NotificationPayload) {
-    try {
-      if (Notification.permission !== 'granted') {
-        console.log('Permission requise pour afficher la notification');
-        return;
-      }
-
-      const notification = new Notification(payload.title, {
-        body: payload.body,
-        icon: payload.icon || '/icon-192x192.png',
-        badge: payload.badge || '/badge-72x72.png',
-        data: payload.data,
-        actions: payload.actions,
-        requireInteraction: true,
-        tag: 'lavuepayee-notification'
-      });
-
-      notification.onclick = (event) => {
-        event.preventDefault();
-        window.focus();
-        
-        if (payload.data?.url) {
-          window.open(payload.data.url, '_blank');
-        }
-        
-        notification.close();
-      };
-
-      // Auto-fermer après 10 secondes
-      setTimeout(() => {
-        notification.close();
-      }, 10000);
-
-    } catch (error) {
-      console.error('Erreur affichage notification locale:', error);
-    }
-  }
-
-  // Envoyer des notifications par type d'événement
-  async notifyTaskCompleted(taskId: string, reward: number) {
-    await this.showLocalNotification({
-      title: 'Tâche complétée ! 🎉',
-      body: `Vous avez gagné ${reward} LVP pour cette tâche`,
-      icon: '/icon-192x192.png',
-      data: {
-        type: 'task_completed',
-        taskId: taskId,
-        url: '/tasks'
-      }
-    });
-  }
-
-  async notifyNewTask(taskTitle: string) {
-    await this.showLocalNotification({
-      title: 'Nouvelle tâche disponible',
-      body: taskTitle,
-      icon: '/icon-192x192.png',
-      data: {
-        type: 'new_task',
-        url: '/tasks'
-      }
-    });
-  }
-
-  async notifyPayment(amount: number, method: string) {
-    await this.showLocalNotification({
-      title: 'Paiement reçu 💰',
-      body: `${amount}€ crédité via ${method}`,
-      icon: '/icon-192x192.png',
-      data: {
-        type: 'payment_received',
-        url: '/wallet'
-      }
-    });
-  }
-
-  async notifyReferral(referralName: string) {
-    await this.showLocalNotification({
-      title: 'Nouveau filleul ! 👥',
-      body: `${referralName} s'est inscrit grâce à vous`,
-      icon: '/icon-192x192.png',
-      data: {
-        type: 'new_referral',
-        url: '/affiliates'
-      }
-    });
-  }
-
-  async notifySystemMessage(title: string, message: string) {
-    await this.showLocalNotification({
-      title: title,
-      body: message,
-      icon: '/icon-192x192.png',
-      data: {
-        type: 'system_message',
-        url: '/notifications'
-      }
-    });
-  }
-
-  // Envoyer une notification push à un utilisateur
-  async sendPushNotification(userId: string, payload: NotificationPayload) {
-    try {
-      const { data, error } = await supabase.functions.invoke('send-push-notification', {
-        body: {
-          userId: userId,
-          payload: payload
-        }
-      });
-
-      if (error) throw error;
-      return data;
-    } catch (error) {
-      console.error('Erreur envoi notification push:', error);
-      return null;
-    }
-  }
-
-  // Programmer des notifications
-  async scheduleNotification(userId: string, payload: NotificationPayload, scheduledFor: Date) {
-    try {
-      const { error } = await supabase
-        .from('scheduled_notifications')
-        .insert({
-          user_id: userId,
-          title: payload.title,
-          body: payload.body,
-          data: payload.data,
-          scheduled_for: scheduledFor.toISOString(),
-          status: 'pending'
-        });
-
-      if (error) throw error;
-      return true;
-    } catch (error) {
-      console.error('Erreur programmation notification:', error);
-      return false;
-    }
-  }
-
-  // Gérer les préférences de notification
-  async updateNotificationPreferences(preferences: {
-    email: boolean;
-    push: boolean;
-    sms: boolean;
-    marketing: boolean;
-  }) {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Utilisateur non connecté');
-
-      const { error } = await supabase
-        .from('user_settings')
-        .update({
-          notifications_email: preferences.email,
-          notifications_push: preferences.push,
-          notifications_sms: preferences.sms,
-          notifications_marketing: preferences.marketing,
-          updated_at: new Date().toISOString()
-        })
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-      return true;
-    } catch (error) {
-      console.error('Erreur mise à jour préférences:', error);
-      return false;
-    }
-  }
-
-  // Analyser l'engagement des notifications
-  async trackNotificationEngagement(notificationId: string, action: 'opened' | 'clicked' | 'dismissed') {
-    try {
-      const { error } = await supabase
-        .from('notification_analytics')
-        .insert({
-          notification_id: notificationId,
-          action: action,
-          timestamp: new Date().toISOString()
-        });
-
-      if (error) throw error;
-    } catch (error) {
-      console.error('Erreur tracking notification:', error);
-    }
+    
+    return window.btoa(binary);
   }
 }
