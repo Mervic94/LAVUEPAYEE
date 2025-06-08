@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -57,8 +56,16 @@ const NotificationCenter = () => {
     const newPreferences = { ...preferences, [key]: value };
     setPreferences(newPreferences);
     
-    // Sauvegarder les préférences
-    const success = await notificationService.updateNotificationPreferences(newPreferences);
+    // Sauvegarder les préférences - ajouter l'userId requis
+    const userId = 'current-user-id'; // TODO: récupérer l'userId réel depuis le contexte d'auth
+    const success = await notificationService.updateNotificationPreferences(userId, {
+      newTasks: newPreferences.email,
+      taskReminders: newPreferences.push,
+      pointsEarned: true,
+      withdrawalUpdates: true,
+      marketingEmails: newPreferences.marketing
+    });
+    
     if (success) {
       toast({
         title: "Préférences mises à jour",
