@@ -3,26 +3,29 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { PostgrestError } from '@supabase/supabase-js';
+import { Database } from '@/integrations/supabase/types';
 
-interface UseSupabaseDataOptions {
-  table: string;
+type TableName = keyof Database['public']['Tables'];
+
+interface UseSupabaseDataOptions<T extends TableName> {
+  table: T;
   select?: string;
   filter?: Record<string, any>;
   orderBy?: { column: string; ascending?: boolean };
   limit?: number;
 }
 
-interface UseSupabaseDataResult<T> {
-  data: T[] | null;
+interface UseSupabaseDataResult<T extends TableName> {
+  data: Database['public']['Tables'][T]['Row'][] | null;
   loading: boolean;
   error: PostgrestError | null;
   refetch: () => Promise<void>;
 }
 
-export function useSupabaseData<T = any>(
-  options: UseSupabaseDataOptions
+export function useSupabaseData<T extends TableName>(
+  options: UseSupabaseDataOptions<T>
 ): UseSupabaseDataResult<T> {
-  const [data, setData] = useState<T[] | null>(null);
+  const [data, setData] = useState<Database['public']['Tables'][T]['Row'][] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<PostgrestError | null>(null);
   const { toast } = useToast();
@@ -65,7 +68,7 @@ export function useSupabaseData<T = any>(
           variant: "destructive"
         });
       } else {
-        setData(result);
+        setData(result as Database['public']['Tables'][T]['Row'][]);
       }
     } catch (err) {
       console.error('Error fetching data:', err);
