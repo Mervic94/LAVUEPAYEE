@@ -1,5 +1,5 @@
 
-// Service Worker pour les notifications push
+// Service Worker pour les notifications push et cache
 const CACHE_NAME = 'lavuepayee-v1';
 const urlsToCache = [
   '/',
@@ -32,15 +32,33 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Gestion des requêtes réseau
+// Gestion des requêtes réseau avec stratégie cache-first
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
+        // Retourner le cache s'il existe
         if (response) {
           return response;
         }
-        return fetch(event.request);
+        
+        // Sinon, faire la requête réseau
+        return fetch(event.request).then((response) => {
+          // Vérifier si la réponse est valide
+          if (!response || response.status !== 200 || response.type !== 'basic') {
+            return response;
+          }
+
+          // Cloner la réponse
+          const responseToCache = response.clone();
+
+          caches.open(CACHE_NAME)
+            .then((cache) => {
+              cache.put(event.request, responseToCache);
+            });
+
+          return response;
+        });
       })
   );
 });
@@ -54,7 +72,8 @@ self.addEventListener('push', (event) => {
     body: 'Vous avez une nouvelle notification',
     icon: '/favicon.ico',
     badge: '/favicon.ico',
-    tag: 'default'
+    tag: 'default',
+    data: {}
   };
 
   if (event.data) {
@@ -75,7 +94,18 @@ self.addEventListener('push', (event) => {
       tag: notificationData.tag,
       requireInteraction: notificationData.requireInteraction || false,
       data: notificationData.data,
-      actions: notificationData.actions || []
+      actions: [
+        {
+          action: 'view',
+          title: 'Voir',
+          icon: '/favicon.ico'
+        },
+        {
+          action: 'dismiss',
+          title: 'Ignorer',
+          icon: '/favicon.ico'
+        }
+      ]
     }
   );
 
@@ -88,11 +118,15 @@ self.addEventListener('notificationclick', (event) => {
   
   event.notification.close();
   
-  const clickAction = event.action || 'default';
+  const action = event.action;
   let targetUrl = '/dashboard';
   
   if (event.notification.data?.url) {
     targetUrl = event.notification.data.url;
+  }
+  
+  if (action === 'dismiss') {
+    return;
   }
   
   const promiseChain = clients.matchAll({
@@ -102,15 +136,19 @@ self.addEventListener('notificationclick', (event) => {
     // Chercher si une fenêtre est déjà ouverte
     for (let i = 0; i < windowClients.length; i++) {
       const client = windowClients[i];
-      if (client.url.includes(self.location.origin)) {
+      if (client.url.includes(self.location.origin) && 'focus' in client) {
         return client.focus().then(() => {
-          return client.navigate(targetUrl);
+          if ('navigate' in client) {
+            return client.navigate(targetUrl);
+          }
         });
       }
     }
     
     // Ouvrir une nouvelle fenêtre si aucune n'est trouvée
-    return clients.openWindow(targetUrl);
+    if (clients.openWindow) {
+      return clients.openWindow(targetUrl);
+    }
   });
   
   event.waitUntil(promiseChain);
@@ -121,23 +159,31 @@ self.addEventListener('sync', (event) => {
   console.log('Background sync triggered:', event.tag);
   
   if (event.tag === 'background-sync') {
-    // Ici on peut synchroniser les données hors ligne
     event.waitUntil(doBackgroundSync());
   }
 });
 
-function doBackgroundSync() {
-  // Logique de synchronisation des données
-  return fetch('/api/sync', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      action: 'sync',
-      timestamp: Date.now()
-    })
-  }).catch((error) => {
+// Fonction de synchronisation des données
+async function doBackgroundSync() {
+  try {
+    // Synchroniser les données hors ligne
+    const response = await fetch('/api/sync', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        action: 'sync',
+        timestamp: Date.now()
+      })
+    });
+    
+    if (response.ok) {
+      console.log('Background sync successful');
+    } else {
+      console.log('Background sync failed');
+    }
+  } catch (error) {
     console.log('Sync failed:', error);
-  });
+  }
 }

@@ -1,269 +1,225 @@
+
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Bell, X, Check, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Bell, BellOff, Settings, CheckCircle } from 'lucide-react';
-import { useNotifications } from '@/hooks/useNotifications';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { useSupabaseData } from '@/hooks/useSupabaseData';
+import { useAuth } from '@/contexts/AuthProvider';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
-const NotificationCenter = () => {
-  const [preferences, setPreferences] = useState({
-    email: true,
-    push: false,
-    sms: false,
-    marketing: true
-  });
-  
-  const { 
-    isSupported, 
-    isEnabled, 
-    isLoading, 
-    enableNotifications, 
-    showNotification,
-    notificationService 
-  } = useNotifications();
-  
-  const { toast } = useToast();
+interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  type: string;
+  read_at: string | null;
+  created_at: string;
+}
 
-  const handleEnableNotifications = async () => {
-    const success = await enableNotifications();
-    if (success) {
-      toast({
-        title: "Notifications activées",
-        description: "Vous recevrez maintenant des notifications push",
-        variant: "default"
-      });
+const NotificationCenter: React.FC = () => {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const { data: notifications, loading, refetch } = useSupabaseData({
+    table: 'notifications',
+    filter: user ? { user_id: user.id } : undefined,
+    orderBy: { column: 'created_at', ascending: false },
+    limit: 10
+  });
+
+  const unreadCount = notifications?.filter(n => !n.read_at).length || 0;
+
+  const markAsRead = async (notificationId: string) => {
+    try {
+      await supabase
+        .from('notifications')
+        .update({ read_at: new Date().toISOString() })
+        .eq('id', notificationId);
       
-      // Afficher une notification de test
-      setTimeout(() => {
-        showNotification(
-          "Notifications activées ! 🎉",
-          "Vous recevrez maintenant les mises à jour importantes"
-        );
-      }, 1000);
-    } else {
+      refetch();
+    } catch (error) {
       toast({
         title: "Erreur",
-        description: "Impossible d'activer les notifications",
+        description: "Impossible de marquer comme lu",
         variant: "destructive"
       });
     }
   };
 
-  const handlePreferenceChange = async (key: keyof typeof preferences, value: boolean) => {
-    const newPreferences = { ...preferences, [key]: value };
-    setPreferences(newPreferences);
+  const markAllAsRead = async () => {
+    if (!user) return;
     
-    // Sauvegarder les préférences - ajouter l'userId requis
-    const userId = 'current-user-id'; // TODO: récupérer l'userId réel depuis le contexte d'auth
-    const success = await notificationService.updateNotificationPreferences(userId, {
-      newTasks: newPreferences.email,
-      taskReminders: newPreferences.push,
-      pointsEarned: true,
-      withdrawalUpdates: true,
-      marketingEmails: newPreferences.marketing
-    });
-    
-    if (success) {
+    try {
+      await supabase
+        .from('notifications')
+        .update({ read_at: new Date().toISOString() })
+        .eq('user_id', user.id)
+        .is('read_at', null);
+      
+      refetch();
+    } catch (error) {
       toast({
-        title: "Préférences mises à jour",
-        description: "Vos préférences de notification ont été sauvegardées",
-        variant: "default"
+        title: "Erreur",
+        description: "Impossible de marquer toutes comme lues",
+        variant: "destructive"
       });
     }
   };
 
-  const testNotification = () => {
-    showNotification(
-      "Notification de test",
-      "Ceci est une notification de test pour vérifier que tout fonctionne correctement"
-    );
+  const deleteNotification = async (notificationId: string) => {
+    try {
+      await supabase
+        .from('notifications')
+        .delete()
+        .eq('id', notificationId);
+      
+      refetch();
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de supprimer la notification",
+        variant: "destructive"
+      });
+    }
   };
 
-  const notificationTypes = [
-    {
-      title: "Nouvelles tâches",
-      description: "Être notifié quand de nouvelles tâches sont disponibles",
-      enabled: true
-    },
-    {
-      title: "Tâches complétées",
-      description: "Confirmation quand vos tâches sont validées",
-      enabled: true
-    },
-    {
-      title: "Paiements",
-      description: "Notifications pour vos gains et retraits",
-      enabled: true
-    },
-    {
-      title: "Parrainage",
-      description: "Alertes pour vos nouveaux filleuls",
-      enabled: preferences.marketing
-    },
-    {
-      title: "Maintenance",
-      description: "Informations sur la maintenance du site",
-      enabled: true
+  const getNotificationIcon = (type: string) => {
+    switch (type) {
+      case 'success': return '✅';
+      case 'warning': return '⚠️';
+      case 'error': return '❌';
+      case 'info': 
+      default: return 'ℹ️';
     }
-  ];
+  };
+
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffMins < 1) return 'À l\'instant';
+    if (diffMins < 60) return `${diffMins}m`;
+    if (diffHours < 24) return `${diffHours}h`;
+    return `${diffDays}j`;
+  };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold flex items-center gap-2">
-          <Bell className="h-6 w-6" />
-          Centre de Notifications
-        </h2>
-      </div>
+    <div className="relative">
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => setIsOpen(!isOpen)}
+        className="relative"
+      >
+        <Bell className="h-5 w-5" />
+        {unreadCount > 0 && (
+          <Badge 
+            variant="destructive" 
+            className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-xs"
+          >
+            {unreadCount > 9 ? '9+' : unreadCount}
+          </Badge>
+        )}
+      </Button>
 
-      {/* État des notifications push */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            {isEnabled ? (
-              <CheckCircle className="h-5 w-5 text-green-500" />
-            ) : (
-              <BellOff className="h-5 w-5 text-gray-500" />
-            )}
-            Notifications Push
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {!isSupported ? (
-            <Alert>
-              <AlertDescription>
-                Votre navigateur ne supporte pas les notifications push.
-              </AlertDescription>
-            </Alert>
-          ) : !isEnabled ? (
-            <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                Activez les notifications push pour recevoir des alertes en temps réel sur votre appareil.
-              </p>
-              <Button 
-                onClick={handleEnableNotifications} 
-                disabled={isLoading}
-                className="w-full sm:w-auto"
-              >
-                {isLoading ? 'Activation...' : 'Activer les notifications'}
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <Alert>
-                <CheckCircle className="h-4 w-4" />
-                <AlertDescription>
-                  Les notifications push sont activées. Vous recevrez les alertes importantes.
-                </AlertDescription>
-              </Alert>
-              <Button 
-                onClick={testNotification}
-                variant="outline"
-                size="sm"
-              >
-                Tester les notifications
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Préférences générales */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Settings className="h-5 w-5" />
-            Préférences de Notification
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid gap-4">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <Label htmlFor="email-notifications">Notifications Email</Label>
-                <p className="text-sm text-muted-foreground">
-                  Recevoir les notifications par email
-                </p>
-              </div>
-              <Switch
-                id="email-notifications"
-                checked={preferences.email}
-                onCheckedChange={(value) => handlePreferenceChange('email', value)}
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <Label htmlFor="push-notifications">Notifications Push</Label>
-                <p className="text-sm text-muted-foreground">
-                  Recevoir les notifications sur votre appareil
-                </p>
-              </div>
-              <Switch
-                id="push-notifications"
-                checked={preferences.push && isEnabled}
-                onCheckedChange={(value) => handlePreferenceChange('push', value)}
-                disabled={!isEnabled}
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <Label htmlFor="sms-notifications">Notifications SMS</Label>
-                <p className="text-sm text-muted-foreground">
-                  Recevoir les notifications par SMS (fonctionnalité future)
-                </p>
-              </div>
-              <Switch
-                id="sms-notifications"
-                checked={preferences.sms}
-                onCheckedChange={(value) => handlePreferenceChange('sms', value)}
-                disabled={true}
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <Label htmlFor="marketing-notifications">Notifications Marketing</Label>
-                <p className="text-sm text-muted-foreground">
-                  Recevoir les offres et promotions
-                </p>
-              </div>
-              <Switch
-                id="marketing-notifications"
-                checked={preferences.marketing}
-                onCheckedChange={(value) => handlePreferenceChange('marketing', value)}
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Types de notifications */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Types de Notifications</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {notificationTypes.map((type, index) => (
-              <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                <div className="space-y-1">
-                  <p className="font-medium">{type.title}</p>
-                  <p className="text-sm text-muted-foreground">{type.description}</p>
+      {isOpen && (
+        <div className="absolute right-0 top-full mt-2 w-80 z-50">
+          <Card>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg">Notifications</CardTitle>
+                <div className="flex gap-2">
+                  {unreadCount > 0 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={markAllAsRead}
+                    >
+                      <Check className="h-4 w-4 mr-1" />
+                      Tout lire
+                    </Button>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
                 </div>
-                <Switch
-                  checked={type.enabled}
-                  disabled={type.title === "Nouvelles tâches" || type.title === "Maintenance"}
-                />
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="max-h-96 overflow-y-auto">
+                {loading ? (
+                  <div className="p-4 text-center text-muted-foreground">
+                    Chargement...
+                  </div>
+                ) : notifications && notifications.length > 0 ? (
+                  notifications.map((notification) => (
+                    <div
+                      key={notification.id}
+                      className={`p-3 border-b border-border hover:bg-muted/50 transition-colors ${
+                        !notification.read_at ? 'bg-muted/30' : ''
+                      }`}
+                    >
+                      <div className="flex items-start gap-3">
+                        <span className="text-lg mt-1">
+                          {getNotificationIcon(notification.type)}
+                        </span>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-2">
+                            <h4 className="font-medium text-sm leading-5">
+                              {notification.title}
+                            </h4>
+                            <div className="flex items-center gap-1">
+                              <span className="text-xs text-muted-foreground">
+                                {formatTime(notification.created_at)}
+                              </span>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-6 w-6"
+                                onClick={() => deleteNotification(notification.id)}
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          </div>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            {notification.message}
+                          </p>
+                          {!notification.read_at && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 text-xs mt-2"
+                              onClick={() => markAsRead(notification.id)}
+                            >
+                              Marquer comme lu
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="p-4 text-center text-muted-foreground">
+                    Aucune notification
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };

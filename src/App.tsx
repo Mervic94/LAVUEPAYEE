@@ -2,7 +2,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/toaster';
-import { AuthProvider } from '@/hooks/useAuth';
+import { AuthProvider } from '@/contexts/AuthProvider';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
@@ -22,7 +22,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 1,
-      staleTime: 5 * 60 * 1000, // 5 minutes
+      staleTime: 5 * 60 * 1000,
       refetchOnWindowFocus: false,
     },
   },
@@ -78,6 +78,23 @@ function App() {
                   <ProtectedRoute>
                     <Profile />
                   </ProtectedRoute>
+                } />
+
+                {/* Routes admin */}
+                <Route path="/admin/*" element={
+                  <ProtectedRoute requiredRole="admin">
+                    <Dashboard />
+                  </ProtectedRoute>
+                } />
+
+                {/* Page d'erreur non autorisé */}
+                <Route path="/unauthorized" element={
+                  <div className="min-h-screen flex items-center justify-center">
+                    <div className="text-center">
+                      <h1 className="text-2xl font-bold mb-4">Accès non autorisé</h1>
+                      <p className="text-muted-foreground">Vous n'avez pas les permissions nécessaires pour accéder à cette page.</p>
+                    </div>
+                  </div>
                 } />
 
                 {/* Route 404 */}
