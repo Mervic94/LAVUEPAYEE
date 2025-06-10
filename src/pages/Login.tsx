@@ -1,109 +1,129 @@
 
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Mail, Phone, User } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
-import GoogleAuthButton from "@/components/login/GoogleAuthButton";
-import EmailLoginForm from "@/components/login/EmailLoginForm";
-import PhoneLoginForm from "@/components/login/PhoneLoginForm";
-import UsernameLoginForm from "@/components/login/UsernameLoginForm";
-import LoginDivider from "@/components/login/LoginDivider";
-import LoginHeader from "@/components/login/LoginHeader";
-import LoginFooter from "@/components/login/LoginFooter";
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Loader2, Eye, EyeOff } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
-const LoginPage: React.FC = () => {
+const Login = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { signIn } = useAuth();
   const navigate = useNavigate();
-  const { user, signIn, signInWithPhone, signInWithUsername, isLoading } = useAuth();
-  const [activeTab, setActiveTab] = useState<string>("email");
 
-  // Redirect already authenticated users
-  useEffect(() => {
-    if (user) {
-      navigate("/dashboard");
-    }
-  }, [user, navigate]);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
 
-  // Handle different form submissions
-  const handleEmailLogin = async (data: { email: string; password: string }) => {
     try {
-      await signIn(data.email, data.password);
-      // Auth state change will trigger the useEffect above to redirect
-    } catch (error) {
-      console.error("Login error:", error);
-    }
-  };
-
-  const handlePhoneLogin = async (data: { phone: string; password: string }) => {
-    try {
-      await signInWithPhone(data.phone, data.password);
-      // Auth state change will trigger the useEffect above to redirect
-    } catch (error) {
-      console.error("Phone login error:", error);
-    }
-  };
-
-  const handleUsernameLogin = async (data: { username: string; password: string }) => {
-    try {
-      await signInWithUsername(data.username, data.password);
-      // Auth state change will trigger the useEffect above to redirect
-    } catch (error) {
-      console.error("Username login error:", error);
+      const { error } = await signIn(email, password);
+      if (!error) {
+        navigate('/dashboard');
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md space-y-6">
-        <LoginHeader title="Se connecter" subtitle="Accédez à votre compte" />
-        
-        <Card className="glass-card">
-          <CardContent className="p-6 tablet-container">
-            <div className="mb-6">
-              <GoogleAuthButton isLoading={isLoading} />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-secondary/5 p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl font-bold">Connexion</CardTitle>
+          <CardDescription>
+            Connectez-vous à votre compte LAVUEPAYEE
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="votre@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={isLoading}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="password">Mot de passe</Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  disabled={isLoading}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                  disabled={isLoading}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4 text-muted-foreground" />
+                  ) : (
+                    <Eye className="h-4 w-4 text-muted-foreground" />
+                  )}
+                </button>
+              </div>
             </div>
 
-            <LoginDivider />
+            <Button 
+              type="submit" 
+              className="w-full" 
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Connexion...
+                </>
+              ) : (
+                'Se connecter'
+              )}
+            </Button>
+          </form>
 
-            <Tabs defaultValue={activeTab} value={activeTab} onValueChange={setActiveTab} className="w-full tabs-container">
-              <TabsList className="grid grid-cols-3 mb-6 w-full">
-                <TabsTrigger value="email" className="flex items-center gap-2 tab-trigger">
-                  <Mail className="h-4 w-4" />
-                  <span>Email</span>
-                </TabsTrigger>
-                <TabsTrigger value="phone" className="flex items-center gap-2 tab-trigger">
-                  <Phone className="h-4 w-4" />
-                  <span>Téléphone</span>
-                </TabsTrigger>
-                <TabsTrigger value="username" className="flex items-center gap-2 tab-trigger">
-                  <User className="h-4 w-4" />
-                  <span>Identifiant</span>
-                </TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="email">
-                <EmailLoginForm onSubmit={handleEmailLogin} isLoading={isLoading} />
-              </TabsContent>
-              
-              <TabsContent value="phone">
-                <PhoneLoginForm onSubmit={handlePhoneLogin} isLoading={isLoading} />
-              </TabsContent>
-              
-              <TabsContent value="username">
-                <UsernameLoginForm onSubmit={handleUsernameLogin} isLoading={isLoading} />
-              </TabsContent>
-            </Tabs>
-
-            <Separator className="my-6" />
-
-            <LoginFooter />
-          </CardContent>
-        </Card>
-      </div>
+          <div className="mt-6 space-y-4">
+            <div className="text-center">
+              <Link 
+                to="/reset-password" 
+                className="text-sm text-primary hover:underline"
+              >
+                Mot de passe oublié ?
+              </Link>
+            </div>
+            
+            <div className="text-center text-sm text-muted-foreground">
+              Pas encore de compte ?{' '}
+              <Link to="/register" className="text-primary hover:underline font-medium">
+                S'inscrire
+              </Link>
+            </div>
+            
+            <div className="text-center">
+              <Link to="/" className="text-sm text-muted-foreground hover:underline">
+                ← Retour à l'accueil
+              </Link>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
 
-export default LoginPage;
+export default Login;

@@ -1,39 +1,94 @@
 
-import React, { lazy, Suspense, useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import { Toaster } from "@/components/ui/toaster";
-import { AuthProvider } from "@/contexts/AuthContext";
-import Navbar from "@/components/navbar";
-import { ScrollToTop } from "@/components/ui/scroll-to-top";
-import Footer from "@/components/Footer";
-import { AnimatedBackground } from "@/components/ui/animated-background";
-import { Outlet } from "react-router-dom";
-import "./App.css";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from '@/components/ui/toaster';
+import { AuthProvider } from '@/hooks/useAuth';
+import ErrorBoundary from '@/components/ErrorBoundary';
+import ProtectedRoute from '@/components/ProtectedRoute';
 
-const ScrollToTopOnNavigate = () => {
-  const { pathname } = useLocation();
+// Pages
+import Index from '@/pages/Index';
+import Login from '@/pages/Login';
+import Register from '@/pages/Register';
+import Dashboard from '@/pages/Dashboard';
+import Tasks from '@/pages/Tasks';
+import Wallet from '@/pages/Wallet';
+import Profile from '@/pages/Profile';
+import NotFound from '@/pages/NotFound';
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
+import './App.css';
 
-  return null;
-};
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 function App() {
   return (
-    <AuthProvider>
-      <AnimatedBackground>
-        <ScrollToTopOnNavigate />
-        <ScrollToTop />
-        <Navbar />
-        <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Chargement...</div>}>
-          <Outlet />
-        </Suspense>
-        <Footer />
-        <Toaster />
-      </AnimatedBackground>
-    </AuthProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <Router>
+            <div className="min-h-screen bg-background">
+              <Routes>
+                {/* Routes publiques */}
+                <Route path="/" element={
+                  <ProtectedRoute requireAuth={false}>
+                    <Index />
+                  </ProtectedRoute>
+                } />
+                
+                <Route path="/login" element={
+                  <ProtectedRoute requireAuth={false}>
+                    <Login />
+                  </ProtectedRoute>
+                } />
+                
+                <Route path="/register" element={
+                  <ProtectedRoute requireAuth={false}>
+                    <Register />
+                  </ProtectedRoute>
+                } />
+
+                {/* Routes protégées */}
+                <Route path="/dashboard" element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                } />
+                
+                <Route path="/tasks" element={
+                  <ProtectedRoute>
+                    <Tasks />
+                  </ProtectedRoute>
+                } />
+                
+                <Route path="/wallet" element={
+                  <ProtectedRoute>
+                    <Wallet />
+                  </ProtectedRoute>
+                } />
+                
+                <Route path="/profile" element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                } />
+
+                {/* Route 404 */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </div>
+          </Router>
+          <Toaster />
+        </AuthProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 
