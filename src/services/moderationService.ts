@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 
 export interface ModerationResult {
@@ -7,7 +6,18 @@ export interface ModerationResult {
   reasons: string[];
 }
 
+export interface ContentReport {
+  id: string;
+  content: string;
+  reportType: 'spam' | 'inappropriate' | 'fake' | 'other';
+  reporterId: string;
+  status: 'pending' | 'approved' | 'rejected';
+  createdAt: Date;
+}
+
 export class ModerationService {
+  private static instance: ModerationService;
+
   private static suspiciousWords = [
     'spam', 'scam', 'fake', 'fraud', 'hack', 'cheat', 'bot', 'abuse'
   ];
@@ -15,6 +25,13 @@ export class ModerationService {
   private static bannedWords = [
     'fuck', 'shit', 'damn', 'asshole', 'bitch'
   ];
+
+  static getInstance(): ModerationService {
+    if (!ModerationService.instance) {
+      ModerationService.instance = new ModerationService();
+    }
+    return ModerationService.instance;
+  }
 
   static async moderateContent(content: string, contentType: string): Promise<ModerationResult> {
     const result: ModerationResult = {

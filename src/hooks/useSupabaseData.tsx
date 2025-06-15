@@ -36,7 +36,7 @@ export function useSupabaseData<T extends TableName>(
       setError(null);
 
       let query = supabase
-        .from(options.table)
+        .from(options.table as any)
         .select(options.select || '*');
 
       // Appliquer les filtres
@@ -68,7 +68,7 @@ export function useSupabaseData<T extends TableName>(
           variant: "destructive"
         });
       } else {
-        setData(result);
+        setData(result as Database['public']['Tables'][T]['Row'][]);
       }
     } catch (err) {
       console.error('Error fetching data:', err);

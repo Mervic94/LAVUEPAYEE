@@ -1,61 +1,166 @@
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthProvider';
+import { useToast } from '@/hooks/use-toast';
 import { NotificationService } from '@/services/notificationService';
 
+interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  type: 'info' | 'success' | 'warning' | 'error';
+  read: boolean;
+  created_at: string;
+  user_id: string;
+}
+
 export const useNotifications = () => {
-  const [isSupported, setIsSupported] = useState(false);
-  const [isEnabled, setIsEnabled] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const { toast } = useToast();
 
-  const notificationService = NotificationService.getInstance();
-
+  // Initialiser les notifications push
   useEffect(() => {
-    checkNotificationSupport();
+    const initNotifications = async () => {
+      const service = NotificationService.getInstance();
+      await service.initializePushNotifications();
+    };
+    
+    initNotifications();
   }, []);
 
-  const checkNotificationSupport = () => {
-    const supported = 'Notification' in window && 'serviceWorker' in navigator;
-    setIsSupported(supported);
-    
-    if (supported) {
-      setIsEnabled(Notification.permission === 'granted');
-    }
-    
-    setIsLoading(false);
-  };
+  // Charger les notifications
+  useEffect(() => {
+    if (!user) return;
 
-  const enableNotifications = async () => {
-    if (!isSupported) return false;
+    const fetchNotifications = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('notifications')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(50);
 
-    setIsLoading(true);
+        if (error) throw error;
+
+        setNotifications(data || []);
+        setUnreadCount(data?.filter(n => !n.read).length || 0);
+      } catch (error) {
+        console.error('Erreur chargement notifications:', error);
+        toast({
+          title: "Erreur",
+          description: "Impossible de charger les notifications",
+          variant: "destructive"
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchNotifications();
+
+    // Écouter les nouvelles notifications en temps réel
+    const subscription = supabase
+      .channel('notifications')
+      .on('postgres_changes', 
+        { 
+          event: 'INSERT', 
+          schema: 'public', 
+          table: 'notifications',
+          filter: `user_id=eq.${user.id}`
+        }, 
+        (payload) => {
+          const newNotification = payload.new as Notification;
+          setNotifications(prev => [newNotification, ...prev]);
+          setUnreadCount(prev => prev + 1);
+          
+          // Afficher une notification push
+          const service = NotificationService.getInstance();
+          service.showLocalNotification(
+            newNotification.title, 
+            newNotification.message
+          );
+          
+          // Afficher un toast
+          toast({
+            title: newNotification.title,
+            description: newNotification.message,
+          });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [user, toast]);
+
+  const markAsRead = async (notificationId: string) => {
     try {
-      const success = await notificationService.initializePushNotifications();
-      setIsEnabled(success);
-      return success;
+      const { error } = await supabase
+        .from('notifications')
+        .update({ read: true })
+        .eq('id', notificationId);
+
+      if (error) throw error;
+
+      setNotifications(prev => 
+        prev.map(n => n.id === notificationId ? { ...n, read: true } : n)
+      );
+      setUnreadCount(prev => Math.max(0, prev - 1));
     } catch (error) {
-      console.error('Erreur activation notifications:', error);
-      return false;
-    } finally {
-      setIsLoading(false);
+      console.error('Erreur marquage notification:', error);
     }
   };
 
-  const showNotification = async (title: string, body: string, data?: any) => {
-    if (!isEnabled) return;
+  const markAllAsRead = async () => {
+    if (!user) return;
 
-    await notificationService.showLocalNotification({
-      title,
-      body,
-      data
-    });
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .update({ read: true })
+        .eq('user_id', user.id)
+        .eq('read', false);
+
+      if (error) throw error;
+
+      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+      setUnreadCount(0);
+    } catch (error) {
+      console.error('Erreur marquage notifications:', error);
+    }
+  };
+
+  const deleteNotification = async (notificationId: string) => {
+    try {
+      const { error } = await supabase
+        .from('notifications')
+        .delete()
+        .eq('id', notificationId);
+
+      if (error) throw error;
+
+      setNotifications(prev => prev.filter(n => n.id !== notificationId));
+      setUnreadCount(prev => {
+        const notification = notifications.find(n => n.id === notificationId);
+        return notification && !notification.read ? prev - 1 : prev;
+      });
+    } catch (error) {
+      console.error('Erreur suppression notification:', error);
+    }
   };
 
   return {
-    isSupported,
-    isEnabled,
-    isLoading,
-    enableNotifications,
-    showNotification,
-    notificationService
+    notifications,
+    unreadCount,
+    loading,
+    markAsRead,
+    markAllAsRead,
+    deleteNotification
   };
 };
