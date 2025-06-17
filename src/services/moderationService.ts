@@ -47,17 +47,23 @@ export class ModerationService {
 
       if (error) throw error;
 
-      return (reports || []).map(report => ({
-        id: report.id,
-        content: report.new_values?.content || '',
-        contentType: report.entity_type,
-        reportType: report.new_values?.reason || 'other',
-        reporterId: report.user_id || '',
-        reportedBy: report.user_id || '',
-        reason: report.new_values?.reason || '',
-        status: 'pending',
-        createdAt: new Date(report.created_at)
-      }));
+      return (reports || []).map(report => {
+        const newValues = typeof report.new_values === 'object' && report.new_values !== null 
+          ? report.new_values as Record<string, any>
+          : {};
+
+        return {
+          id: report.id,
+          content: newValues.content || '',
+          contentType: report.entity_type,
+          reportType: newValues.reason || 'other',
+          reporterId: report.user_id || '',
+          reportedBy: report.user_id || '',
+          reason: newValues.reason || '',
+          status: 'pending' as const,
+          createdAt: new Date(report.created_at)
+        };
+      });
     } catch (error) {
       console.error('Erreur chargement rapports:', error);
       return [];

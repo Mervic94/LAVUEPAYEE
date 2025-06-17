@@ -47,8 +47,15 @@ export const useNotifications = () => {
 
         if (error) throw error;
 
-        setNotifications(data || []);
-        setUnreadCount(data?.filter(n => !n.read_at).length || 0);
+        const typedData = (data || []).map(notification => ({
+          ...notification,
+          type: (['info', 'success', 'warning', 'error'].includes(notification.type) 
+            ? notification.type 
+            : 'info') as 'info' | 'success' | 'warning' | 'error'
+        }));
+
+        setNotifications(typedData);
+        setUnreadCount(typedData.filter(n => !n.read_at).length);
       } catch (error) {
         console.error('Erreur chargement notifications:', error);
         toast({
@@ -74,7 +81,13 @@ export const useNotifications = () => {
           filter: `user_id=eq.${user.id}`
         }, 
         (payload) => {
-          const newNotification = payload.new as Notification;
+          const newNotification = {
+            ...payload.new,
+            type: (['info', 'success', 'warning', 'error'].includes(payload.new.type) 
+              ? payload.new.type 
+              : 'info') as 'info' | 'success' | 'warning' | 'error'
+          } as Notification;
+          
           setNotifications(prev => [newNotification, ...prev]);
           setUnreadCount(prev => prev + 1);
           

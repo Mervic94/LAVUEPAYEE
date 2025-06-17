@@ -68,7 +68,7 @@ export function useSupabaseData<T extends TableName>(
           variant: "destructive"
         });
       } else {
-        setData(result as Database['public']['Tables'][T]['Row'][]);
+        setData(result);
       }
     } catch (err) {
       console.error('Error fetching data:', err);
