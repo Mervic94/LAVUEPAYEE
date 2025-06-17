@@ -69,7 +69,7 @@ export function useSupabaseData<T extends TableName>(
         });
         setData(null);
       } else {
-        setData(result as Database['public']['Tables'][T]['Row'][] | null);
+        setData(result as any);
       }
     } catch (err) {
       console.error('Error fetching data:', err);
