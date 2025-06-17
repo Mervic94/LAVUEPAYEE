@@ -67,8 +67,9 @@ export function useSupabaseData<T extends TableName>(
           description: `Impossible de charger les données: ${queryError.message}`,
           variant: "destructive"
         });
+        setData(null);
       } else {
-        setData(result);
+        setData(result as Database['public']['Tables'][T]['Row'][] | null);
       }
     } catch (err) {
       console.error('Error fetching data:', err);
@@ -77,6 +78,7 @@ export function useSupabaseData<T extends TableName>(
         description: "Une erreur inattendue s'est produite",
         variant: "destructive"
       });
+      setData(null);
     } finally {
       setLoading(false);
     }
