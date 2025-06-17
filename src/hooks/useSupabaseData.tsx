@@ -36,7 +36,7 @@ export function useSupabaseData<T extends TableName>(
       setError(null);
 
       let query = supabase
-        .from(options.table as any)
+        .from(options.table)
         .select(options.select || '*');
 
       // Appliquer les filtres

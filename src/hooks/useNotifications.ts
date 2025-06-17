@@ -10,7 +10,7 @@ interface Notification {
   title: string;
   message: string;
   type: 'info' | 'success' | 'warning' | 'error';
-  read: boolean;
+  read_at: string | null;
   created_at: string;
   user_id: string;
 }
@@ -48,7 +48,7 @@ export const useNotifications = () => {
         if (error) throw error;
 
         setNotifications(data || []);
-        setUnreadCount(data?.filter(n => !n.read).length || 0);
+        setUnreadCount(data?.filter(n => !n.read_at).length || 0);
       } catch (error) {
         console.error('Erreur chargement notifications:', error);
         toast({
@@ -103,13 +103,13 @@ export const useNotifications = () => {
     try {
       const { error } = await supabase
         .from('notifications')
-        .update({ read: true })
+        .update({ read_at: new Date().toISOString() })
         .eq('id', notificationId);
 
       if (error) throw error;
 
       setNotifications(prev => 
-        prev.map(n => n.id === notificationId ? { ...n, read: true } : n)
+        prev.map(n => n.id === notificationId ? { ...n, read_at: new Date().toISOString() } : n)
       );
       setUnreadCount(prev => Math.max(0, prev - 1));
     } catch (error) {
@@ -123,13 +123,13 @@ export const useNotifications = () => {
     try {
       const { error } = await supabase
         .from('notifications')
-        .update({ read: true })
+        .update({ read_at: new Date().toISOString() })
         .eq('user_id', user.id)
-        .eq('read', false);
+        .is('read_at', null);
 
       if (error) throw error;
 
-      setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+      setNotifications(prev => prev.map(n => ({ ...n, read_at: new Date().toISOString() })));
       setUnreadCount(0);
     } catch (error) {
       console.error('Erreur marquage notifications:', error);
@@ -148,7 +148,7 @@ export const useNotifications = () => {
       setNotifications(prev => prev.filter(n => n.id !== notificationId));
       setUnreadCount(prev => {
         const notification = notifications.find(n => n.id === notificationId);
-        return notification && !notification.read ? prev - 1 : prev;
+        return notification && !notification.read_at ? prev - 1 : prev;
       });
     } catch (error) {
       console.error('Erreur suppression notification:', error);

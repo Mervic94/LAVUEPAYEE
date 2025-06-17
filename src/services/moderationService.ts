@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 
 export interface ModerationResult {
@@ -9,9 +10,12 @@ export interface ModerationResult {
 export interface ContentReport {
   id: string;
   content: string;
+  contentType: string;
   reportType: 'spam' | 'inappropriate' | 'fake' | 'other';
   reporterId: string;
-  status: 'pending' | 'approved' | 'rejected';
+  reportedBy: string;
+  reason: string;
+  status: 'pending' | 'reviewed' | 'resolved' | 'dismissed';
   createdAt: Date;
 }
 
@@ -31,6 +35,50 @@ export class ModerationService {
       ModerationService.instance = new ModerationService();
     }
     return ModerationService.instance;
+  }
+
+  async getReports(): Promise<ContentReport[]> {
+    try {
+      const { data: reports, error } = await supabase
+        .from('audit_logs')
+        .select('*')
+        .eq('action', 'report_content')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      return (reports || []).map(report => ({
+        id: report.id,
+        content: report.new_values?.content || '',
+        contentType: report.entity_type,
+        reportType: report.new_values?.reason || 'other',
+        reporterId: report.user_id || '',
+        reportedBy: report.user_id || '',
+        reason: report.new_values?.reason || '',
+        status: 'pending',
+        createdAt: new Date(report.created_at)
+      }));
+    } catch (error) {
+      console.error('Erreur chargement rapports:', error);
+      return [];
+    }
+  }
+
+  async moderateReport(reportId: string, action: 'approve' | 'dismiss', moderatorId: string): Promise<boolean> {
+    try {
+      const { error } = await supabase.from('audit_logs').insert({
+        user_id: moderatorId,
+        action: `moderate_${action}`,
+        entity_type: 'report',
+        entity_id: reportId,
+        new_values: { action, moderatedAt: new Date().toISOString() }
+      });
+
+      return !error;
+    } catch (error) {
+      console.error('Erreur modération rapport:', error);
+      return false;
+    }
   }
 
   static async moderateContent(content: string, contentType: string): Promise<ModerationResult> {
