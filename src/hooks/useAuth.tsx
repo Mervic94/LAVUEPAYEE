@@ -1,4 +1,3 @@
 
-// Ce fichier est maintenant remplacé par AuthProvider.tsx
-// Import depuis le nouveau contexte
+// Ce fichier redirige maintenant correctement vers AuthProvider
 export { useAuth } from '@/contexts/AuthProvider';

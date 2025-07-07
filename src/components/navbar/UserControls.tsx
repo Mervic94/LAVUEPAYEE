@@ -1,65 +1,112 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { MessageCircle, User, LogOut } from 'lucide-react';
-import { Button } from "@/components/ui/button";
-import PointsIndicator from '@/components/PointsIndicator';
+import { Link, useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { User, LogOut, Settings } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useAuth } from '@/contexts/AuthProvider';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
-interface UserControlsProps {
-  user: any;
-  onLogout: () => void;
-  isMobile?: boolean;
-}
+const UserControls = () => {
+  const { user, userProfile } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
-const UserControls: React.FC<UserControlsProps> = ({ user, onLogout, isMobile = false }) => {
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        toast({
+          title: "Erreur de déconnexion",
+          description: error.message,
+          variant: "destructive"
+        });
+      } else {
+        navigate('/');
+        toast({
+          title: "Déconnexion réussie",
+          description: "Vous avez été déconnecté avec succès"
+        });
+      }
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur inattendue s'est produite",
+        variant: "destructive"
+      });
+    }
+  };
+
   if (!user) {
     return (
-      <Button 
-        asChild 
-        variant="default" 
-        size={isMobile ? "default" : "sm"} 
-        className={`${isMobile ? 'w-full mt-4' : 'rounded-full bg-green-600 hover:bg-green-700'}`}
-      >
-        <Link to="/login">Se connecter</Link>
-      </Button>
+      <div className="flex items-center gap-2">
+        <Button asChild variant="ghost" size="sm">
+          <Link to="/login">Se connecter</Link>
+        </Button>
+        <Button asChild size="sm">
+          <Link to="/register">S'inscrire</Link>
+        </Button>
+      </div>
     );
   }
 
-  if (isMobile) {
-    return (
-      <Button className="w-full mt-4" variant="outline" onClick={onLogout}>
-        <LogOut className="h-4 w-4 mr-2" />
-        Déconnexion
-      </Button>
-    );
-  }
+  const displayName = userProfile?.first_name || userProfile?.username || user.email?.split('@')[0] || 'Utilisateur';
+  const avatarUrl = userProfile?.avatar_url;
 
   return (
-    <>
-      <PointsIndicator points={1250} />
-      <div className="flex items-center px-3 py-1.5 gap-1.5 rounded-full bg-green-100 text-green-800 font-medium">
-        <img 
-          src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
-          alt="Vuecoin" 
-          className="h-4 w-4 object-contain bg-transparent"
-        />
-        <span>1 Vc</span>
-      </div>
-      <Button asChild variant="ghost" size="icon" className="rounded-full">
-        <Link to="/messages">
-          <MessageCircle className="h-5 w-5" />
-        </Link>
-      </Button>
-      <Button asChild variant="ghost" size="icon" className="rounded-full">
-        <Link to="/profile">
-          <User className="h-5 w-5" />
-        </Link>
-      </Button>
-      <Button variant="outline" size="sm" className="rounded-full" onClick={onLogout}>
-        <LogOut className="h-4 w-4 mr-2" />
-        Déconnexion
-      </Button>
-    </>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+          <Avatar className="h-8 w-8">
+            <AvatarImage src={avatarUrl || ''} alt={displayName} />
+            <AvatarFallback>
+              {displayName.charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56" align="end" forceMount>
+        <div className="flex items-center justify-start gap-2 p-2">
+          <div className="flex flex-col space-y-1 leading-none">
+            <p className="font-medium">{displayName}</p>
+            <p className="text-xs text-muted-foreground">{user.email}</p>
+          </div>
+        </div>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <DropdownMenuItem asChild>
+            <Link to="/profile" className="cursor-pointer">
+              <User className="mr-2 h-4 w-4" />
+              <span>Profil</span>
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link to="/settings" className="cursor-pointer">
+              <Settings className="mr-2 h-4 w-4" />
+              <span>Paramètres</span>
+            </Link>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          className="cursor-pointer text-red-600 focus:text-red-600"
+          onClick={handleLogout}
+        >
+          <LogOut className="mr-2 h-4 w-4" />
+          <span>Se déconnecter</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
 
