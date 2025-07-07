@@ -20,6 +20,7 @@ import Leaderboard from '@/pages/Leaderboard';
 import Courses from '@/pages/Courses';
 import FAQ from '@/pages/FAQ';
 import Settings from '@/pages/Settings';
+import Analytics from '@/pages/Analytics';
 import NotFound from '@/pages/NotFound';
 
 import './App.css';
@@ -105,6 +106,12 @@ function App() {
                 <Route path="/settings" element={
                   <ProtectedRoute>
                     <Settings />
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/analytics" element={
+                  <ProtectedRoute>
+                    <Analytics />
                   </ProtectedRoute>
                 } />
 

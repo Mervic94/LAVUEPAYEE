@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Mail, Phone } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthProvider";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -17,7 +17,7 @@ import SocialAuth from "@/components/register/SocialAuth";
 const RegisterPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { signUp, signUpWithPhone, user, isLoading } = useAuth();
+  const { signUp, user, loading } = useAuth();
   const [activeTab, setActiveTab] = useState<string>("email");
   const [sponsorInfo, setSponsorInfo] = useState<SponsorInfo>(null);
   const [checkingSponsor, setCheckingSponsor] = useState(false);
@@ -94,12 +94,14 @@ const RegisterPage = () => {
       first_name: data.firstName,
       last_name: data.lastName,
       email: data.email,
+      phone: data.phone,
       sponsor_username: data.sponsorUsername,
       date_of_birth: dateOfBirth,
       account_type: data.accountType,
     };
     
-    await signUpWithPhone(data.phone, data.password, userData);
+    // Pour l'instant, on utilise l'email pour l'inscription avec téléphone
+    await signUp(data.email, data.password, userData);
   };
 
   return (
@@ -151,7 +153,7 @@ const RegisterPage = () => {
                   checkingSponsor={checkingSponsor}
                   sponsorUsername={referralSponsor}
                   isReadOnlySponsor={!!referralSponsor}
-                  isLoading={isLoading}
+                  isLoading={loading}
                 />
               </TabsContent>
               
@@ -162,7 +164,7 @@ const RegisterPage = () => {
                   checkingSponsor={checkingSponsor}
                   sponsorUsername={referralSponsor}
                   isReadOnlySponsor={!!referralSponsor}
-                  isLoading={isLoading}
+                  isLoading={loading}
                 />
               </TabsContent>
             </Tabs>
