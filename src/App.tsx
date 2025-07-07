@@ -14,6 +14,12 @@ import Dashboard from '@/pages/Dashboard';
 import Tasks from '@/pages/Tasks';
 import Wallet from '@/pages/Wallet';
 import Profile from '@/pages/Profile';
+import Marketplace from '@/pages/Marketplace';
+import Affiliates from '@/pages/Affiliates';
+import Leaderboard from '@/pages/Leaderboard';
+import Courses from '@/pages/Courses';
+import FAQ from '@/pages/FAQ';
+import Settings from '@/pages/Settings';
 import NotFound from '@/pages/NotFound';
 
 import './App.css';
@@ -55,6 +61,10 @@ function App() {
                   </ProtectedRoute>
                 } />
 
+                <Route path="/marketplace" element={<Marketplace />} />
+                <Route path="/leaderboard" element={<Leaderboard />} />
+                <Route path="/faq" element={<FAQ />} />
+
                 {/* Routes protégées */}
                 <Route path="/dashboard" element={
                   <ProtectedRoute>
@@ -77,6 +87,24 @@ function App() {
                 <Route path="/profile" element={
                   <ProtectedRoute>
                     <Profile />
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/affiliates" element={
+                  <ProtectedRoute>
+                    <Affiliates />
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/courses" element={
+                  <ProtectedRoute>
+                    <Courses />
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/settings" element={
+                  <ProtectedRoute>
+                    <Settings />
                   </ProtectedRoute>
                 } />
 
