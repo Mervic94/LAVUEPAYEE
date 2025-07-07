@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Phone, Facebook, Instagram, Twitter } from 'lucide-react';
 import SocialLinks from './SocialLinks';
@@ -53,7 +54,7 @@ const MobileNav: React.FC<MobileNavProps> = ({ isOpen, user, onLogout, onItemCli
           </div>
         </div>
         
-        <UserControls user={user} onLogout={onLogout} isMobile={true} />
+        <UserControls />
       </div>
     </div>
   );

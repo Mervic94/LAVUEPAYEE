@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthProvider';
 
 // Import components
 import Logo from './Logo';
@@ -69,7 +69,7 @@ const Navbar = () => {
 
         <div className="hidden md:flex items-center gap-4">
           <SocialLinks size="sm" />
-          <UserControls user={user} onLogout={handleLogout} />
+          <UserControls />
         </div>
 
         {/* Mobile Menu Button */}
