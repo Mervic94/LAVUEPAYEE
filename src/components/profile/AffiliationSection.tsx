@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { ChevronUp, ChevronDown, Copy, Check } from 'lucide-react';
 import SocialShareLinks from '@/components/SocialShareLinks';
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthProvider';
 import { generateAffiliationCode, generateAffiliationLink } from '@/utils/sponsorUtils';
 
 interface AffiliationSectionProps {

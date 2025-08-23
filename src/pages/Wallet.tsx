@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import TransactionsHistory from '@/components/profile/TransactionsHistory';
 import CashoutDialog from '@/components/CashoutDialog';
 import { useToast } from '@/components/ui/use-toast';
+import Navbar from '@/components/navbar';
 
 // Données fictives pour les transactions
 const mockTransactions = [
@@ -54,7 +55,10 @@ const Wallet = () => {
   };
   
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <div className="min-h-screen bg-background">
+      <Navbar />
+      
+      <main className="container mx-auto px-4 pt-24 pb-12 max-w-6xl">
       <h1 className="text-3xl font-bold mb-8">Mon Portefeuille</h1>
       
       {/* Cartes de solde */}
@@ -148,6 +152,7 @@ const Wallet = () => {
         onOpenChange={setDialogOpen} 
         userPoints={userPoints}
       />
+      </main>
     </div>
   );
 };

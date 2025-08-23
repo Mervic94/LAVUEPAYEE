@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthProvider";
 
 // Import components
 import RequestResetForm from "@/components/reset-password/RequestResetForm";
@@ -15,7 +15,7 @@ const ResetPassword = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [stage, setStage] = useState<"request" | "reset">("request");
-  const { resetPassword } = useAuth();
+  const { } = useAuth();
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
