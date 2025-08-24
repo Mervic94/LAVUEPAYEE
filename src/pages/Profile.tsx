@@ -13,44 +13,49 @@ import AdvertiserDashboard from '@/components/profile/AdvertiserDashboard';
 import AdvertiserSettings from '@/components/advertiser/AdvertiserSettings';
 import AdCreativeLibrary from '@/components/advertiser/AdCreativeLibrary';
 import CampaignsList from '@/components/advertiser/CampaignsList';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import ErrorDisplay from '@/components/ui/ErrorDisplay';
+import { useUserData } from '@/hooks/useUserData';
 
 const Profile = () => {
   const { toast } = useToast();
+  const { loading, userProfile, userWallet, transactions, updateUserProfile, refreshData } = useUserData();
   const [cashoutDialogOpen, setCashoutDialogOpen] = useState(false);
-  const [profileImage, setProfileImage] = useState<string | null>(null);
-  const [isAdvertiser, setIsAdvertiser] = useState(false);
+  const [profileImage, setProfileImage] = useState<string | null>(userProfile?.avatar_url || null);
+  const [isAdvertiser, setIsAdvertiser] = useState(userProfile?.role === 'advertiser');
   const [kycVerified, setKycVerified] = useState(false);
   const [kybVerified, setKybVerified] = useState(false);
   const [advertiserVerificationRequested, setAdvertiserVerificationRequested] = useState(false);
   
-  // Mock user data
+  // Transform user data for components
   const userData = {
-    name: 'Thomas Dubois',
-    email: 'thomas.dubois@example.com',
-    phone: '+33612345678',
-    points: 1250,
-    affiliationCode: 'THOMAS25',
-    affiliationLink: 'https://rewardads.com/ref/THOMAS25',
+    name: `${userProfile?.first_name || ''} ${userProfile?.last_name || ''}`.trim() || userProfile?.username || 'Utilisateur',
+    email: userProfile?.email || '',
+    phone: userProfile?.phone || '',
+    points: userProfile?.points || 0,
+    affiliationCode: userProfile?.referral_code || 'TEMP123',
+    affiliationLink: `https://lavuepayee.com/ref/${userProfile?.referral_code || 'TEMP123'}`,
     affiliationStats: {
-      totalAffiliates: 12,
+      totalAffiliates: 12, // TODO: Calculate from referrals table
       level1: 5,
       level2: 4,
       level3: 2,
       level4: 1,
       level5: 0,
-      earnings: 387
+      earnings: 387 // TODO: Calculate from referral earnings
     }
   };
   
-  // Mock transaction history
-  const transactions = [
-    { id: 1, type: 'earning', description: 'Publicité visionnée', amount: 50, date: '2023-06-15T14:30:00' },
-    { id: 2, type: 'earning', description: 'Commission d\'affiliation - Niveau 1', amount: 25, date: '2023-06-14T11:15:00' },
-    { id: 3, type: 'spending', description: 'Conversion en euros', amount: -5000, date: '2023-06-10T09:45:00' },
-    { id: 4, type: 'earning', description: 'Publicité visionnée', amount: 75, date: '2023-06-08T16:20:00' },
-    { id: 5, type: 'earning', description: 'Commission d\'affiliation - Niveau 2', amount: 10, date: '2023-06-05T13:10:00' },
-    { id: 6, type: 'spending', description: 'Écouteurs sans fil premium', amount: -15000, date: '2023-06-01T10:30:00' },
-  ];
+  // Transform transactions for TransactionsHistory component
+  const transformedTransactions = transactions.map((transaction, index) => ({
+    id: index + 1,
+    type: transaction.type === 'earning' ? 'earning' : 
+          transaction.type === 'withdrawal' ? 'spending' : 
+          transaction.type === 'cashout' ? 'spending' : 'earning',
+    description: transaction.description || 'Transaction',
+    amount: transaction.type === 'earning' ? transaction.points : -Math.abs(transaction.points),
+    date: transaction.created_at
+  }));
   
   // Advertiser account requirements
   const advertiserRequirements = [
@@ -113,6 +118,32 @@ const Profile = () => {
     });
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background transition-theme">
+        <Navbar />
+        <main className="container px-4 md:px-6 mx-auto max-w-7xl pt-24 pb-12">
+          <LoadingSpinner size="lg" text="Chargement de votre profil..." className="h-64" />
+        </main>
+      </div>
+    );
+  }
+
+  if (!userProfile) {
+    return (
+      <div className="min-h-screen bg-background transition-theme">
+        <Navbar />
+        <main className="container px-4 md:px-6 mx-auto max-w-7xl pt-24 pb-12">
+          <ErrorDisplay 
+            title="Profil indisponible"
+            message="Impossible de charger votre profil. Veuillez vous reconnecter."
+            onRetry={refreshData}
+          />
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background transition-theme">
       <Navbar />
@@ -146,7 +177,7 @@ const Profile = () => {
           </TabsList>
           
           <TabsContent value="history" className="animate-fade-in">
-            <TransactionsHistory transactions={transactions} />
+            <TransactionsHistory transactions={transformedTransactions} />
           </TabsContent>
           
           <TabsContent value="settings" className="animate-fade-in">

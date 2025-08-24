@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { BadgeDollarSign } from 'lucide-react';
+import { BadgeDollarSign, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -8,46 +8,58 @@ import TransactionsHistory from '@/components/profile/TransactionsHistory';
 import CashoutDialog from '@/components/CashoutDialog';
 import { useToast } from '@/components/ui/use-toast';
 import Navbar from '@/components/navbar';
-
-// Données fictives pour les transactions
-const mockTransactions = [
-  {
-    id: 1,
-    type: 'gain',
-    description: 'Visionnage de publicité',
-    amount: 250,
-    date: '2025-04-02T10:30:00'
-  },
-  {
-    id: 2,
-    type: 'gain',
-    description: 'Bonus parrainage',
-    amount: 500,
-    date: '2025-04-01T14:15:00'
-  },
-  {
-    id: 3,
-    type: 'conversion',
-    description: 'Conversion LVP en Vc',
-    amount: -700,
-    date: '2025-03-30T09:45:00'
-  },
-  {
-    id: 4,
-    type: 'retrait',
-    description: 'Retrait PayPal',
-    amount: -1000,
-    date: '2025-03-25T16:20:00'
-  }
-];
+import { useUserData } from '@/hooks/useUserData';
 
 const Wallet = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const { toast } = useToast();
-  
-  // Solde fictif de l'utilisateur
-  const userPoints = 1250;
-  const userVc = (userPoints * 0.00143).toFixed(2); // Conversion approximative
+  const { loading, userProfile, userWallet, transactions } = useUserData();
+
+  // Transform transactions to match TransactionsHistory expectations
+  const transformedTransactions = transactions.map((transaction, index) => ({
+    id: index + 1, // Convert string ID to number for compatibility
+    type: transaction.type === 'earning' ? 'earning' : 
+          transaction.type === 'withdrawal' ? 'spending' : 
+          transaction.type === 'cashout' ? 'retrait' : 'conversion',
+    description: transaction.description || 'Transaction',
+    amount: transaction.type === 'earning' ? transaction.points : -Math.abs(transaction.points),
+    date: transaction.created_at
+  }));
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <main className="container mx-auto px-4 pt-24 pb-12 max-w-6xl">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+              <p className="text-muted-foreground">Chargement de votre portefeuille...</p>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (!userProfile || !userWallet) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <main className="container mx-auto px-4 pt-24 pb-12 max-w-6xl">
+          <Alert className="max-w-md mx-auto">
+            <AlertDescription>
+              Impossible de charger les données du portefeuille. Veuillez rafraîchir la page.
+            </AlertDescription>
+          </Alert>
+        </main>
+      </div>
+    );
+  }
+
+  // Calculate conversion rate: 1 LVP = 0.00143 Vc (as shown in original)
+  const userPoints = userProfile.points || 0;
+  const userVc = (userPoints * 0.00143).toFixed(2);
   
   // Ouvrir la boîte de dialogue de retrait
   const handleCashout = () => {
@@ -130,19 +142,19 @@ const Wallet = () => {
         </TabsList>
         
         <TabsContent value="all">
-          <TransactionsHistory transactions={mockTransactions} />
+          <TransactionsHistory transactions={transformedTransactions} />
         </TabsContent>
         
         <TabsContent value="gains">
-          <TransactionsHistory transactions={mockTransactions.filter(t => t.type === 'gain')} />
+          <TransactionsHistory transactions={transformedTransactions.filter(t => t.type === 'earning')} />
         </TabsContent>
         
         <TabsContent value="conversions">
-          <TransactionsHistory transactions={mockTransactions.filter(t => t.type === 'conversion')} />
+          <TransactionsHistory transactions={transformedTransactions.filter(t => t.type === 'conversion')} />
         </TabsContent>
         
         <TabsContent value="withdrawals">
-          <TransactionsHistory transactions={mockTransactions.filter(t => t.type === 'retrait')} />
+          <TransactionsHistory transactions={transformedTransactions.filter(t => t.type === 'retrait')} />
         </TabsContent>
       </Tabs>
       

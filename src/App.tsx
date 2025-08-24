@@ -21,6 +21,7 @@ import Courses from '@/pages/Courses';
 import FAQ from '@/pages/FAQ';
 import Settings from '@/pages/Settings';
 import Analytics from '@/pages/Analytics';
+import Unauthorized from '@/pages/Unauthorized';
 import NotFound from '@/pages/NotFound';
 
 import './App.css';
@@ -123,14 +124,7 @@ function App() {
                 } />
 
                 {/* Page d'erreur non autorisé */}
-                <Route path="/unauthorized" element={
-                  <div className="min-h-screen flex items-center justify-center">
-                    <div className="text-center">
-                      <h1 className="text-2xl font-bold mb-4">Accès non autorisé</h1>
-                      <p className="text-muted-foreground">Vous n'avez pas les permissions nécessaires pour accéder à cette page.</p>
-                    </div>
-                  </div>
-                } />
+                 <Route path="/unauthorized" element={<Unauthorized />} />
 
                 {/* Route 404 */}
                 <Route path="*" element={<NotFound />} />

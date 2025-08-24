@@ -10,13 +10,21 @@ import PointsIndicator from '@/components/PointsIndicator';
 import OnlineTraining from '@/components/OnlineTraining';
 import TaskPackages from '@/components/TaskPackages';
 import AutoTaskAssigner from '@/components/dashboards/consumer/AutoTaskAssigner';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import ErrorDisplay from '@/components/ui/ErrorDisplay';
+import { useTasksData } from '@/hooks/useTasksData';
+import { useUserData } from '@/hooks/useUserData';
 
 const Tasks = () => {
   const [activePackage, setActivePackage] = useState<string | null>('premium');
+  const { loading: userLoading, userProfile } = useUserData();
+  const { loading: tasksLoading, tasks, getPendingTasks, getCompletedTasks } = useTasksData();
   
-  // Mock user data
+  const loading = userLoading || tasksLoading;
+  
+  // Mock user data - could be enhanced with real data later
   const userLevel = 2;
-  const userPoints = 3500;
+  const userPoints = userProfile?.points || 0;
   
   // Mock tasks data
   const dailyTasks = [
@@ -129,6 +137,17 @@ const Tasks = () => {
     );
   };
   
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <main className="container mx-auto px-4 pt-24 pb-12 max-w-7xl">
+          <LoadingSpinner size="lg" text="Chargement de vos tâches..." className="h-64" />
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
