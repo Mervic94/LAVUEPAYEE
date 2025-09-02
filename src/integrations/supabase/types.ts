@@ -863,6 +863,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_expired_sessions: {
+        Args: { expiry_days?: number }
+        Returns: number
+      }
       cleanup_old_sessions: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -876,8 +880,20 @@ export type Database = {
         }
         Returns: string
       }
+      create_user_session: {
+        Args: {
+          session_device_info?: Json
+          session_ip_address?: unknown
+          target_user_id: string
+        }
+        Returns: string
+      }
       is_admin_user: {
         Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      update_session_activity: {
+        Args: { session_id: string }
         Returns: boolean
       }
     }
