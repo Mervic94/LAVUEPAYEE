@@ -23,6 +23,7 @@ import Settings from '@/pages/Settings';
 import Analytics from '@/pages/Analytics';
 import Unauthorized from '@/pages/Unauthorized';
 import NotFound from '@/pages/NotFound';
+import TestAuth from '@/pages/TestAuth';
 
 import './App.css';
 
@@ -66,6 +67,7 @@ function App() {
                 <Route path="/marketplace" element={<Marketplace />} />
                 <Route path="/leaderboard" element={<Leaderboard />} />
                 <Route path="/faq" element={<FAQ />} />
+                <Route path="/test-auth" element={<TestAuth />} />
 
                 {/* Routes protégées */}
                 <Route path="/dashboard" element={

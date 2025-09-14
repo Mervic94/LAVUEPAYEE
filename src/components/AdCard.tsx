@@ -1,8 +1,12 @@
 
-import React from 'react';
-import { Play, Clock, Tag } from 'lucide-react';
+import React, { useState } from 'react';
+import { Play, Clock, Tag, Gift, Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import PointsIndicator from './PointsIndicator';
 
 interface AdCardProps {
   id: string;
@@ -13,6 +17,7 @@ interface AdCardProps {
   reward: number; // points
   adType?: 'banner' | 'interstitial' | 'video' | 'native' | 'popup' | 'audio';
   provider?: string;
+  onTaskComplete?: (reward: number) => void;
 }
 
 const AdCard: React.FC<AdCardProps> = ({
@@ -23,8 +28,12 @@ const AdCard: React.FC<AdCardProps> = ({
   duration,
   reward,
   adType = 'banner',
-  provider = 'LAVUEPAYEE'
+  provider = 'LAVUEPAYEE',
+  onTaskComplete
 }) => {
+  const [isWatching, setIsWatching] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false);
+  const { toast } = useToast();
   // Format duration as MM:SS
   const formatDuration = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -87,6 +96,57 @@ const AdCard: React.FC<AdCardProps> = ({
     return Math.round(baseReward);
   };
 
+  const handleWatchAd = async () => {
+    if (isWatching || isCompleted) return;
+
+    setIsWatching(true);
+    
+    try {
+      // Simulate watching the ad
+      await new Promise(resolve => setTimeout(resolve, Math.min(duration * 100, 3000)));
+      
+      // Call the process-task edge function
+      const { data, error } = await supabase.functions.invoke('process-task', {
+        body: {
+          ad_id: id,
+          task_type: 'view',
+          proof_url: `watched_${id}_${Date.now()}`
+        }
+      });
+
+      if (error) {
+        console.error('Error processing task:', error);
+        toast({
+          title: "Erreur",
+          description: "Impossible de traiter la tâche. Veuillez réessayer.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (data?.success) {
+        setIsCompleted(true);
+        onTaskComplete?.(data.points_earned || calculateReward());
+        
+        toast({
+          title: "Félicitations !",
+          description: `Vous avez gagné ${data.points_earned || calculateReward()} LVP !`,
+          variant: "default"
+        });
+      }
+
+    } catch (error) {
+      console.error('Error watching ad:', error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue pendant le visionnage.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsWatching(false);
+    }
+  };
+
   return (
     <div className="group relative rounded-xl overflow-hidden card-hover bg-white">
       {/* Thumbnail */}
@@ -96,26 +156,40 @@ const AdCard: React.FC<AdCardProps> = ({
           alt={title}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
+          onError={(e) => {
+            e.currentTarget.src = '/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png';
+          }}
         />
+        
+        {/* Ad Type Badge */}
+        <Badge 
+          variant="secondary" 
+          className="absolute top-2 left-2 bg-amber-400/90 text-green-900 border-none"
+        >
+          <Tag className="h-3 w-3 mr-1" />
+          {getAdTypeLabel()}
+        </Badge>
+
+        {/* Duration Badge */}
+        <Badge variant="secondary" className="absolute top-2 right-2 bg-black/70 text-white border-none">
+          <Clock className="h-3 w-3 mr-1" />
+          {formatDuration(duration)}
+        </Badge>
+
+        {/* Completion overlay */}
+        {isCompleted && (
+          <div className="absolute inset-0 bg-green-500/20 backdrop-blur-sm flex items-center justify-center">
+            <div className="text-white text-lg font-semibold bg-green-500 px-4 py-2 rounded-full">
+              ✓ Terminé
+            </div>
+          </div>
+        )}
+        
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <div className="absolute bottom-4 left-4 flex items-center gap-2">
-            <span className="flex items-center gap-1 text-xs bg-black/60 text-white px-2 py-1 rounded-full backdrop-blur-xs">
-              <Clock className="h-3 w-3" />
-              {formatDuration(duration)}
-            </span>
             <span className="flex items-center gap-1 text-xs bg-primary/90 text-white px-2 py-1 rounded-full backdrop-blur-xs">
-              <div className="h-3 w-3 rounded-full flex items-center justify-center overflow-hidden">
-                <img 
-                  src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
-                  alt="LVP" 
-                  className="w-full h-full object-contain"
-                />
-              </div>
-              {calculateReward()} LVP
-            </span>
-            <span className="flex items-center gap-1 text-xs bg-amber-400/90 text-green-900 px-2 py-1 rounded-full backdrop-blur-xs">
-              <Tag className="h-3 w-3" />
-              {getAdTypeLabel()}
+              <Gift className="h-3 w-3" />
+              <PointsIndicator points={calculateReward()} size="sm" />
             </span>
           </div>
         </div>
@@ -129,12 +203,22 @@ const AdCard: React.FC<AdCardProps> = ({
         </div>
         <p className="text-foreground/70 text-sm mb-4 line-clamp-2">{description}</p>
         
-        <Button asChild variant="default" size="sm" className="w-full group-hover:bg-primary transition-colors">
-          <Link to={`/view-ad/${id}`} className="flex items-center justify-center gap-2">
-            <Play className="h-4 w-4" />
-            Regarder et gagner
-          </Link>
-        </Button>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Gift className="h-4 w-4 text-primary" />
+            <PointsIndicator points={calculateReward()} size="sm" />
+          </div>
+
+          <Button 
+            onClick={handleWatchAd}
+            disabled={isWatching || isCompleted}
+            variant={isCompleted ? "secondary" : "default"}
+            size="sm"
+            className="font-medium"
+          >
+            {isWatching ? "En cours..." : isCompleted ? "Terminé" : "Regarder"}
+          </Button>
+        </div>
       </div>
     </div>
   );
