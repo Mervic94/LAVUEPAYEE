@@ -4,6 +4,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthProvider";
+import { useAccountManagementService } from "@/contexts/auth/services/accountManagement";
 
 // Import components
 import RequestResetForm from "@/components/reset-password/RequestResetForm";
@@ -15,8 +16,9 @@ const ResetPassword = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [stage, setStage] = useState<"request" | "reset">("request");
-  const { } = useAuth();
+  const { user } = useAuth();
   const [searchParams] = useSearchParams();
+  const { resetPassword, updatePassword } = useAccountManagementService(setLoading);
 
   useEffect(() => {
     // Vérifier si nous avons un token de réinitialisation dans l'URL
@@ -27,63 +29,22 @@ const ResetPassword = () => {
   }, [searchParams]);
 
   const onRequestSubmit = async (data: { email: string }) => {
-    setLoading(true);
-    
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
-      
-      if (error) throw error;
-      
-      toast({
-        title: "Email envoyé",
-        description: "Les instructions de réinitialisation ont été envoyées à votre adresse email",
-      });
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Erreur",
-        description: error.message || "Une erreur est survenue. Veuillez réessayer",
-      });
-    } finally {
-      setLoading(false);
-    }
+    await resetPassword(data.email);
   };
 
   const onResetSubmit = async (data: { password: string; confirmPassword: string }) => {
-    setLoading(true);
+    const token_hash = searchParams.get('token_hash');
+    const type = searchParams.get('type');
     
-    try {
-      // Si nous avons un token dans l'URL, c'est une réinitialisation via lien
-      const token_hash = searchParams.get('token_hash');
-      const type = searchParams.get('type');
-      
-      if (token_hash && type === 'recovery') {
-        // Utilisons la structure correcte pour verifyOtp avec type 'recovery'
-        const { error } = await supabase.auth.updateUser({
-          password: data.password
-        });
-        
-        if (error) throw error;
-        
-        toast({
-          title: "Mot de passe réinitialisé",
-          description: "Votre mot de passe a été modifié avec succès",
-        });
-        
-        navigate("/login");
-      } else {
-        throw new Error("Lien de réinitialisation invalide ou expiré");
-      }
-    } catch (error: any) {
+    if (token_hash && type === 'recovery') {
+      await updatePassword(data.password);
+      navigate("/login");
+    } else {
       toast({
         variant: "destructive",
-        title: "Échec de réinitialisation",
-        description: error.message || "Une erreur est survenue. Veuillez réessayer",
+        title: "Lien invalide",
+        description: "Le lien de réinitialisation est invalide ou expiré",
       });
-    } finally {
-      setLoading(false);
     }
   };
 

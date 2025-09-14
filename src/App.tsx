@@ -24,6 +24,7 @@ import Analytics from '@/pages/Analytics';
 import Unauthorized from '@/pages/Unauthorized';
 import NotFound from '@/pages/NotFound';
 import TestAuth from '@/pages/TestAuth';
+import ResetPassword from '@/pages/ResetPassword';
 
 import './App.css';
 
@@ -61,6 +62,12 @@ function App() {
                 <Route path="/register" element={
                   <ProtectedRoute requireAuth={false}>
                     <Register />
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/reset-password" element={
+                  <ProtectedRoute requireAuth={false}>
+                    <ResetPassword />
                   </ProtectedRoute>
                 } />
 

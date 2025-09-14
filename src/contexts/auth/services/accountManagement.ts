@@ -36,14 +36,23 @@ export const useAccountManagementService = (setIsLoading: (isLoading: boolean) =
       
       toast({
         title: "Email envoyé",
-        description: "Vérifiez votre boîte de réception pour réinitialiser votre mot de passe",
+        description: "Vérifiez votre boîte de réception pour réinitialiser votre mot de passe. Le lien sera valide pendant 1 heure.",
       });
       
     } catch (error: any) {
+      console.error('Reset password error:', error);
+      let errorMessage = "Une erreur est survenue lors de l'envoi de l'email";
+      
+      if (error.message?.includes('User not found')) {
+        errorMessage = "Aucun compte trouvé avec cette adresse email";
+      } else if (error.message?.includes('signup_disabled')) {
+        errorMessage = "La création de compte est désactivée";
+      }
+      
       toast({
         variant: "destructive",
         title: "Erreur de réinitialisation",
-        description: error.message || "Une erreur est survenue lors de l'envoi de l'email de réinitialisation",
+        description: errorMessage,
       });
     } finally {
       setIsLoading(false);

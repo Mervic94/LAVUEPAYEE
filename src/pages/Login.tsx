@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth } from '@/contexts/AuthProvider';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -21,10 +21,11 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const { error } = await signIn(email, password);
-      if (!error) {
-        navigate('/dashboard');
-      }
+      await signIn(email, password);
+      navigate('/dashboard');
+    } catch (error) {
+      // L'erreur est déjà gérée par le service
+      console.error('Login error:', error);
     } finally {
       setIsLoading(false);
     }
