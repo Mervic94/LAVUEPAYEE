@@ -25,6 +25,8 @@ import Unauthorized from '@/pages/Unauthorized';
 import NotFound from '@/pages/NotFound';
 import TestAuth from '@/pages/TestAuth';
 import ResetPassword from '@/pages/ResetPassword';
+import Help from '@/pages/Help';
+import Support from '@/pages/Support';
 
 import './App.css';
 
@@ -74,6 +76,8 @@ function App() {
                 <Route path="/marketplace" element={<Marketplace />} />
                 <Route path="/leaderboard" element={<Leaderboard />} />
                 <Route path="/faq" element={<FAQ />} />
+                <Route path="/help" element={<Help />} />
+                <Route path="/support" element={<Support />} />
                 <Route path="/test-auth" element={<TestAuth />} />
 
                 {/* Routes protégées */}
