@@ -12,8 +12,9 @@ export async function checkSponsor(username: string): Promise<SponsorInfo> {
   }
   
   try {
+    // Utilise la vue publique pour accéder uniquement aux données non-sensibles
     const { data, error } = await supabase
-      .from('profiles')
+      .from('public_profiles')
       .select('username, first_name, last_name')
       .eq('username', username)
       .maybeSingle();

@@ -860,9 +860,47 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          first_name: string | null
+          id: string | null
+          last_name: string | null
+          username: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          first_name?: string | null
+          id?: string | null
+          last_name?: string | null
+          username?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          first_name?: string | null
+          id?: string | null
+          last_name?: string | null
+          username?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      check_email_exists: {
+        Args: { check_email: string }
+        Returns: boolean
+      }
+      check_phone_exists: {
+        Args: { check_phone: string }
+        Returns: boolean
+      }
+      check_username_exists: {
+        Args: { check_username: string }
+        Returns: boolean
+      }
       cleanup_expired_sessions: {
         Args: { expiry_days?: number }
         Returns: number
@@ -891,6 +929,13 @@ export type Database = {
       generate_referral_code: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      get_credentials_by_username: {
+        Args: { lookup_username: string }
+        Returns: {
+          email: string
+          phone: string
+        }[]
       }
       is_admin_user: {
         Args: Record<PropertyKey, never>

@@ -11,26 +11,20 @@ export const useRegisterService = (setIsLoading: (isLoading: boolean) => void) =
     try {
       setIsLoading(true);
       
-      // Check if email already exists
-      const { data: existingUser } = await supabase
-        .from('profiles')
-        .select('email')
-        .eq('email', email)
-        .single();
+      // Utilise la fonction sécurisée pour vérifier l'existence de l'email
+      const { data: emailExists } = await supabase
+        .rpc('check_email_exists', { check_email: email });
         
-      if (existingUser) {
+      if (emailExists) {
         throw new Error("Cette adresse email est déjà utilisée");
       }
       
-      // Check if username already exists
+      // Utilise la fonction sécurisée pour vérifier l'existence du username
       if (userData.username) {
-        const { data: existingUsername } = await supabase
-          .from('profiles')
-          .select('username')
-          .eq('username', userData.username)
-          .single();
+        const { data: usernameExists } = await supabase
+          .rpc('check_username_exists', { check_username: userData.username });
           
-        if (existingUsername) {
+        if (usernameExists) {
           throw new Error("Ce nom d'utilisateur est déjà pris");
         }
       }
@@ -49,8 +43,9 @@ export const useRegisterService = (setIsLoading: (isLoading: boolean) => void) =
       // Add sponsor relationship if sponsor username is provided
       if (userData.sponsor_username) {
         try {
+          // Utilise la vue publique pour récupérer l'ID du sponsor
           const { data: sponsorData, error: sponsorError } = await supabase
-            .from('profiles')
+            .from('public_profiles')
             .select('id')
             .eq('username', userData.sponsor_username)
             .single();
@@ -97,26 +92,20 @@ export const useRegisterService = (setIsLoading: (isLoading: boolean) => void) =
     try {
       setIsLoading(true);
       
-      // Check if phone already exists
-      const { data: existingUser } = await supabase
-        .from('profiles')
-        .select('phone')
-        .eq('phone', phone)
-        .single();
+      // Utilise la fonction sécurisée pour vérifier l'existence du téléphone
+      const { data: phoneExists } = await supabase
+        .rpc('check_phone_exists', { check_phone: phone });
         
-      if (existingUser) {
+      if (phoneExists) {
         throw new Error("Ce numéro de téléphone est déjà utilisé");
       }
       
-      // Check if username already exists
+      // Utilise la fonction sécurisée pour vérifier l'existence du username
       if (userData.username) {
-        const { data: existingUsername } = await supabase
-          .from('profiles')
-          .select('username')
-          .eq('username', userData.username)
-          .single();
+        const { data: usernameExists } = await supabase
+          .rpc('check_username_exists', { check_username: userData.username });
           
-        if (existingUsername) {
+        if (usernameExists) {
           throw new Error("Ce nom d'utilisateur est déjà pris");
         }
       }
@@ -124,8 +113,9 @@ export const useRegisterService = (setIsLoading: (isLoading: boolean) => void) =
       // Check if sponsor exists if provided
       if (userData.sponsor_username) {
         try {
+          // Utilise la vue publique pour récupérer l'ID du sponsor
           const { data: sponsorData, error: sponsorError } = await supabase
-            .from('profiles')
+            .from('public_profiles')
             .select('id')
             .eq('username', userData.sponsor_username)
             .single();

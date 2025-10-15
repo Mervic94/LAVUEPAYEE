@@ -67,28 +67,26 @@ export const useLoginService = (setIsLoading: (isLoading: boolean) => void) => {
     try {
       setIsLoading(true);
       
-      // Use the newly added columns to the profiles table
-      // Check if profile data exists and get related email/phone
-      const { data, error: profileError } = await supabase
-        .from('profiles')
-        .select('username, email, phone')
-        .eq('username', username)
-        .maybeSingle();
+      // Utilise la fonction sécurisée pour obtenir les credentials sans exposer toutes les données
+      const { data, error: rpcError } = await supabase
+        .rpc('get_credentials_by_username', { lookup_username: username });
       
-      if (profileError || !data) {
+      if (rpcError || !data || data.length === 0) {
         throw new Error("Nom d'utilisateur non trouvé");
       }
       
-      if (data.email) {
+      const credentials = data[0];
+      
+      if (credentials.email) {
         const { error } = await supabase.auth.signInWithPassword({
-          email: data.email,
+          email: credentials.email,
           password
         });
         
         if (error) throw error;
-      } else if (data.phone) {
+      } else if (credentials.phone) {
         const { error } = await supabase.auth.signInWithPassword({
-          phone: data.phone,
+          phone: credentials.phone,
           password
         });
         
