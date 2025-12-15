@@ -86,7 +86,7 @@ export type Database = {
           entity_id: string | null
           entity_type: string
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           new_values: Json | null
           old_values: Json | null
           user_agent: string | null
@@ -98,7 +98,7 @@ export type Database = {
           entity_id?: string | null
           entity_type: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           new_values?: Json | null
           old_values?: Json | null
           user_agent?: string | null
@@ -110,7 +110,7 @@ export type Database = {
           entity_id?: string | null
           entity_type?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           new_values?: Json | null
           old_values?: Json | null
           user_agent?: string | null
@@ -604,7 +604,7 @@ export type Database = {
           created_at: string | null
           device_info: Json | null
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           last_activity: string | null
           user_id: string | null
         }
@@ -612,7 +612,7 @@ export type Database = {
           created_at?: string | null
           device_info?: Json | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           last_activity?: string | null
           user_id?: string | null
         }
@@ -620,7 +620,7 @@ export type Database = {
           created_at?: string | null
           device_info?: Json | null
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           last_activity?: string | null
           user_id?: string | null
         }
@@ -889,14 +889,8 @@ export type Database = {
       }
     }
     Functions: {
-      check_email_exists: {
-        Args: { check_email: string }
-        Returns: boolean
-      }
-      check_phone_exists: {
-        Args: { check_phone: string }
-        Returns: boolean
-      }
+      check_email_exists: { Args: { check_email: string }; Returns: boolean }
+      check_phone_exists: { Args: { check_phone: string }; Returns: boolean }
       check_username_exists: {
         Args: { check_username: string }
         Returns: boolean
@@ -905,10 +899,7 @@ export type Database = {
         Args: { expiry_days?: number }
         Returns: number
       }
-      cleanup_old_sessions: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      cleanup_old_sessions: { Args: never; Returns: undefined }
       create_system_notification: {
         Args: {
           notification_message: string
@@ -926,10 +917,7 @@ export type Database = {
         }
         Returns: string
       }
-      generate_referral_code: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      generate_referral_code: { Args: never; Returns: string }
       get_credentials_by_username: {
         Args: { lookup_username: string }
         Returns: {
@@ -937,10 +925,7 @@ export type Database = {
           phone: string
         }[]
       }
-      is_admin_user: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      is_admin_user: { Args: never; Returns: boolean }
       update_session_activity: {
         Args: { session_id: string }
         Returns: boolean

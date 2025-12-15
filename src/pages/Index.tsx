@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { ArrowRight, Users, ShoppingBag, PlayCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import Navbar from '@/components/navbar';
 import Hero from '@/components/Hero';
 import TestimonialCarousel from '@/components/testimonials/TestimonialCarousel';
+import Footer from '@/components/Footer';
 
 const Index = () => {
   return (
@@ -229,6 +230,9 @@ const Index = () => {
           </div>
         </div>
       </section>
+      
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };

@@ -21,11 +21,10 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      await signIn(email, password);
-      navigate('/dashboard');
-    } catch (error) {
-      // L'erreur est déjà gérée par le service
-      console.error('Login error:', error);
+      const result = await signIn(email, password);
+      if (!result.error) {
+        navigate('/dashboard');
+      }
     } finally {
       setIsLoading(false);
     }
