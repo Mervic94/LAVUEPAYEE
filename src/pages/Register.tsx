@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { EmailRegisterFormValues, PhoneRegisterFormValues } from "@/schemas/registerSchemas";
 import { checkSponsor, SponsorInfo } from "@/utils/sponsorUtils";
 import { formatDateOfBirth } from "@/utils/dateUtils";
+import { supabase } from "@/integrations/supabase/client";
 import EmailRegisterForm from "@/components/register/EmailRegisterForm";
 import PhoneRegisterForm from "@/components/register/PhoneRegisterForm";
 import SocialAuth from "@/components/register/SocialAuth";
@@ -73,35 +74,63 @@ const RegisterPage = () => {
   const onEmailSubmit = async (data: EmailRegisterFormValues) => {
     const dateOfBirth = formatDateOfBirth(data.birthYear, data.birthMonth, data.birthDay);
     
+    // Récupérer l'ID du sponsor si présent
+    let sponsorId = null;
+    const sponsorUsername = referralSponsor || data.sponsorUsername;
+    if (sponsorUsername && sponsorInfo) {
+      const { data: sponsorData } = await supabase
+        .from('public_profiles')
+        .select('id')
+        .eq('username', sponsorUsername)
+        .maybeSingle();
+      sponsorId = sponsorData?.id || null;
+    }
+    
     const userData = {
       username: data.username,
       first_name: data.firstName,
       last_name: data.lastName,
       phone: data.phone,
-      sponsor_username: data.sponsorUsername,
+      sponsor_id: sponsorId,
       date_of_birth: dateOfBirth,
       account_type: data.accountType,
     };
     
-    await signUp(data.email, data.password, userData);
+    const result = await signUp(data.email, data.password, userData);
+    if (!result.error) {
+      navigate('/login');
+    }
   };
 
   const onPhoneSubmit = async (data: PhoneRegisterFormValues) => {
     const dateOfBirth = formatDateOfBirth(data.birthYear, data.birthMonth, data.birthDay);
     
+    // Récupérer l'ID du sponsor si présent
+    let sponsorId = null;
+    const sponsorUsername = referralSponsor || data.sponsorUsername;
+    if (sponsorUsername && sponsorInfo) {
+      const { data: sponsorData } = await supabase
+        .from('public_profiles')
+        .select('id')
+        .eq('username', sponsorUsername)
+        .maybeSingle();
+      sponsorId = sponsorData?.id || null;
+    }
+    
     const userData = {
       username: data.username,
       first_name: data.firstName,
       last_name: data.lastName,
-      email: data.email,
       phone: data.phone,
-      sponsor_username: data.sponsorUsername,
+      sponsor_id: sponsorId,
       date_of_birth: dateOfBirth,
       account_type: data.accountType,
     };
     
-    // Pour l'instant, on utilise l'email pour l'inscription avec téléphone
-    await signUp(data.email, data.password, userData);
+    const result = await signUp(data.email, data.password, userData);
+    if (!result.error) {
+      navigate('/login');
+    }
   };
 
   return (

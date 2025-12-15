@@ -95,20 +95,46 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const signIn = async (email: string, password: string) => {
+    setLoading(true);
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
+      
+      if (error) {
+        toast({
+          title: "Erreur de connexion",
+          description: error.message === "Invalid login credentials" 
+            ? "Email ou mot de passe incorrect"
+            : error.message,
+          variant: "destructive"
+        });
+        return { error };
+      }
+
+      toast({
+        title: "Connexion réussie",
+        description: "Bienvenue sur LAVUEPAYEE !",
+      });
+      
+      return { error: null };
+    } catch (error: any) {
+      toast({
+        title: "Erreur de connexion",
+        description: error.message || "Une erreur est survenue",
+        variant: "destructive"
+      });
       return { error };
-    } catch (error) {
-      return { error };
+    } finally {
+      setLoading(false);
     }
   };
 
   const signUp = async (email: string, password: string, metadata?: any) => {
+    setLoading(true);
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -116,9 +142,51 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           data: metadata
         }
       });
+
+      if (error) {
+        toast({
+          title: "Erreur d'inscription",
+          description: error.message,
+          variant: "destructive"
+        });
+        return { error };
+      }
+
+      // Créer le profil utilisateur dans la table users si l'inscription a réussi
+      if (data.user) {
+        const { error: profileError } = await supabase
+          .from('users')
+          .insert({
+            id: data.user.id,
+            email: email,
+            username: metadata?.username || email.split('@')[0],
+            first_name: metadata?.first_name || null,
+            last_name: metadata?.last_name || null,
+            phone: metadata?.phone || null,
+            role: metadata?.account_type || 'consumer',
+            referred_by: metadata?.sponsor_id || null,
+          });
+
+        if (profileError && profileError.code !== '23505') { // Ignore duplicate key errors
+          console.error('Error creating user profile:', profileError);
+        }
+      }
+
+      toast({
+        title: "Inscription réussie !",
+        description: "Vérifiez votre email pour confirmer votre compte.",
+      });
+
+      return { error: null };
+    } catch (error: any) {
+      toast({
+        title: "Erreur d'inscription",
+        description: error.message || "Une erreur est survenue",
+        variant: "destructive"
+      });
       return { error };
-    } catch (error) {
-      return { error };
+    } finally {
+      setLoading(false);
     }
   };
 
