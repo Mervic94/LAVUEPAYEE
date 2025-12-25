@@ -138,7 +138,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/`,
+          emailRedirectTo: `${window.location.origin}/verify-email`,
           data: metadata
         }
       });
@@ -174,10 +174,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       toast({
         title: "Inscription réussie !",
-        description: "Vérifiez votre email pour confirmer votre compte.",
+        description: "Un email de vérification a été envoyé. Veuillez confirmer votre adresse email.",
       });
 
-      return { error: null };
+      return { error: null, needsEmailVerification: true };
     } catch (error: any) {
       toast({
         title: "Erreur d'inscription",
