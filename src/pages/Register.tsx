@@ -98,7 +98,9 @@ const RegisterPage = () => {
     
     const result = await signUp(data.email, data.password, userData);
     if (!result.error) {
-      navigate('/login');
+      // Stocker l'email pour le renvoi de vérification
+      localStorage.setItem('pendingEmail', data.email);
+      navigate('/verify-email');
     }
   };
 
@@ -129,7 +131,9 @@ const RegisterPage = () => {
     
     const result = await signUp(data.email, data.password, userData);
     if (!result.error) {
-      navigate('/login');
+      // Stocker l'email pour le renvoi de vérification
+      localStorage.setItem('pendingEmail', data.email);
+      navigate('/verify-email');
     }
   };
 

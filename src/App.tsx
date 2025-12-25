@@ -10,6 +10,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import Index from '@/pages/Index';
 import Login from '@/pages/Login';
 import Register from '@/pages/Register';
+import VerifyEmail from '@/pages/VerifyEmail';
 import Dashboard from '@/pages/Dashboard';
 import Tasks from '@/pages/Tasks';
 import Wallet from '@/pages/Wallet';
@@ -27,6 +28,7 @@ import TestAuth from '@/pages/TestAuth';
 import ResetPassword from '@/pages/ResetPassword';
 import Help from '@/pages/Help';
 import Support from '@/pages/Support';
+import Notifications from '@/pages/Notifications';
 
 import './App.css';
 
@@ -73,12 +75,25 @@ function App() {
                   </ProtectedRoute>
                 } />
 
+                <Route path="/verify-email" element={
+                  <ProtectedRoute requireAuth={false}>
+                    <VerifyEmail />
+                  </ProtectedRoute>
+                } />
+
                 <Route path="/marketplace" element={<Marketplace />} />
                 <Route path="/leaderboard" element={<Leaderboard />} />
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/help" element={<Help />} />
                 <Route path="/support" element={<Support />} />
                 <Route path="/test-auth" element={<TestAuth />} />
+
+                {/* Route notifications */}
+                <Route path="/notifications" element={
+                  <ProtectedRoute>
+                    <Notifications />
+                  </ProtectedRoute>
+                } />
 
                 {/* Routes protégées */}
                 <Route path="/dashboard" element={
