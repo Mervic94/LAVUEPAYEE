@@ -21,7 +21,22 @@ serve(async (req) => {
 
     const { amount, method, paymentDetails } = await req.json()
 
-    // Vérifier l'authentification
+    // Validate inputs
+    if (typeof amount !== 'number' || isNaN(amount) || amount <= 0) {
+      return new Response(
+        JSON.stringify({ error: 'Montant invalide' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    if (!method || typeof method !== 'string') {
+      return new Response(
+        JSON.stringify({ error: 'Méthode de paiement invalide' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Verify authentication
     const { data: { user } } = await supabaseClient.auth.getUser()
     if (!user) {
       return new Response(
@@ -30,7 +45,7 @@ serve(async (req) => {
       )
     }
 
-    // Vérifier le solde
+    // Check balance
     const { data: wallet } = await supabaseClient
       .from('wallets')
       .select('balance')
@@ -44,12 +59,18 @@ serve(async (req) => {
       )
     }
 
-    // Calculer les frais (2% de base)
     const fee = amount * 0.02
     const netAmount = amount - fee
 
-    // Créer la demande de retrait
-    const { data: withdrawal, error } = await supabaseClient
+    // Use service role for financial operations
+    const supabaseService = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      { auth: { persistSession: false } }
+    )
+
+    // Create withdrawal
+    const { data: withdrawal, error } = await supabaseService
       .from('withdrawals')
       .insert({
         user_id: user.id,
@@ -57,21 +78,25 @@ serve(async (req) => {
         fee,
         net_amount: netAmount,
         method,
-        payment_details: paymentDetails
+        payment_details: paymentDetails || {}
       })
       .select()
       .single()
 
     if (error) {
-      throw error
+      console.error('Withdrawal creation error:', error)
+      return new Response(
+        JSON.stringify({ error: 'Impossible de créer la demande de retrait' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
     }
 
-    // Déduire du portefeuille
-    await supabaseClient
+    // Update wallet balances
+    await supabaseService
       .from('wallets')
       .update({
-        balance: supabaseClient.raw(`balance - ${amount}`),
-        pending_balance: supabaseClient.raw(`pending_balance + ${amount}`)
+        balance: (wallet.balance || 0) - amount,
+        pending_balance: (wallet.balance || 0) + amount
       })
       .eq('user_id', user.id)
 
@@ -81,9 +106,10 @@ serve(async (req) => {
     )
 
   } catch (error) {
+    console.error('Withdrawal processing error:', error)
     return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify({ error: 'Une erreur est survenue lors du traitement' }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   }
 })
