@@ -21,7 +21,22 @@ serve(async (req) => {
 
     const { amount, method, description, campaignId } = await req.json()
 
-    // Vérifier l'authentification
+    // Validate inputs
+    if (typeof amount !== 'number' || isNaN(amount) || amount <= 0) {
+      return new Response(
+        JSON.stringify({ error: 'Montant invalide' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    if (!method || typeof method !== 'string') {
+      return new Response(
+        JSON.stringify({ error: 'Méthode de paiement invalide' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Verify authentication
     const { data: { user } } = await supabaseClient.auth.getUser()
     if (!user) {
       return new Response(
@@ -30,21 +45,25 @@ serve(async (req) => {
       )
     }
 
-    // Simuler le traitement du paiement
-    const paymentSuccess = Math.random() > 0.1 // 90% de succès
+    const supabaseService = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      { auth: { persistSession: false } }
+    )
 
+    const paymentSuccess = Math.random() > 0.1
     const transactionStatus = paymentSuccess ? 'completed' : 'failed'
     const referenceId = `PAY_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
-    // Créer la transaction
-    const { data: transaction, error: transactionError } = await supabaseClient
+    // Create transaction
+    const { data: transaction, error: transactionError } = await supabaseService
       .from('transactions')
       .insert({
         user_id: user.id,
         type: 'earning',
         amount,
         status: transactionStatus,
-        description,
+        description: typeof description === 'string' ? description.slice(0, 500) : '',
         reference_id: referenceId,
         payment_method: method,
         payment_details: { campaign_id: campaignId },
@@ -54,27 +73,45 @@ serve(async (req) => {
       .single()
 
     if (transactionError) {
-      throw transactionError
+      console.error('Transaction creation error:', transactionError)
+      return new Response(
+        JSON.stringify({ error: 'Impossible de créer la transaction' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
     }
 
-    // Si le paiement réussit, mettre à jour le portefeuille
+    // If payment succeeds, update wallet
     if (paymentSuccess) {
-      await supabaseClient
+      const { data: wallet } = await supabaseService
         .from('wallets')
-        .update({
-          balance: supabaseClient.raw(`balance + ${amount}`),
-          total_earned: supabaseClient.raw(`total_earned + ${amount}`)
-        })
+        .select('balance, total_earned')
         .eq('user_id', user.id)
+        .single()
 
-      // Mettre à jour le budget de la campagne
-      if (campaignId) {
-        await supabaseClient
-          .from('campaigns')
+      if (wallet) {
+        await supabaseService
+          .from('wallets')
           .update({
-            spent: supabaseClient.raw(`spent + ${amount}`)
+            balance: (wallet.balance || 0) + amount,
+            total_earned: (wallet.total_earned || 0) + amount
           })
+          .eq('user_id', user.id)
+      }
+
+      // Update campaign budget
+      if (campaignId && typeof campaignId === 'string') {
+        const { data: campaign } = await supabaseService
+          .from('campaigns')
+          .select('spent')
           .eq('id', campaignId)
+          .single()
+
+        if (campaign) {
+          await supabaseService
+            .from('campaigns')
+            .update({ spent: (campaign.spent || 0) + amount })
+            .eq('id', campaignId)
+        }
       }
     }
 
@@ -88,9 +125,10 @@ serve(async (req) => {
     )
 
   } catch (error) {
+    console.error('Payment processing error:', error)
     return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify({ error: 'Une erreur est survenue lors du traitement du paiement' }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   }
 })

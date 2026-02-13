@@ -7,6 +7,13 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+const allowedActions = ['view', 'click', 'share'] as const
+const actionFieldMap: Record<string, string> = {
+  view: 'views_count',
+  click: 'clicks_count',
+  share: 'shares_count',
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -21,7 +28,22 @@ serve(async (req) => {
 
     const { adId, action } = await req.json()
 
-    // Vérifier l'authentification
+    // Validate inputs
+    if (!adId || typeof adId !== 'string') {
+      return new Response(
+        JSON.stringify({ error: 'ID de publicité invalide' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    if (!allowedActions.includes(action)) {
+      return new Response(
+        JSON.stringify({ error: 'Action non valide' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Verify authentication
     const { data: { user } } = await supabaseClient.auth.getUser()
     if (!user) {
       return new Response(
@@ -30,54 +52,47 @@ serve(async (req) => {
       )
     }
 
-    // Mettre à jour les statistiques de la publicité
-    let updateField = ''
-    switch (action) {
-      case 'view':
-        updateField = 'views_count'
-        break
-      case 'click':
-        updateField = 'clicks_count'
-        break
-      case 'share':
-        updateField = 'shares_count'
-        break
-      default:
-        throw new Error('Action non valide')
+    const updateField = actionFieldMap[action]
+
+    // Use service role for updates
+    const supabaseService = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      { auth: { persistSession: false } }
+    )
+
+    // Get current count and increment
+    const { data: currentAd } = await supabaseService
+      .from('ads')
+      .select(`${updateField}, reward_points, reward_amount`)
+      .eq('id', adId)
+      .single()
+
+    if (!currentAd) {
+      return new Response(
+        JSON.stringify({ error: 'Publicité introuvable' }),
+        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
     }
 
-    const { error } = await supabaseClient
+    await supabaseService
       .from('ads')
-      .update({
-        [updateField]: supabaseClient.raw(`${updateField} + 1`)
-      })
+      .update({ [updateField]: (currentAd[updateField] || 0) + 1 })
       .eq('id', adId)
 
-    if (error) {
-      throw error
-    }
-
-    // Créer une tâche pour l'utilisateur si applicable
+    // Create task for non-view actions
     if (action !== 'view') {
-      const { data: ad } = await supabaseClient
-        .from('ads')
-        .select('reward_points, reward_amount')
-        .eq('id', adId)
-        .single()
-
-      if (ad) {
-        await supabaseClient
-          .from('tasks')
-          .insert({
-            user_id: user.id,
-            ad_id: adId,
-            type: action,
-            reward_points: ad.reward_points,
-            reward_amount: ad.reward_amount,
-            status: 'completed',
-            completed_at: new Date().toISOString()
-          })
-      }
+      await supabaseService
+        .from('tasks')
+        .insert({
+          user_id: user.id,
+          ad_id: adId,
+          type: action,
+          reward_points: currentAd.reward_points,
+          reward_amount: currentAd.reward_amount,
+          status: 'completed',
+          completed_at: new Date().toISOString()
+        })
     }
 
     return new Response(
@@ -89,9 +104,10 @@ serve(async (req) => {
     )
 
   } catch (error) {
+    console.error('Ad analytics error:', error)
     return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify({ error: 'Une erreur est survenue' }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   }
 })
