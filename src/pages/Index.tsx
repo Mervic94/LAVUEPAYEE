@@ -17,11 +17,11 @@ const Index = () => {
       <Hero />
       
       {/* How It Works Section */}
-      <section id="how-it-works" className="py-20 bg-white dark:bg-gray-900">
+      <section id="how-it-works" className="py-20 bg-muted/50">
         <div className="container px-6 mx-auto max-w-7xl">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Comment ça marche</h2>
-            <p className="text-foreground/70 text-lg max-w-3xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">Comment ça marche</h2>
+            <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
               Suivez ces étapes simples pour commencer à gagner des points et recevoir des récompenses
             </p>
             
@@ -51,18 +51,18 @@ const Index = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
             <div className="flex flex-col items-center text-center">
-              <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+              <div className="relative h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
                 <PlayCircle className="h-8 w-8 text-primary" />
-                <div className="absolute -right-1 -top-1 h-6 w-6 bg-primary rounded-full text-white flex items-center justify-center font-medium text-sm">1</div>
+                <div className="absolute -right-1 -top-1 h-6 w-6 bg-primary rounded-full text-primary-foreground flex items-center justify-center font-medium text-sm">1</div>
               </div>
-              <h3 className="text-xl font-semibold mb-3">Regardez des publicités</h3>
-              <p className="text-foreground/70">
+              <h3 className="text-xl font-semibold mb-3 text-foreground">Regardez des publicités</h3>
+              <p className="text-muted-foreground">
                 Choisissez parmi une variété de publicités et de contenu sponsorisé qui vous intéresse.
               </p>
             </div>
             
             <div className="flex flex-col items-center text-center">
-              <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+              <div className="relative h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
                 <div className="h-8 w-8 lvp-icon-container">
                   <img 
                     src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
@@ -70,21 +70,21 @@ const Index = () => {
                     className="h-8 w-8"
                   />
                 </div>
-                <div className="absolute -right-1 -top-1 h-6 w-6 bg-primary rounded-full text-white flex items-center justify-center font-medium text-sm">2</div>
+                <div className="absolute -right-1 -top-1 h-6 w-6 bg-primary rounded-full text-primary-foreground flex items-center justify-center font-medium text-sm">2</div>
               </div>
-              <h3 className="text-xl font-semibold mb-3">Gagnez des points</h3>
-              <p className="text-foreground/70">
+              <h3 className="text-xl font-semibold mb-3 text-foreground">Gagnez des points</h3>
+              <p className="text-muted-foreground">
                 Accumulez des points pour chaque publicité visionnée. Plus vous regardez, plus vous gagnez.
               </p>
             </div>
             
             <div className="flex flex-col items-center text-center">
-              <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+              <div className="relative h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mb-6">
                 <ShoppingBag className="h-8 w-8 text-primary" />
-                <div className="absolute -right-1 -top-1 h-6 w-6 bg-primary rounded-full text-white flex items-center justify-center font-medium text-sm">3</div>
+                <div className="absolute -right-1 -top-1 h-6 w-6 bg-primary rounded-full text-primary-foreground flex items-center justify-center font-medium text-sm">3</div>
               </div>
-              <h3 className="text-xl font-semibold mb-3">Échangez vos récompenses</h3>
-              <p className="text-foreground/70">
+              <h3 className="text-xl font-semibold mb-3 text-foreground">Échangez vos récompenses</h3>
+              <p className="text-muted-foreground">
                 Utilisez vos LPV pour obtenir des produits physiques ou convertissez-les en argent réel.
               </p>
             </div>
@@ -105,7 +105,7 @@ const Index = () => {
       <TestimonialCarousel />
       
       {/* Affiliation Section */}
-      <section className="py-20 bg-secondary/50">
+      <section className="py-20 bg-muted/50">
         <div className="container px-6 mx-auto max-w-7xl">
           <div className="flex flex-col md:flex-row gap-10 items-center">
             <div className="md:w-1/2">
@@ -116,7 +116,7 @@ const Index = () => {
               <h2 className="text-3xl md:text-4xl font-bold mb-6">
                 Multipliez vos LVP avec notre programme d'affiliation
               </h2>
-              <p className="text-foreground/70 text-lg mb-8">
+              <p className="text-muted-foreground text-lg mb-8">
                 Invitez vos amis, votre famille et vos relations à rejoindre la plateforme et gagnez des commissions sur leurs activités. Notre programme d'affiliation sur cinq niveaux vous permet de maximiser vos revenus.
               </p>
               
@@ -127,7 +127,7 @@ const Index = () => {
                   </div>
                   <div>
                     <h4 className="font-semibold">Niveau 1: 10%</h4>
-                    <p className="text-foreground/70">Commission directe sur les LVP gagnés par vos affiliés.</p>
+                    <p className="text-muted-foreground">Commission directe sur les LVP gagnés par vos affiliés.</p>
                   </div>
                 </div>
                 
@@ -137,7 +137,7 @@ const Index = () => {
                   </div>
                   <div>
                     <h4 className="font-semibold">Niveaux 2-5: 2-5%</h4>
-                    <p className="text-foreground/70">Commissions supplémentaires sur les affiliés de vos affiliés.</p>
+                    <p className="text-muted-foreground">Commissions supplémentaires sur les affiliés de vos affiliés.</p>
                   </div>
                 </div>
               </div>

@@ -16,7 +16,7 @@ interface MobileNavProps {
 const MobileNav: React.FC<MobileNavProps> = ({ isOpen, user, onLogout, onItemClick }) => {
   return (
     <div 
-      className={`fixed inset-0 bg-white/95 backdrop-blur-md flex flex-col z-40 pt-20 px-6 transition-all duration-300 ease-in-out transform ${
+      className={`fixed inset-0 bg-background/95 backdrop-blur-md flex flex-col z-40 pt-20 px-6 transition-all duration-300 ease-in-out transform ${
         isOpen ? 'translate-y-0' : '-translate-y-full'
       } md:hidden overflow-y-auto`}
     >
@@ -25,17 +25,17 @@ const MobileNav: React.FC<MobileNavProps> = ({ isOpen, user, onLogout, onItemCli
         
         <MobileNavLinks user={user} onItemClick={onItemClick} />
         
-        <div className="w-full px-4 py-3 border-t border-gray-100">
-          <p className="text-gray-500 text-sm mb-3 text-center">Suivez-nous</p>
+        <div className="w-full px-4 py-3 border-t border-border">
+          <p className="text-muted-foreground text-sm mb-3 text-center">Suivez-nous</p>
           <div className="flex justify-center">
             <SocialLinks size="md" />
           </div>
         </div>
         
-        <div className="w-full px-4 py-3 border-t border-gray-100">
-          <p className="text-gray-500 text-sm mb-3 text-center">Contact</p>
+        <div className="w-full px-4 py-3 border-t border-border">
+          <p className="text-muted-foreground text-sm mb-3 text-center">Contact</p>
           <div className="flex items-center justify-center">
-            <a href="tel:+2290190069561" className="flex items-center gap-2 text-gray-700 hover:text-primary">
+            <a href="tel:+2290190069561" className="flex items-center gap-2 text-foreground hover:text-primary">
               <Phone size={16} />
               <span>+229 01 900 695 61</span>
             </a>
