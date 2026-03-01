@@ -81,7 +81,7 @@ const Hero = () => {
               <div className="flex items-center gap-4 pt-4">
                 <div className="flex items-center gap-1">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                    <Star key={i} className="h-4 w-4 fill-primary text-primary" />
                   ))}
                 </div>
                 <span className="text-sm text-muted-foreground">
@@ -100,7 +100,7 @@ const Hero = () => {
                     className="max-w-full max-h-full object-contain"
                   />
                 </div>
-                <div className="absolute -top-4 -right-4 bg-green-500 text-white px-4 py-2 rounded-full text-sm font-medium">
+                <div className="absolute -top-4 -right-4 bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-medium">
                   En ligne maintenant
                 </div>
               </div>
