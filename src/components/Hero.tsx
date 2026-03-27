@@ -1,8 +1,27 @@
 
 import React from 'react';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Play, Star, Users, TrendingUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.15, duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+  }),
+};
+
+const scaleIn = {
+  hidden: { opacity: 0, scale: 0.85 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: { delay: 0.4, duration: 0.7, ease: [0.22, 1, 0.36, 1] },
+  },
+};
 
 const Hero = () => {
   const scrollToHowItWorks = () => {
@@ -20,21 +39,45 @@ const Hero = () => {
             {/* Left Content */}
             <div className="space-y-8">
               <div className="space-y-4">
-                <div className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium">
+                <motion.div
+                  variants={fadeUp}
+                  initial="hidden"
+                  animate="visible"
+                  custom={0}
+                  className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium"
+                >
                   🎉 Plateforme 100% gratuite
-                </div>
-                <h1 className="text-4xl md:text-6xl font-bold text-foreground leading-tight">
+                </motion.div>
+                <motion.h1
+                  variants={fadeUp}
+                  initial="hidden"
+                  animate="visible"
+                  custom={1}
+                  className="text-4xl md:text-6xl font-bold text-foreground leading-tight"
+                >
                   Gagnez de l'argent en 
                   <span className="text-primary"> regardant </span>
                   des publicités
-                </h1>
-                <p className="text-xl text-muted-foreground max-w-lg">
+                </motion.h1>
+                <motion.p
+                  variants={fadeUp}
+                  initial="hidden"
+                  animate="visible"
+                  custom={2}
+                  className="text-xl text-muted-foreground max-w-lg"
+                >
                   LAVUEPAYEE vous récompense pour votre attention. Regardez, cliquez, partagez et gagnez de l'argent réel.
-                </p>
+                </motion.p>
               </div>
 
               {/* Stats */}
-              <div className="grid grid-cols-3 gap-6">
+              <motion.div
+                variants={fadeUp}
+                initial="hidden"
+                animate="visible"
+                custom={3}
+                className="grid grid-cols-3 gap-6"
+              >
                 <div className="text-center">
                   <div className="flex items-center justify-center mb-2">
                     <Users className="h-5 w-5 text-primary mr-1" />
@@ -56,10 +99,16 @@ const Hero = () => {
                   </div>
                   <p className="text-sm text-muted-foreground">Satisfaction</p>
                 </div>
-              </div>
+              </motion.div>
 
               {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4">
+              <motion.div
+                variants={fadeUp}
+                initial="hidden"
+                animate="visible"
+                custom={4}
+                className="flex flex-col sm:flex-row gap-4"
+              >
                 <Button size="lg" className="text-lg px-8 py-6" asChild>
                   <Link to="/register">
                     Commencer maintenant
@@ -75,10 +124,16 @@ const Hero = () => {
                   <Play className="mr-2 h-5 w-5" />
                   Comment ça marche
                 </Button>
-              </div>
+              </motion.div>
 
               {/* Trust indicators */}
-              <div className="flex items-center gap-4 pt-4">
+              <motion.div
+                variants={fadeUp}
+                initial="hidden"
+                animate="visible"
+                custom={5}
+                className="flex items-center gap-4 pt-4"
+              >
                 <div className="flex items-center gap-1">
                   {[...Array(5)].map((_, i) => (
                     <Star key={i} className="h-4 w-4 fill-primary text-primary" />
@@ -87,11 +142,16 @@ const Hero = () => {
                 <span className="text-sm text-muted-foreground">
                   Noté 4.8/5 par nos utilisateurs
                 </span>
-              </div>
+              </motion.div>
             </div>
 
             {/* Right Content - Hero Image with Logo */}
-            <div className="relative">
+            <motion.div
+              variants={scaleIn}
+              initial="hidden"
+              animate="visible"
+              className="relative"
+            >
               <div className="relative bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl p-8 backdrop-blur-sm">
                 <div className="flex items-center justify-center w-full h-80">
                   <img 
@@ -100,11 +160,16 @@ const Hero = () => {
                     className="max-w-full max-h-full object-contain"
                   />
                 </div>
-                <div className="absolute -top-4 -right-4 bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-medium">
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.8, duration: 0.5 }}
+                  className="absolute -top-4 -right-4 bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-medium"
+                >
                   En ligne maintenant
-                </div>
+                </motion.div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>
