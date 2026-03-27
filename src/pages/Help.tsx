@@ -1,16 +1,17 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Wrench, MessageCircle, Book, PhoneCall, Mail, Clock, HelpCircle } from "lucide-react";
+import { MessageCircle, Book, PhoneCall, Mail, Clock, HelpCircle, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Navbar from '@/components/navbar';
+import Footer from '@/components/Footer';
 
 const Help = () => {
   const supportChannels = [
     {
       icon: HelpCircle,
       title: "FAQ & Dépannage",
-      description: "Réponses aux questions courantes",
+      description: "Réponses aux questions courantes sur les points, retraits, parrainage et plus",
       availability: "Disponible 24h/24",
       link: "/faq",
       buttonText: "Consulter la FAQ"
@@ -18,23 +19,23 @@ const Help = () => {
     {
       icon: MessageCircle,
       title: "Support avancé",
-      description: "Centre d'aide complet avec tickets",
+      description: "Centre d'aide complet avec tickets et suivi personnalisé",
       availability: "Support personnalisé",
       link: "/support",
       buttonText: "Accéder au support"
     },
     {
       icon: Book,
-      title: "Base de connaissances",
-      description: "Guides détaillés et tutoriels",
+      title: "Formation en ligne",
+      description: "Guides détaillés et tutoriels pour maximiser vos gains",
       availability: "Toujours accessible",
-      link: "/faq",
-      buttonText: "Explorer les guides"
+      link: "/courses",
+      buttonText: "Explorer les formations"
     },
     {
       icon: PhoneCall,
       title: "Support téléphonique",
-      description: "Assistance directe par téléphone",
+      description: "Assistance directe par téléphone pour les questions urgentes",
       availability: "Lun-Ven 9h-18h",
       link: "tel:+2290190069561",
       buttonText: "+229 01 900 695 61",
@@ -43,7 +44,7 @@ const Help = () => {
     {
       icon: Mail,
       title: "Support par e-mail",
-      description: "Réponse sous 24h maximum",
+      description: "Réponse sous 24h maximum par notre équipe dédiée",
       availability: "contact@lavuepayee.com",
       link: "mailto:contact@lavuepayee.com",
       buttonText: "Envoyer un e-mail",
@@ -52,13 +53,14 @@ const Help = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
       
-      <main className="container px-4 md:px-6 mx-auto max-w-6xl pt-24 pb-12">
+      <main className="container px-4 md:px-6 mx-auto max-w-6xl pt-24 pb-12 flex-1">
         <div className="mb-8 text-center">
+          <HelpCircle className="h-12 w-12 mx-auto mb-4 text-primary" />
           <h1 className="text-3xl md:text-4xl font-bold mb-4">Comment pouvons-nous vous aider ?</h1>
-          <p className="text-muted-foreground text-lg">
+          <p className="text-muted-foreground text-lg max-w-xl mx-auto">
             Trouvez l'assistance dont vous avez besoin pour utiliser LaVuePayee
           </p>
         </div>
@@ -119,10 +121,30 @@ const Help = () => {
                   Politique de cookies
                 </Link>
               </Button>
+              <Button asChild variant="outline" className="justify-start">
+                <Link to="/kyc">
+                  <Book className="h-4 w-4 mr-2" />
+                  Vérification KYC
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="justify-start">
+                <Link to="/wallet">
+                  <Book className="h-4 w-4 mr-2" />
+                  Mon portefeuille
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="justify-start">
+                <Link to="/affiliates">
+                  <Book className="h-4 w-4 mr-2" />
+                  Programme d'affiliation
+                </Link>
+              </Button>
             </div>
           </CardContent>
         </Card>
       </main>
+
+      <Footer />
     </div>
   );
 };
