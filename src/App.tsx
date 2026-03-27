@@ -29,6 +29,13 @@ import ResetPassword from '@/pages/ResetPassword';
 import Help from '@/pages/Help';
 import Support from '@/pages/Support';
 import Notifications from '@/pages/Notifications';
+import Terms from '@/pages/Terms';
+import Privacy from '@/pages/Privacy';
+import Cookies from '@/pages/Cookies';
+import KYC from '@/pages/KYC';
+import Messages from '@/pages/Messages';
+import ViewAd from '@/pages/ViewAd';
+import VerifyPhone from '@/pages/VerifyPhone';
 
 import './App.css';
 
