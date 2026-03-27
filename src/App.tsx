@@ -161,6 +161,18 @@ function App() {
                   </ProtectedRoute>
                 } />
 
+                <Route path="/messages" element={
+                  <ProtectedRoute>
+                    <Messages />
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/kyc" element={
+                  <ProtectedRoute>
+                    <KYC />
+                  </ProtectedRoute>
+                } />
+
                 {/* Routes admin */}
                 <Route path="/admin/*" element={
                   <ProtectedRoute requiredRole="admin">
