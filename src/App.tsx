@@ -29,6 +29,13 @@ import ResetPassword from '@/pages/ResetPassword';
 import Help from '@/pages/Help';
 import Support from '@/pages/Support';
 import Notifications from '@/pages/Notifications';
+import Terms from '@/pages/Terms';
+import Privacy from '@/pages/Privacy';
+import Cookies from '@/pages/Cookies';
+import KYC from '@/pages/KYC';
+import Messages from '@/pages/Messages';
+import ViewAd from '@/pages/ViewAd';
+import VerifyPhone from '@/pages/VerifyPhone';
 
 import './App.css';
 
@@ -86,7 +93,17 @@ function App() {
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/help" element={<Help />} />
                 <Route path="/support" element={<Support />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/privacy" element={<Privacy />} />
+                <Route path="/cookies" element={<Cookies />} />
+                <Route path="/view-ad/:id" element={<ViewAd />} />
                 <Route path="/test-auth" element={<TestAuth />} />
+
+                <Route path="/verify-phone" element={
+                  <ProtectedRoute requireAuth={false}>
+                    <VerifyPhone />
+                  </ProtectedRoute>
+                } />
 
                 {/* Route notifications */}
                 <Route path="/notifications" element={
@@ -141,6 +158,18 @@ function App() {
                 <Route path="/analytics" element={
                   <ProtectedRoute>
                     <Analytics />
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/messages" element={
+                  <ProtectedRoute>
+                    <Messages />
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/kyc" element={
+                  <ProtectedRoute>
+                    <KYC />
                   </ProtectedRoute>
                 } />
 
