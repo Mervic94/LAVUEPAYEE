@@ -93,7 +93,17 @@ function App() {
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/help" element={<Help />} />
                 <Route path="/support" element={<Support />} />
+                <Route path="/terms" element={<Terms />} />
+                <Route path="/privacy" element={<Privacy />} />
+                <Route path="/cookies" element={<Cookies />} />
+                <Route path="/view-ad/:id" element={<ViewAd />} />
                 <Route path="/test-auth" element={<TestAuth />} />
+
+                <Route path="/verify-phone" element={
+                  <ProtectedRoute requireAuth={false}>
+                    <VerifyPhone />
+                  </ProtectedRoute>
+                } />
 
                 {/* Route notifications */}
                 <Route path="/notifications" element={
