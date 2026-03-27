@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { Mail, Phone } from "lucide-react";
+import { motion } from "framer-motion";
+import { Mail, Phone, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthProvider";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -26,12 +27,10 @@ const RegisterPage = () => {
   const isMobile = useIsMobile();
   const [searchParams] = useSearchParams();
 
-  // Vérifier s'il y a un parrain dans l'URL
   useEffect(() => {
     const refParam = searchParams.get('ref');
     if (refParam) {
       setReferralSponsor(refParam);
-      // Vérifier si le parrain existe
       setCheckingSponsor(true);
       checkSponsor(refParam).then(info => {
         setSponsorInfo(info);
@@ -47,7 +46,6 @@ const RegisterPage = () => {
   }, [user, navigate]);
 
   useEffect(() => {
-    // Ne vérifier le parrain que s'il n'y a pas de parrain dans l'URL
     if (!referralSponsor) {
       const debouncedCheckSponsor = setTimeout(() => {
         const sponsorUsername = document.querySelector(
@@ -74,7 +72,6 @@ const RegisterPage = () => {
   const onEmailSubmit = async (data: EmailRegisterFormValues) => {
     const dateOfBirth = formatDateOfBirth(data.birthYear, data.birthMonth, data.birthDay);
     
-    // Récupérer l'ID du sponsor si présent
     let sponsorId = null;
     const sponsorUsername = referralSponsor || data.sponsorUsername;
     if (sponsorUsername && sponsorInfo) {
@@ -98,7 +95,6 @@ const RegisterPage = () => {
     
     const result = await signUp(data.email, data.password, userData);
     if (!result.error) {
-      // Stocker l'email pour le renvoi de vérification
       localStorage.setItem('pendingEmail', data.email);
       navigate('/verify-email');
     }
@@ -107,7 +103,6 @@ const RegisterPage = () => {
   const onPhoneSubmit = async (data: PhoneRegisterFormValues) => {
     const dateOfBirth = formatDateOfBirth(data.birthYear, data.birthMonth, data.birthDay);
     
-    // Récupérer l'ID du sponsor si présent
     let sponsorId = null;
     const sponsorUsername = referralSponsor || data.sponsorUsername;
     if (sponsorUsername && sponsorInfo) {
@@ -131,82 +126,114 @@ const RegisterPage = () => {
     
     const result = await signUp(data.email, data.password, userData);
     if (!result.error) {
-      // Stocker l'email pour le renvoi de vérification
       localStorage.setItem('pendingEmail', data.email);
       navigate('/verify-email');
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md space-y-6">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-primary">S'inscrire</h1>
-          <p className="text-muted-foreground mt-2">
-            Créez votre compte pour commencer.
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-primary/5 via-background to-secondary/5 p-4 relative overflow-hidden">
+      {/* Decorative blobs */}
+      <div className="absolute -top-32 -right-32 w-72 h-72 bg-primary/10 rounded-full blur-3xl" />
+      <div className="absolute -bottom-32 -left-32 w-72 h-72 bg-secondary/10 rounded-full blur-3xl" />
+
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="w-full max-w-md space-y-6 relative z-10"
+      >
+        {/* Brand header */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.1, duration: 0.5 }}
+          className="text-center"
+        >
+          <Link to="/" className="inline-block">
+            <img
+              src="/lovable-uploads/d82c55d8-0c83-4a02-82c0-67e854a84332.png"
+              alt="LAVUEPAYEE"
+              className="h-14 mx-auto mb-4"
+            />
+          </Link>
+          <h1 className="text-3xl font-bold text-foreground">Créer un compte</h1>
+          <p className="text-muted-foreground mt-1">
+            Rejoignez la communauté et commencez à gagner
             {referralSponsor && sponsorInfo && (
-              <span className="block mt-1 text-green-600">
-                Vous avez été parrainé par {sponsorInfo.fullName || sponsorInfo.username}
+              <span className="block mt-1 text-primary font-medium">
+                Parrainé par {sponsorInfo.fullName || sponsorInfo.username}
               </span>
             )}
           </p>
-        </div>
+        </motion.div>
 
-        <Card className="glass-card">
+        <Card className="glass-card border-border/50 shadow-xl">
           <CardContent className="p-6 tablet-container">
-            <div className="mb-6">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="mb-6"
+            >
               <SocialAuth />
-            </div>
+            </motion.div>
 
             <div className="relative mb-6">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-border"></div>
               </div>
               <div className="relative flex justify-center text-xs">
-                <span className="bg-card px-2 text-muted-foreground">ou continuer avec</span>
+                <span className="bg-card px-3 text-muted-foreground">ou continuer avec</span>
               </div>
             </div>
 
-            <Tabs defaultValue="email" value={activeTab} onValueChange={setActiveTab} className="w-full tabs-container">
-              <TabsList className="grid grid-cols-2 mb-6 w-full">
-                <TabsTrigger value="email" className="flex items-center gap-2 tab-trigger">
-                  <Mail className="h-4 w-4" />
-                  <span>Email</span>
-                </TabsTrigger>
-                <TabsTrigger value="phone" className="flex items-center gap-2 tab-trigger">
-                  <Phone className="h-4 w-4" />
-                  <span>Téléphone</span>
-                </TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="email">
-                <EmailRegisterForm 
-                  onSubmit={onEmailSubmit}
-                  sponsorInfo={sponsorInfo}
-                  checkingSponsor={checkingSponsor}
-                  sponsorUsername={referralSponsor}
-                  isReadOnlySponsor={!!referralSponsor}
-                  isLoading={loading}
-                />
-              </TabsContent>
-              
-              <TabsContent value="phone">
-                <PhoneRegisterForm 
-                  onSubmit={onPhoneSubmit}
-                  sponsorInfo={sponsorInfo}
-                  checkingSponsor={checkingSponsor}
-                  sponsorUsername={referralSponsor}
-                  isReadOnlySponsor={!!referralSponsor}
-                  isLoading={loading}
-                />
-              </TabsContent>
-            </Tabs>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <Tabs defaultValue="email" value={activeTab} onValueChange={setActiveTab} className="w-full tabs-container">
+                <TabsList className="grid grid-cols-2 mb-6 w-full">
+                  <TabsTrigger value="email" className="flex items-center gap-2 tab-trigger">
+                    <Mail className="h-4 w-4" />
+                    <span>Email</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="phone" className="flex items-center gap-2 tab-trigger">
+                    <Phone className="h-4 w-4" />
+                    <span>Téléphone</span>
+                  </TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="email">
+                  <EmailRegisterForm 
+                    onSubmit={onEmailSubmit}
+                    sponsorInfo={sponsorInfo}
+                    checkingSponsor={checkingSponsor}
+                    sponsorUsername={referralSponsor}
+                    isReadOnlySponsor={!!referralSponsor}
+                    isLoading={loading}
+                  />
+                </TabsContent>
+                
+                <TabsContent value="phone">
+                  <PhoneRegisterForm 
+                    onSubmit={onPhoneSubmit}
+                    sponsorInfo={sponsorInfo}
+                    checkingSponsor={checkingSponsor}
+                    sponsorUsername={referralSponsor}
+                    isReadOnlySponsor={!!referralSponsor}
+                    isLoading={loading}
+                  />
+                </TabsContent>
+              </Tabs>
+            </motion.div>
 
             <Separator className="my-6" />
 
             <div className="text-center">
               <p className="text-sm text-muted-foreground">
-                Vous avez déjà un compte?{" "}
+                Vous avez déjà un compte ?{" "}
                 <Link to="/login" className="text-primary font-semibold hover:underline">
                   Se connecter
                 </Link>
@@ -214,7 +241,19 @@ const RegisterPage = () => {
             </div>
           </CardContent>
         </Card>
-      </div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="text-center"
+        >
+          <Link to="/" className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1 transition-colors">
+            <ArrowLeft className="h-3 w-3" />
+            Retour à l'accueil
+          </Link>
+        </motion.div>
+      </motion.div>
     </div>
   );
 };

@@ -1,12 +1,10 @@
-
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { motion } from "framer-motion";
+import { ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthProvider";
 import { useAccountManagementService } from "@/contexts/auth/services/accountManagement";
-
-// Import components
 import RequestResetForm from "@/components/reset-password/RequestResetForm";
 import ResetPasswordForm from "@/components/reset-password/ResetPasswordForm";
 import ResetPasswordHeader from "@/components/reset-password/ResetPasswordHeader";
@@ -21,7 +19,6 @@ const ResetPassword = () => {
   const { resetPassword, updatePassword } = useAccountManagementService(setLoading);
 
   useEffect(() => {
-    // Vérifier si nous avons un token de réinitialisation dans l'URL
     const hasResetToken = searchParams.get('token_hash') && searchParams.get('type') === 'recovery';
     if (hasResetToken) {
       setStage("reset");
@@ -49,11 +46,30 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md space-y-8">
-        <ResetPasswordHeader stage={stage} />
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-primary/5 via-background to-secondary/5 p-4 relative overflow-hidden">
+      <div className="absolute -top-32 -left-32 w-72 h-72 bg-primary/10 rounded-full blur-3xl" />
+      <div className="absolute -bottom-32 -right-32 w-72 h-72 bg-secondary/10 rounded-full blur-3xl" />
 
-        <div className="glass-card p-6 rounded-lg">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="w-full max-w-md space-y-8 relative z-10"
+      >
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.1, duration: 0.5 }}
+        >
+          <ResetPasswordHeader stage={stage} />
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="glass-card p-6 rounded-lg border-border/50 shadow-xl"
+        >
           {stage === "request" ? (
             <RequestResetForm onSubmit={onRequestSubmit} loading={loading} />
           ) : (
@@ -64,14 +80,20 @@ const ResetPassword = () => {
               showBackButton={!searchParams.get('token_hash')}
             />
           )}
-        </div>
+        </motion.div>
 
-        <div className="text-center">
-          <Link to="/login" className="text-primary text-sm hover:underline">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="text-center"
+        >
+          <Link to="/login" className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1 transition-colors">
+            <ArrowLeft className="h-3 w-3" />
             Retour à la connexion
           </Link>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 };
