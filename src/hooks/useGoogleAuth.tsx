@@ -20,15 +20,15 @@ export const useGoogleAuth = () => {
           }
         }
       });
-      
+
       if (error) throw error;
-      
+      // Redirection en cours vers Google : pas de reset ici, la page va naviguer.
     } catch (error: any) {
       console.error("Google auth error:", error);
       toast({
         variant: "destructive",
-        title: "Erreur de connexion",
-        description: error.message || "Une erreur est survenue lors de la connexion avec Google",
+        title: "Erreur de connexion Google",
+        description: error.message || "Une erreur est survenue lors de la connexion avec Google. Vérifiez que le provider Google est activé dans Supabase.",
       });
       setGoogleLoading(false);
     }
