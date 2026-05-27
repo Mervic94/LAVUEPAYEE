@@ -1,83 +1,65 @@
 
-Objectif: connecter votre domaine personnalisé à votre site LaVuePayee publié sur Lovable.
+## Objectif
 
-Ce qu’il faut vérifier d’abord
-1. Le projet doit déjà être publié.
-   - Votre URL publique actuelle est: `https://lavuepayee.lovable.app`
-   - Donc vous pouvez connecter un domaine personnalisé.
+1. Attribuer automatiquement les rôles aux 3 comptes Gmail indiqués.
+2. Vérifier et corriger l'inscription/connexion via Google (OAuth).
 
-Étapes à faire dans Lovable
+## 1. Attribution des rôles
 
-Desktop
-1. Ouvrez le projet.
-2. Cliquez sur le nom du projet en haut à gauche.
-3. Ouvrez `Settings`.
-4. Allez dans `Domains`.
-5. Cliquez sur `Connect Domain`.
-6. Saisissez votre domaine:
-   - exemple racine: `monsite.com`
-   - puis ajoutez aussi `www.monsite.com`
-7. Suivez l’assistant Lovable.
+Mapping demandé :
+- `melvicsotch@gmail.com` → **admin**
+- `vicsotchenou@gmail.com` → **consumer**
+- `victorsotch@gmail.com` → **advertiser**
 
-Mobile
-1. Ouvrez le projet.
-2. En mode Chat, touchez le nom du projet en haut ou le bouton `...` en bas à droite.
-3. Ouvrez `Settings`.
-4. Allez dans `Domains`.
-5. Touchez `Connect Domain`.
-6. Ajoutez:
-   - `monsite.com`
-   - `www.monsite.com`
-7. Suivez les instructions affichées.
+Actions (migration SQL) :
+- **UPDATE** sur `public.users` pour forcer ces 3 rôles si les comptes existent déjà (créés par signup).
+- Mettre à jour la fonction `handle_new_user()` pour qu'à chaque nouvelle inscription, si l'email correspond à un des 3 ci-dessus, le rôle correct soit assigné automatiquement (au lieu de `consumer` par défaut).
+- Aucune création manuelle de compte côté DB (Supabase Auth ne permet pas d'insérer dans `auth.users` via migration sans mot de passe) — les comptes seront créés par la connexion Google.
 
-Configuration DNS à mettre chez votre hébergeur de domaine
-Si vous faites la configuration manuelle, ajoutez:
+## 2. Inscription / Connexion Google
+
+Diagnostic du code actuel :
+- `useGoogleAuth` et `login.ts` appellent correctement `supabase.auth.signInWithOAuth({ provider: 'google', redirectTo: window.location.origin + '/dashboard' })`.
+- Le trigger `handle_new_user` crée bien le profil dans `users` et `profiles` à partir de `raw_user_meta_data` (avatar, prénom, nom).
+- Le client Supabase est en `flowType: 'pkce'` avec `detectSessionInUrl: true` ✅.
+
+Corrections côté code :
+- **Bug potentiel** : `useGoogleAuth` ne remet pas `googleLoading=false` en cas de succès (uniquement en cas d'erreur). Comme la page redirige, ce n'est généralement pas bloquant, mais on ajoute un `finally` propre.
+- Le redirect `window.location.origin + '/dashboard'` doit être listé dans les **Redirect URLs** Supabase (action manuelle, voir ci-dessous).
+- Vérifier que `Register.tsx` propose bien le bouton Google (composant `SocialAuth` existe déjà ✅).
+- S'assurer qu'après login Google, le nouvel utilisateur tombe sur `/dashboard` même si son profil vient juste d'être créé par le trigger.
+
+Actions manuelles indispensables (à faire dans la console Supabase + Google Cloud) — non automatisables par Lovable :
+
+a. **Google Cloud Console** → OAuth Client ID type "Web application" :
+   - Authorized JavaScript origin : `https://lavuepayee.lovable.app` (et l'URL preview)
+   - Authorized redirect URI : `https://dfgvpaauwcbnmeitbxdx.supabase.co/auth/v1/callback`
+
+b. **Supabase Dashboard → Authentication → Providers → Google** :
+   - Activer le provider
+   - Coller le Client ID + Client Secret de Google
+
+c. **Supabase Dashboard → Authentication → URL Configuration** :
+   - Site URL : `https://lavuepayee.lovable.app`
+   - Redirect URLs : `https://lavuepayee.lovable.app/*`, URL de preview Lovable, `http://localhost:*`
+
+## Détails techniques
 
 ```text
-Type   Nom        Valeur
-A      @          185.158.133.1
-A      www        185.158.133.1
-TXT    _lovable   lovable_verify=ABC
+SQL migration (résumé) :
+1. UPDATE public.users SET role='admin' WHERE email='melvicsotch@gmail.com';
+2. UPDATE public.users SET role='consumer' WHERE email='vicsotchenou@gmail.com';
+3. UPDATE public.users SET role='advertiser' WHERE email='victorsotch@gmail.com';
+4. CREATE OR REPLACE FUNCTION public.handle_new_user() -- avec CASE sur NEW.email
+   pour attribuer le bon rôle à la création.
 ```
 
-Important:
-- la valeur exacte du TXT vous sera donnée par Lovable
-- ajoutez bien le domaine racine ET le sous-domaine `www`
-- ensuite choisissez lequel sera le domaine principal
+Fichiers code modifiés :
+- `src/hooks/useGoogleAuth.tsx` (ajout `finally`)
+- `src/contexts/auth/services/login.ts` (idem)
 
-Si vous utilisez Cloudflare
-- Dans l’écran `Connect Domain`, ouvrez `Advanced`
-- Activez l’option indiquant que le domaine utilise Cloudflare ou un proxy similaire
-- Dans ce cas, Lovable adaptera la méthode de configuration
+## Livrable utilisateur
 
-Délais
-- La propagation DNS peut prendre quelques minutes à 72h
-- Après vérification, Lovable active automatiquement le SSL/HTTPS
-
-États possibles du domaine
-- `Verifying`: DNS en cours de propagation
-- `Setting up`: SSL en cours
-- `Active`: domaine opérationnel
-- `Action required`: configuration incomplète
-- `Offline`: le DNS ne pointe plus correctement
-- `Failed`: certificat SSL non généré, il faut corriger puis relancer
-
-Conseils pratiques
-1. Connectez d’abord `monsite.com`
-2. Connectez ensuite `www.monsite.com`
-3. Définissez un domaine principal
-4. Vérifiez qu’aucun ancien enregistrement A ne pointe vers un autre service
-5. Si cela bloque, vérifiez aussi les éventuels enregistrements CAA
-
-Si vous voulez, une fois votre nom de domaine acheté, je pourrai vous préparer un plan précis selon votre registrar:
-- Namecheap
-- GoDaddy
-- Hostinger
-- OVH
-- IONOS
-- Cloudflare
-
-Détails techniques
-- Le projet doit être publié avant de pouvoir lier un domaine
-- Lovable sert ensuite votre site sur ce domaine avec certificat HTTPS automatique
-- Si le site publié est privé, il faut aussi vérifier la visibilité de publication pour qu’il soit accessible publiquement
+Après implémentation, je vous fournirai :
+- Le récap des étapes manuelles à faire dans Google Cloud + Supabase
+- Confirmation que les 3 comptes auront automatiquement leur rôle dès leur première connexion Google
