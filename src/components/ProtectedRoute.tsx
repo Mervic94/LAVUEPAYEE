@@ -1,48 +1,48 @@
-
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthProvider';
+import { useRole, AppRole } from '@/hooks/useRole';
 import { Loader2 } from 'lucide-react';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requireAuth?: boolean;
-  requiredRole?: string;
+  allowedRoles?: AppRole[];
+  requiredRole?: AppRole; // backwards compat
   redirectTo?: string;
 }
 
-const ProtectedRoute = ({ 
-  children, 
-  requireAuth = true, 
+const ProtectedRoute = ({
+  children,
+  requireAuth = true,
+  allowedRoles,
   requiredRole,
-  redirectTo = '/login' 
+  redirectTo = '/login',
 }: ProtectedRouteProps) => {
-  const { user, userProfile, loading } = useAuth();
+  const { user, loading } = useAuth();
+  const { roles, loading: rolesLoading } = useRole();
   const navigate = useNavigate();
 
+  const effectiveAllowed = allowedRoles ?? (requiredRole ? [requiredRole] : undefined);
+
   useEffect(() => {
-    if (!loading) {
-      // Redirection si auth requise mais pas connecté
-      if (requireAuth && !user) {
-        navigate(redirectTo);
-        return;
-      }
+    if (loading || rolesLoading) return;
 
-      // Redirection si pas d'auth requise mais connecté
-      if (!requireAuth && user) {
-        navigate('/dashboard');
-        return;
-      }
-
-      // Vérification du rôle
-      if (requiredRole && userProfile?.role !== requiredRole) {
-        navigate('/unauthorized');
-        return;
-      }
+    if (requireAuth && !user) {
+      navigate(redirectTo);
+      return;
     }
-  }, [user, userProfile, loading, navigate, requireAuth, requiredRole, redirectTo]);
+    if (!requireAuth && user) {
+      navigate('/dashboard');
+      return;
+    }
+    if (effectiveAllowed && user) {
+      const ok = effectiveAllowed.some((r) => roles.includes(r));
+      if (!ok) navigate('/unauthorized');
+    }
+  }, [user, loading, rolesLoading, roles, navigate, requireAuth, redirectTo, effectiveAllowed]);
 
-  if (loading) {
+  if (loading || rolesLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -53,10 +53,9 @@ const ProtectedRoute = ({
     );
   }
 
-  // Ne pas afficher le contenu si les conditions ne sont pas remplies
   if (requireAuth && !user) return null;
   if (!requireAuth && user) return null;
-  if (requiredRole && userProfile?.role !== requiredRole) return null;
+  if (effectiveAllowed && user && !effectiveAllowed.some((r) => roles.includes(r))) return null;
 
   return <>{children}</>;
 };
