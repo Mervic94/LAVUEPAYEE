@@ -45,7 +45,7 @@ const Onboarding = () => {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    if (userProfile?.onboarded) navigate('/dashboard');
+    if ((userProfile as any)?.onboarded) navigate('/dashboard');
   }, [userProfile, navigate]);
 
   const role = primaryRole ?? 'consumer';
