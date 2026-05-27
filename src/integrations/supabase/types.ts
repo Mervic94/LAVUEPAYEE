@@ -289,6 +289,65 @@ export type Database = {
           },
         ]
       }
+      exchange_requests: {
+        Row: {
+          admin_note: string | null
+          amount_fiat: number | null
+          amount_points: number
+          created_at: string
+          fiat_currency: string | null
+          id: string
+          payment_details: Json | null
+          processed_at: string | null
+          processed_by: string | null
+          product_id: string | null
+          status: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_note?: string | null
+          amount_fiat?: number | null
+          amount_points: number
+          created_at?: string
+          fiat_currency?: string | null
+          id?: string
+          payment_details?: Json | null
+          processed_at?: string | null
+          processed_by?: string | null
+          product_id?: string | null
+          status?: string
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_note?: string | null
+          amount_fiat?: number | null
+          amount_points?: number
+          created_at?: string
+          fiat_currency?: string | null
+          id?: string
+          payment_details?: Json | null
+          processed_at?: string | null
+          processed_by?: string | null
+          product_id?: string | null
+          status?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exchange_requests_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lavuepayee: {
         Row: {
           created_at: string
@@ -395,6 +454,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      products: {
+        Row: {
+          active: boolean
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          name: string
+          points_cost: number
+          stock: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          points_cost: number
+          stock?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          points_cost?: number
+          stock?: number
+          updated_at?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -599,6 +694,27 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_sessions: {
         Row: {
           created_at: string | null
@@ -699,6 +815,7 @@ export type Database = {
           first_name: string | null
           id: string
           last_name: string | null
+          onboarded: boolean
           phone: string | null
           phone_verified: boolean | null
           points: number | null
@@ -718,6 +835,7 @@ export type Database = {
           first_name?: string | null
           id: string
           last_name?: string | null
+          onboarded?: boolean
           phone?: string | null
           phone_verified?: boolean | null
           points?: number | null
@@ -737,6 +855,7 @@ export type Database = {
           first_name?: string | null
           id?: string
           last_name?: string | null
+          onboarded?: boolean
           phone?: string | null
           phone_verified?: boolean | null
           points?: number | null
@@ -925,6 +1044,13 @@ export type Database = {
           phone: string
         }[]
       }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       is_admin_user: { Args: never; Returns: boolean }
       update_session_activity: {
         Args: { session_id: string }
@@ -932,7 +1058,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "consumer" | "advertiser"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1059,6 +1185,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "consumer", "advertiser"],
+    },
   },
 } as const

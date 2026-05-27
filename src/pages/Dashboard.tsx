@@ -56,8 +56,12 @@ const Dashboard = () => {
   
   const loading = userLoading || adsLoading || tasksLoading;
   const userRole = userProfile?.role || 'consumer';
-  
-  // Quick actions based on user role
+
+  useEffect(() => {
+    if (!userLoading && userProfile && !(userProfile as any).onboarded) {
+      navigate('/onboarding');
+    }
+  }, [userLoading, userProfile, navigate]);
   const quickActions = [
     {
       title: 'Voir les tâches',
