@@ -36,6 +36,10 @@ import KYC from '@/pages/KYC';
 import Messages from '@/pages/Messages';
 import ViewAd from '@/pages/ViewAd';
 import VerifyPhone from '@/pages/VerifyPhone';
+import Onboarding from '@/pages/Onboarding';
+import Exchange from '@/pages/Exchange';
+import AdminUsers from '@/pages/admin/Users';
+import AdminExchanges from '@/pages/admin/Exchanges';
 
 import './App.css';
 
@@ -173,11 +177,25 @@ function App() {
                   </ProtectedRoute>
                 } />
 
+                {/* Onboarding */}
+                <Route path="/onboarding" element={
+                  <ProtectedRoute><Onboarding /></ProtectedRoute>
+                } />
+
+                {/* Échange de points */}
+                <Route path="/exchange" element={
+                  <ProtectedRoute><Exchange /></ProtectedRoute>
+                } />
+
                 {/* Routes admin */}
-                <Route path="/admin/*" element={
-                  <ProtectedRoute requiredRole="admin">
-                    <Dashboard />
-                  </ProtectedRoute>
+                <Route path="/admin" element={
+                  <ProtectedRoute><AdminUsers /></ProtectedRoute>
+                } />
+                <Route path="/admin/users" element={
+                  <ProtectedRoute><AdminUsers /></ProtectedRoute>
+                } />
+                <Route path="/admin/exchanges" element={
+                  <ProtectedRoute><AdminExchanges /></ProtectedRoute>
                 } />
 
                 {/* Page d'erreur non autorisé */}
