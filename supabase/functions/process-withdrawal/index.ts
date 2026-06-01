@@ -1,115 +1,131 @@
-
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+};
+
+// LAVUEPAYEE withdrawal rules
+const MIN_WITHDRAWAL_VUC = 500;
+const COMMISSION_RATE = 0.05; // 5%
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
-  }
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
 
   try {
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
       { global: { headers: { Authorization: req.headers.get('Authorization')! } } }
-    )
+    );
 
-    const { amount, method, paymentDetails } = await req.json()
+    const { amount_vuc, method, paymentDetails } = await req.json();
 
-    // Validate inputs
-    if (typeof amount !== 'number' || isNaN(amount) || amount <= 0) {
-      return new Response(
-        JSON.stringify({ error: 'Montant invalide' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
+    if (typeof amount_vuc !== 'number' || isNaN(amount_vuc) || amount_vuc <= 0) {
+      return json({ error: 'Montant VUC invalide' }, 400);
     }
-
+    if (amount_vuc < MIN_WITHDRAWAL_VUC) {
+      return json({ error: `Retrait minimum : ${MIN_WITHDRAWAL_VUC} VUC` }, 400);
+    }
     if (!method || typeof method !== 'string') {
-      return new Response(
-        JSON.stringify({ error: 'Méthode de paiement invalide' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
+      return json({ error: 'Méthode de paiement invalide' }, 400);
     }
 
-    // Verify authentication
-    const { data: { user } } = await supabaseClient.auth.getUser()
-    if (!user) {
-      return new Response(
-        JSON.stringify({ error: 'Non autorisé' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) return json({ error: 'Non autorisé' }, 401);
 
-    // Check balance
-    const { data: wallet } = await supabaseClient
-      .from('wallets')
-      .select('balance')
-      .eq('user_id', user.id)
-      .single()
-
-    if (!wallet || wallet.balance < amount) {
-      return new Response(
-        JSON.stringify({ error: 'Solde insuffisant' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
-
-    const fee = amount * 0.02
-    const netAmount = amount - fee
-
-    // Use service role for financial operations
     const supabaseService = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
       { auth: { persistSession: false } }
-    )
+    );
 
-    // Create withdrawal
+    const { data: wallet } = await supabaseService
+      .from('wallets')
+      .select('balance_vuc, locked_vuc')
+      .eq('user_id', user.id)
+      .single();
+
+    if (!wallet || Number(wallet.balance_vuc || 0) < amount_vuc) {
+      return json({ error: 'Solde VUC insuffisant' }, 400);
+    }
+
+    // VUC → XOF
+    const { data: rateRow } = await supabaseService
+      .from('token_rates')
+      .select('vuc_to_xof')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const vucToXof = Number(rateRow?.vuc_to_xof ?? 5);
+
+    const grossXof = amount_vuc * vucToXof;
+    const feeXof = grossXof * COMMISSION_RATE;
+    const netXof = grossXof - feeXof;
+
     const { data: withdrawal, error } = await supabaseService
       .from('withdrawals')
       .insert({
         user_id: user.id,
-        amount,
-        fee,
-        net_amount: netAmount,
+        amount: grossXof,
+        amount_vuc,
+        amount_xof: grossXof,
+        fee: feeXof,
+        net_amount: netXof,
         method,
-        payment_details: paymentDetails || {}
+        payment_details: paymentDetails || {},
+        status: 'pending',
       })
       .select()
-      .single()
+      .single();
 
     if (error) {
-      console.error('Withdrawal creation error:', error)
-      return new Response(
-        JSON.stringify({ error: 'Impossible de créer la demande de retrait' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
+      console.error('Withdrawal error:', error);
+      return json({ error: 'Impossible de créer la demande de retrait' }, 500);
     }
 
-    // Update wallet balances
+    // Lock VUC: balance -= amount, locked += amount
     await supabaseService
       .from('wallets')
       .update({
-        balance: (wallet.balance || 0) - amount,
-        pending_balance: (wallet.balance || 0) + amount
+        balance_vuc: Number(wallet.balance_vuc) - amount_vuc,
+        locked_vuc: Number(wallet.locked_vuc || 0) + amount_vuc,
       })
-      .eq('user_id', user.id)
+      .eq('user_id', user.id);
 
-    return new Response(
-      JSON.stringify({ success: true, withdrawal }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    )
+    await supabaseService.from('transactions').insert({
+      user_id: user.id,
+      type: 'withdrawal',
+      amount: grossXof,
+      points: amount_vuc,
+      status: 'pending',
+      description: `Withdrawal ${amount_vuc} VUC via ${method}`,
+      reference_id: withdrawal.id,
+      platform_id: 'lavuepayee',
+    });
 
-  } catch (error) {
-    console.error('Withdrawal processing error:', error)
-    return new Response(
-      JSON.stringify({ error: 'Une erreur est survenue lors du traitement' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    )
+    return json({
+      success: true,
+      withdrawal,
+      summary: {
+        amount_vuc,
+        gross_xof: grossXof,
+        commission_xof: feeXof,
+        net_xof: netXof,
+        commission_rate: COMMISSION_RATE,
+        vuc_to_xof: vucToXof,
+      },
+    });
+  } catch (e) {
+    console.error('Withdrawal processing error:', e);
+    return json({ error: 'Une erreur est survenue lors du traitement' }, 500);
   }
-})
+});
+
+function json(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  });
+}
