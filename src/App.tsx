@@ -40,6 +40,7 @@ import Onboarding from '@/pages/Onboarding';
 import Exchange from '@/pages/Exchange';
 import AdminUsers from '@/pages/admin/Users';
 import AdminExchanges from '@/pages/admin/Exchanges';
+import AdminPlatformMonitor from '@/pages/admin/PlatformMonitor';
 
 import './App.css';
 
@@ -196,6 +197,9 @@ function App() {
                 } />
                 <Route path="/admin/exchanges" element={
                   <ProtectedRoute><AdminExchanges /></ProtectedRoute>
+                } />
+                <Route path="/admin/platforms" element={
+                  <ProtectedRoute><AdminPlatformMonitor /></ProtectedRoute>
                 } />
 
                 {/* Page d'erreur non autorisé */}
