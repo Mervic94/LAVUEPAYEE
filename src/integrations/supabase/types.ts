@@ -14,15 +14,79 @@ export type Database = {
   }
   public: {
     Tables: {
+      ad_views: {
+        Row: {
+          ad_id: string
+          created_at: string | null
+          device: string | null
+          id: string
+          ip_hash: string | null
+          rewarded_vuc: number | null
+          tab_active: boolean | null
+          viewer_id: string
+          watched_seconds: number
+        }
+        Insert: {
+          ad_id: string
+          created_at?: string | null
+          device?: string | null
+          id?: string
+          ip_hash?: string | null
+          rewarded_vuc?: number | null
+          tab_active?: boolean | null
+          viewer_id: string
+          watched_seconds?: number
+        }
+        Update: {
+          ad_id?: string
+          created_at?: string | null
+          device?: string | null
+          id?: string
+          ip_hash?: string | null
+          rewarded_vuc?: number | null
+          tab_active?: boolean | null
+          viewer_id?: string
+          watched_seconds?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ad_views_ad_id_fkey"
+            columns: ["ad_id"]
+            isOneToOne: false
+            referencedRelation: "ads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ad_views_ad_id_fkey"
+            columns: ["ad_id"]
+            isOneToOne: false
+            referencedRelation: "advertiser_stats"
+            referencedColumns: ["ad_id"]
+          },
+          {
+            foreignKeyName: "ad_views_viewer_id_fkey"
+            columns: ["viewer_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ads: {
         Row: {
+          approved: boolean | null
           campaign_id: string
           clicks_count: number | null
           content: string
+          cooldown_seconds: number | null
           created_at: string | null
+          daily_limit: number | null
+          duration_sec: number | null
           id: string
           image_url: string | null
           link_url: string | null
+          min_watch_percent: number | null
+          platform: string | null
           reward_amount: number | null
           reward_points: number
           shares_count: number | null
@@ -34,13 +98,19 @@ export type Database = {
           views_count: number | null
         }
         Insert: {
+          approved?: boolean | null
           campaign_id: string
           clicks_count?: number | null
           content: string
+          cooldown_seconds?: number | null
           created_at?: string | null
+          daily_limit?: number | null
+          duration_sec?: number | null
           id?: string
           image_url?: string | null
           link_url?: string | null
+          min_watch_percent?: number | null
+          platform?: string | null
           reward_amount?: number | null
           reward_points?: number
           shares_count?: number | null
@@ -52,13 +122,19 @@ export type Database = {
           views_count?: number | null
         }
         Update: {
+          approved?: boolean | null
           campaign_id?: string
           clicks_count?: number | null
           content?: string
+          cooldown_seconds?: number | null
           created_at?: string | null
+          daily_limit?: number | null
+          duration_sec?: number | null
           id?: string
           image_url?: string | null
           link_url?: string | null
+          min_watch_percent?: number | null
+          platform?: string | null
           reward_amount?: number | null
           reward_points?: number
           shares_count?: number | null
@@ -70,6 +146,13 @@ export type Database = {
           views_count?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "ads_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "advertiser_stats"
+            referencedColumns: ["campaign_id"]
+          },
           {
             foreignKeyName: "ads_campaign_id_fkey"
             columns: ["campaign_id"]
@@ -240,42 +323,57 @@ export type Database = {
         Row: {
           advertiser_id: string
           budget: number
+          budget_vuc: number | null
+          budget_xof: number | null
           created_at: string | null
+          daily_view_limit: number | null
           description: string | null
           end_date: string | null
           id: string
+          platform_id: string | null
           spent: number | null
           start_date: string | null
           status: string | null
           target_audience: Json | null
+          target_criteria: Json | null
           title: string
           updated_at: string | null
         }
         Insert: {
           advertiser_id: string
           budget: number
+          budget_vuc?: number | null
+          budget_xof?: number | null
           created_at?: string | null
+          daily_view_limit?: number | null
           description?: string | null
           end_date?: string | null
           id?: string
+          platform_id?: string | null
           spent?: number | null
           start_date?: string | null
           status?: string | null
           target_audience?: Json | null
+          target_criteria?: Json | null
           title: string
           updated_at?: string | null
         }
         Update: {
           advertiser_id?: string
           budget?: number
+          budget_vuc?: number | null
+          budget_xof?: number | null
           created_at?: string | null
+          daily_view_limit?: number | null
           description?: string | null
           end_date?: string | null
           id?: string
+          platform_id?: string | null
           spent?: number | null
           start_date?: string | null
           status?: string | null
           target_audience?: Json | null
+          target_criteria?: Json | null
           title?: string
           updated_at?: string | null
         }
@@ -283,6 +381,44 @@ export type Database = {
           {
             foreignKeyName: "campaigns_advertiser_id_fkey"
             columns: ["advertiser_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      device_fingerprints: {
+        Row: {
+          created_at: string | null
+          device_type: string | null
+          fingerprint_hash: string
+          flagged: boolean | null
+          id: string
+          ip_hash: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          device_type?: string | null
+          fingerprint_hash: string
+          flagged?: boolean | null
+          id?: string
+          ip_hash?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          device_type?: string | null
+          fingerprint_hash?: string
+          flagged?: boolean | null
+          id?: string
+          ip_hash?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "device_fingerprints_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
@@ -348,20 +484,87 @@ export type Database = {
           },
         ]
       }
-      lavuepayee: {
+      fedapay_payments: {
         Row: {
+          amount_vuc: number
+          amount_xof: number
+          callback_data: Json | null
+          campaign_id: string | null
           created_at: string
-          id: number
+          credited_at: string | null
+          fedapay_id: string | null
+          fedapay_ref: string | null
+          fee_xof: number
+          id: string
+          net_xof: number
+          operator: string | null
+          payment_method: string | null
+          phone_number: string | null
+          status: string
+          updated_at: string
+          user_id: string
         }
         Insert: {
+          amount_vuc: number
+          amount_xof: number
+          callback_data?: Json | null
+          campaign_id?: string | null
           created_at?: string
-          id?: number
+          credited_at?: string | null
+          fedapay_id?: string | null
+          fedapay_ref?: string | null
+          fee_xof?: number
+          id?: string
+          net_xof: number
+          operator?: string | null
+          payment_method?: string | null
+          phone_number?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
         }
         Update: {
+          amount_vuc?: number
+          amount_xof?: number
+          callback_data?: Json | null
+          campaign_id?: string | null
           created_at?: string
-          id?: number
+          credited_at?: string | null
+          fedapay_id?: string | null
+          fedapay_ref?: string | null
+          fee_xof?: number
+          id?: string
+          net_xof?: number
+          operator?: string | null
+          payment_method?: string | null
+          phone_number?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fedapay_payments_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "advertiser_stats"
+            referencedColumns: ["campaign_id"]
+          },
+          {
+            foreignKeyName: "fedapay_payments_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fedapay_payments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       messages: {
         Row: {
@@ -455,6 +658,135 @@ export type Database = {
           },
         ]
       }
+      otp_verifications: {
+        Row: {
+          attempts: number
+          channel: string
+          created_at: string
+          expires_at: string
+          id: string
+          phone: string
+          status: string
+          twilio_sid: string | null
+          user_id: string | null
+          verified_at: string | null
+        }
+        Insert: {
+          attempts?: number
+          channel?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          phone: string
+          status?: string
+          twilio_sid?: string | null
+          user_id?: string | null
+          verified_at?: string | null
+        }
+        Update: {
+          attempts?: number
+          channel?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          phone?: string
+          status?: string
+          twilio_sid?: string | null
+          user_id?: string | null
+          verified_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "otp_verifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      phone_verifications: {
+        Row: {
+          attempt_count: number
+          channel: string
+          created_at: string
+          expires_at: string
+          id: string
+          phone_number: string
+          status: string
+          twilio_sid: string | null
+          updated_at: string
+          user_id: string
+          verified_at: string | null
+        }
+        Insert: {
+          attempt_count?: number
+          channel?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          phone_number: string
+          status?: string
+          twilio_sid?: string | null
+          updated_at?: string
+          user_id: string
+          verified_at?: string | null
+        }
+        Update: {
+          attempt_count?: number
+          channel?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          phone_number?: string
+          status?: string
+          twilio_sid?: string | null
+          updated_at?: string
+          user_id?: string
+          verified_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "phone_verifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      platform_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          platform_id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          platform_id?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          platform_id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "platform_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           active: boolean
@@ -527,6 +859,48 @@ export type Database = {
         }
         Relationships: []
       }
+      project_snapshots: {
+        Row: {
+          app_name: string
+          category: string
+          code: string | null
+          component: string
+          created_at: string
+          description: string | null
+          id: string
+          metadata: Json
+          status: string
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          app_name?: string
+          category: string
+          code?: string | null
+          component: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json
+          status?: string
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          app_name?: string
+          category?: string
+          code?: string | null
+          component?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json
+          status?: string
+          updated_at?: string
+          version?: number
+        }
+        Relationships: []
+      }
       referrals: {
         Row: {
           created_at: string | null
@@ -572,6 +946,47 @@ export type Database = {
           {
             foreignKeyName: "referrals_referrer_id_fkey"
             columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reward_logs: {
+        Row: {
+          action_type: string
+          created_at: string | null
+          description: string | null
+          id: string
+          platform_id: string | null
+          ref_id: string | null
+          user_id: string
+          vuc_earned: number
+        }
+        Insert: {
+          action_type: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          platform_id?: string | null
+          ref_id?: string | null
+          user_id: string
+          vuc_earned?: number
+        }
+        Update: {
+          action_type?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          platform_id?: string | null
+          ref_id?: string | null
+          user_id?: string
+          vuc_earned?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reward_logs_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
@@ -630,6 +1045,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "tasks_ad_id_fkey"
+            columns: ["ad_id"]
+            isOneToOne: false
+            referencedRelation: "advertiser_stats"
+            referencedColumns: ["ad_id"]
+          },
+          {
             foreignKeyName: "tasks_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -637,6 +1059,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      token_rates: {
+        Row: {
+          created_at: string | null
+          id: string
+          source: string | null
+          updated_at: string | null
+          vuc_to_usdt: number | null
+          vuc_to_xof: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          source?: string | null
+          updated_at?: string | null
+          vuc_to_usdt?: number | null
+          vuc_to_xof?: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          source?: string | null
+          updated_at?: string | null
+          vuc_to_usdt?: number | null
+          vuc_to_xof?: number
+        }
+        Relationships: []
       }
       transactions: {
         Row: {
@@ -810,14 +1259,19 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string | null
+          daily_vuc_earned: number | null
+          daily_vuc_reset_at: string | null
           email: string
           email_verified: boolean | null
           first_name: string | null
+          fraud_score: number | null
           id: string
+          kyc_status: string | null
           last_name: string | null
           onboarded: boolean
           phone: string | null
           phone_verified: boolean | null
+          phone_verified_at: string | null
           points: number | null
           referral_code: string | null
           referred_by: string | null
@@ -830,14 +1284,19 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           created_at?: string | null
+          daily_vuc_earned?: number | null
+          daily_vuc_reset_at?: string | null
           email: string
           email_verified?: boolean | null
           first_name?: string | null
+          fraud_score?: number | null
           id: string
+          kyc_status?: string | null
           last_name?: string | null
           onboarded?: boolean
           phone?: string | null
           phone_verified?: boolean | null
+          phone_verified_at?: string | null
           points?: number | null
           referral_code?: string | null
           referred_by?: string | null
@@ -850,14 +1309,19 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           created_at?: string | null
+          daily_vuc_earned?: number | null
+          daily_vuc_reset_at?: string | null
           email?: string
           email_verified?: boolean | null
           first_name?: string | null
+          fraud_score?: number | null
           id?: string
+          kyc_status?: string | null
           last_name?: string | null
           onboarded?: boolean
           phone?: string | null
           phone_verified?: boolean | null
+          phone_verified_at?: string | null
           points?: number | null
           referral_code?: string | null
           referred_by?: string | null
@@ -877,12 +1341,53 @@ export type Database = {
           },
         ]
       }
+      view_validations: {
+        Row: {
+          created_at: string | null
+          flag_reason: string | null
+          flagged: boolean | null
+          id: string
+          score: number | null
+          validation_method: string
+          view_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          flag_reason?: string | null
+          flagged?: boolean | null
+          id?: string
+          score?: number | null
+          validation_method?: string
+          view_id: string
+        }
+        Update: {
+          created_at?: string | null
+          flag_reason?: string | null
+          flagged?: boolean | null
+          id?: string
+          score?: number | null
+          validation_method?: string
+          view_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "view_validations_view_id_fkey"
+            columns: ["view_id"]
+            isOneToOne: false
+            referencedRelation: "ad_views"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       wallets: {
         Row: {
           balance: number | null
+          balance_vuc: number | null
+          balance_xof: number | null
           created_at: string | null
           currency: string | null
           id: string
+          locked_vuc: number | null
           pending_balance: number | null
           total_earned: number | null
           total_withdrawn: number | null
@@ -891,9 +1396,12 @@ export type Database = {
         }
         Insert: {
           balance?: number | null
+          balance_vuc?: number | null
+          balance_xof?: number | null
           created_at?: string | null
           currency?: string | null
           id?: string
+          locked_vuc?: number | null
           pending_balance?: number | null
           total_earned?: number | null
           total_withdrawn?: number | null
@@ -902,9 +1410,12 @@ export type Database = {
         }
         Update: {
           balance?: number | null
+          balance_vuc?: number | null
+          balance_xof?: number | null
           created_at?: string | null
           currency?: string | null
           id?: string
+          locked_vuc?: number | null
           pending_balance?: number | null
           total_earned?: number | null
           total_withdrawn?: number | null
@@ -924,13 +1435,18 @@ export type Database = {
       withdrawals: {
         Row: {
           amount: number
+          amount_vuc: number | null
+          amount_xof: number | null
           created_at: string | null
           fee: number | null
           id: string
           method: string
+          mobile_number: string | null
+          mobile_operator: string | null
           net_amount: number
           notes: string | null
           payment_details: Json
+          payment_provider: string | null
           processed_at: string | null
           status: string | null
           transaction_id: string | null
@@ -939,13 +1455,18 @@ export type Database = {
         }
         Insert: {
           amount: number
+          amount_vuc?: number | null
+          amount_xof?: number | null
           created_at?: string | null
           fee?: number | null
           id?: string
           method: string
+          mobile_number?: string | null
+          mobile_operator?: string | null
           net_amount: number
           notes?: string | null
           payment_details: Json
+          payment_provider?: string | null
           processed_at?: string | null
           status?: string | null
           transaction_id?: string | null
@@ -954,13 +1475,18 @@ export type Database = {
         }
         Update: {
           amount?: number
+          amount_vuc?: number | null
+          amount_xof?: number | null
           created_at?: string | null
           fee?: number | null
           id?: string
           method?: string
+          mobile_number?: string | null
+          mobile_operator?: string | null
           net_amount?: number
           notes?: string | null
           payment_details?: Json
+          payment_provider?: string | null
           processed_at?: string | null
           status?: string | null
           transaction_id?: string | null
@@ -979,6 +1505,83 @@ export type Database = {
       }
     }
     Views: {
+      admin_kpis: {
+        Row: {
+          active_campaigns: number | null
+          active_users: number | null
+          current_rate: number | null
+          new_users_24h: number | null
+          pending_ads: number | null
+          pending_withdrawals: number | null
+          total_ads: number | null
+          total_campaigns: number | null
+          total_users: number | null
+          total_vuc_distributed: number | null
+          total_vuc_withdrawn: number | null
+          views_24h: number | null
+        }
+        Relationships: []
+      }
+      admin_platform_stats: {
+        Row: {
+          active_campaigns: number | null
+          active_users: number | null
+          new_users_7d: number | null
+          pending_ads: number | null
+          pending_withdrawals: number | null
+          total_campaigns: number | null
+          total_users: number | null
+          total_vuc_distributed: number | null
+          total_vuc_in_circulation: number | null
+          total_vuc_withdrawn: number | null
+        }
+        Relationships: []
+      }
+      advertiser_stats: {
+        Row: {
+          ad_created_at: string | null
+          ad_id: string | null
+          ad_status: string | null
+          ad_title: string | null
+          advertiser_id: string | null
+          approved: boolean | null
+          budget_vuc: number | null
+          campaign_id: string | null
+          campaign_status: string | null
+          campaign_title: string | null
+          clicks_count: number | null
+          reward_points: number | null
+          spent: number | null
+          views_count: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaigns_advertiser_id_fkey"
+            columns: ["advertiser_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      my_referral_summary: {
+        Row: {
+          active_referrals: number | null
+          last_referral_at: string | null
+          referrer_id: string | null
+          total_referrals: number | null
+          total_vuc_from_referrals: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_referrer_id_fkey"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       public_profiles: {
         Row: {
           avatar_url: string | null
@@ -1006,8 +1609,52 @@ export type Database = {
         }
         Relationships: []
       }
+      wallet_summary: {
+        Row: {
+          balance_vuc: number | null
+          balance_xof: number | null
+          email: string | null
+          locked_vuc: number | null
+          role: string | null
+          total_earned: number | null
+          total_withdrawn: number | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wallets_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
+      admin_approve_ad: { Args: { p_ad_id: string }; Returns: undefined }
+      admin_process_withdrawal: {
+        Args: {
+          p_notes?: string
+          p_status: string
+          p_transaction_id?: string
+          p_withdrawal_id: string
+        }
+        Returns: undefined
+      }
+      admin_reject_ad: {
+        Args: { p_ad_id: string; p_reason?: string }
+        Returns: undefined
+      }
+      admin_set_fraud_score: {
+        Args: { p_score: number; p_user_id: string }
+        Returns: undefined
+      }
+      admin_set_token_rate: {
+        Args: { p_vuc_to_xof: number }
+        Returns: undefined
+      }
       check_email_exists: { Args: { check_email: string }; Returns: boolean }
       check_phone_exists: { Args: { check_phone: string }; Returns: boolean }
       check_username_exists: {
@@ -1051,6 +1698,11 @@ export type Database = {
         }
         Returns: boolean
       }
+      increment_wallet_vuc: {
+        Args: { p_amount: number; p_user_id: string }
+        Returns: undefined
+      }
+      is_admin: { Args: never; Returns: boolean }
       is_admin_user: { Args: never; Returns: boolean }
       update_session_activity: {
         Args: { session_id: string }
