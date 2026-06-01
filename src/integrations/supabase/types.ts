@@ -21,6 +21,7 @@ export type Database = {
           device: string | null
           id: string
           ip_hash: string | null
+          platform_id: string
           rewarded_vuc: number | null
           tab_active: boolean | null
           viewer_id: string
@@ -32,6 +33,7 @@ export type Database = {
           device?: string | null
           id?: string
           ip_hash?: string | null
+          platform_id?: string
           rewarded_vuc?: number | null
           tab_active?: boolean | null
           viewer_id: string
@@ -43,6 +45,7 @@ export type Database = {
           device?: string | null
           id?: string
           ip_hash?: string | null
+          platform_id?: string
           rewarded_vuc?: number | null
           tab_active?: boolean | null
           viewer_id?: string
@@ -993,6 +996,66 @@ export type Database = {
           },
         ]
       }
+      social_tasks: {
+        Row: {
+          advertiser_id: string
+          approved: boolean
+          completions_count: number
+          created_at: string
+          daily_limit: number
+          description: string | null
+          id: string
+          metadata: Json
+          network: string
+          platform_id: string
+          reward_vuc: number
+          status: string
+          target_url: string
+          task_type: string
+          title: string
+          total_limit: number | null
+          updated_at: string
+        }
+        Insert: {
+          advertiser_id: string
+          approved?: boolean
+          completions_count?: number
+          created_at?: string
+          daily_limit?: number
+          description?: string | null
+          id?: string
+          metadata?: Json
+          network: string
+          platform_id?: string
+          reward_vuc?: number
+          status?: string
+          target_url: string
+          task_type: string
+          title: string
+          total_limit?: number | null
+          updated_at?: string
+        }
+        Update: {
+          advertiser_id?: string
+          approved?: boolean
+          completions_count?: number
+          created_at?: string
+          daily_limit?: number
+          description?: string | null
+          id?: string
+          metadata?: Json
+          network?: string
+          platform_id?: string
+          reward_vuc?: number
+          status?: string
+          target_url?: string
+          task_type?: string
+          title?: string
+          total_limit?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       tasks: {
         Row: {
           ad_id: string
@@ -1095,6 +1158,7 @@ export type Database = {
           id: string
           payment_details: Json | null
           payment_method: string | null
+          platform_id: string
           points: number | null
           processed_at: string | null
           reference_id: string | null
@@ -1110,6 +1174,7 @@ export type Database = {
           id?: string
           payment_details?: Json | null
           payment_method?: string | null
+          platform_id?: string
           points?: number | null
           processed_at?: string | null
           reference_id?: string | null
@@ -1125,6 +1190,7 @@ export type Database = {
           id?: string
           payment_details?: Json | null
           payment_method?: string | null
+          platform_id?: string
           points?: number | null
           processed_at?: string | null
           reference_id?: string | null
@@ -1609,6 +1675,35 @@ export type Database = {
         }
         Relationships: []
       }
+      suspicious_transactions: {
+        Row: {
+          amount: number | null
+          avg_amount: number | null
+          created_at: string | null
+          description: string | null
+          id: string | null
+          payment_details: Json | null
+          payment_method: string | null
+          platform_id: string | null
+          points: number | null
+          processed_at: string | null
+          ratio_to_avg: number | null
+          reference_id: string | null
+          status: string | null
+          type: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       wallet_summary: {
         Row: {
           balance_vuc: number | null
@@ -1666,6 +1761,10 @@ export type Database = {
         Returns: number
       }
       cleanup_old_sessions: { Args: never; Returns: undefined }
+      count_recent_registrations_by_ip: {
+        Args: { _hours?: number; _ip_hash: string }
+        Returns: number
+      }
       create_system_notification: {
         Args: {
           notification_message: string
