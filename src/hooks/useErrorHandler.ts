@@ -38,9 +38,15 @@ export const useErrorHandler = () => {
       variant: "destructive"
     });
 
+    // Capture vers Sentry (en prod uniquement, via la config DSN)
+    Sentry.withScope((scope) => {
+      if (context) scope.setTag('context', context);
+      scope.setExtras({ raw: typeof error === 'object' ? error : { value: error } });
+      Sentry.captureException(error instanceof Error ? error : new Error(message));
+    });
+
     // Log pour le monitoring
     if (process.env.NODE_ENV === 'production') {
-      // Ici on pourrait envoyer vers un service de monitoring
       console.error('Production error:', { error, context, timestamp: new Date().toISOString() });
     }
   }, [toast]);
