@@ -1,6 +1,7 @@
 
 import { useToast } from '@/hooks/use-toast';
 import { useCallback } from 'react';
+import { Sentry } from '@/integrations/sentry';
 
 export interface ErrorInfo {
   message: string;
