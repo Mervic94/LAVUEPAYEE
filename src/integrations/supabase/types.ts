@@ -390,6 +390,48 @@ export type Database = {
           },
         ]
       }
+      completion_reviews: {
+        Row: {
+          comment: string | null
+          completion_id: string
+          decision: string | null
+          id: string
+          reviewed_at: string
+          reviewer_id: string | null
+        }
+        Insert: {
+          comment?: string | null
+          completion_id: string
+          decision?: string | null
+          id?: string
+          reviewed_at?: string
+          reviewer_id?: string | null
+        }
+        Update: {
+          comment?: string | null
+          completion_id?: string
+          decision?: string | null
+          id?: string
+          reviewed_at?: string
+          reviewer_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "completion_reviews_completion_id_fkey"
+            columns: ["completion_id"]
+            isOneToOne: false
+            referencedRelation: "task_completions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "completion_reviews_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       device_fingerprints: {
         Row: {
           created_at: string | null
@@ -562,6 +604,86 @@ export type Database = {
           },
           {
             foreignKeyName: "fedapay_payments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fraud_alerts: {
+        Row: {
+          alert_type: string
+          created_at: string
+          details: Json | null
+          id: string
+          resolved: boolean
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          user_id: string
+        }
+        Insert: {
+          alert_type: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          resolved?: boolean
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          user_id: string
+        }
+        Update: {
+          alert_type?: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          resolved?: boolean
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fraud_alerts_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fraud_alerts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ip_registrations: {
+        Row: {
+          created_at: string
+          id: string
+          ip_hash: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ip_hash: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ip_hash?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ip_registrations_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
@@ -829,7 +951,10 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          city: string | null
+          country: string | null
           created_at: string | null
+          display_name: string | null
           email: string | null
           first_name: string | null
           id: string
@@ -840,7 +965,10 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          city?: string | null
+          country?: string | null
           created_at?: string | null
+          display_name?: string | null
           email?: string | null
           first_name?: string | null
           id: string
@@ -851,7 +979,10 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          city?: string | null
+          country?: string | null
           created_at?: string | null
+          display_name?: string | null
           email?: string | null
           first_name?: string | null
           id?: string
@@ -996,65 +1127,310 @@ export type Database = {
           },
         ]
       }
+      social_accounts: {
+        Row: {
+          created_at: string
+          followers_count: number | null
+          handle: string | null
+          id: string
+          is_active: boolean
+          linked_at: string
+          metadata: Json | null
+          platform: string
+          profile_url: string | null
+          updated_at: string
+          user_id: string
+          verified: boolean
+          verified_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          followers_count?: number | null
+          handle?: string | null
+          id?: string
+          is_active?: boolean
+          linked_at?: string
+          metadata?: Json | null
+          platform: string
+          profile_url?: string | null
+          updated_at?: string
+          user_id: string
+          verified?: boolean
+          verified_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          followers_count?: number | null
+          handle?: string | null
+          id?: string
+          is_active?: boolean
+          linked_at?: string
+          metadata?: Json | null
+          platform?: string
+          profile_url?: string | null
+          updated_at?: string
+          user_id?: string
+          verified?: boolean
+          verified_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_accounts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       social_tasks: {
         Row: {
+          action_type: string
           advertiser_id: string
           approved: boolean
+          budget_vuc: number
           completions_count: number
+          content_text: string | null
           created_at: string
           daily_limit: number
           description: string | null
+          duration_hours: number
+          end_date: string | null
           id: string
+          media_url: string | null
           metadata: Json
+          min_followers: number | null
           network: string
+          platform: string | null
           platform_id: string
           reward_vuc: number
+          spent_vuc: number
+          start_date: string | null
           status: string
           target_url: string
           task_type: string
           title: string
           total_limit: number | null
           updated_at: string
+          verification_mode: string
         }
         Insert: {
+          action_type?: string
           advertiser_id: string
           approved?: boolean
+          budget_vuc?: number
           completions_count?: number
+          content_text?: string | null
           created_at?: string
           daily_limit?: number
           description?: string | null
+          duration_hours?: number
+          end_date?: string | null
           id?: string
+          media_url?: string | null
           metadata?: Json
+          min_followers?: number | null
           network: string
+          platform?: string | null
           platform_id?: string
           reward_vuc?: number
+          spent_vuc?: number
+          start_date?: string | null
           status?: string
           target_url: string
           task_type: string
           title: string
           total_limit?: number | null
           updated_at?: string
+          verification_mode?: string
         }
         Update: {
+          action_type?: string
           advertiser_id?: string
           approved?: boolean
+          budget_vuc?: number
           completions_count?: number
+          content_text?: string | null
           created_at?: string
           daily_limit?: number
           description?: string | null
+          duration_hours?: number
+          end_date?: string | null
           id?: string
+          media_url?: string | null
           metadata?: Json
+          min_followers?: number | null
           network?: string
+          platform?: string | null
           platform_id?: string
           reward_vuc?: number
+          spent_vuc?: number
+          start_date?: string | null
           status?: string
           target_url?: string
           task_type?: string
           title?: string
           total_limit?: number | null
           updated_at?: string
+          verification_mode?: string
         }
         Relationships: []
+      }
+      status_campaigns: {
+        Row: {
+          advertiser_id: string
+          approved: boolean
+          budget_vuc: number
+          completions_count: number
+          content_text: string
+          created_at: string
+          description: string | null
+          end_date: string | null
+          id: string
+          max_completions: number | null
+          media_url: string | null
+          min_followers: number
+          platform_id: string
+          reward_per_post: number
+          spent_vuc: number
+          start_date: string | null
+          status: string
+          target_criteria: Json | null
+          target_platforms: string[]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          advertiser_id: string
+          approved?: boolean
+          budget_vuc?: number
+          completions_count?: number
+          content_text: string
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          max_completions?: number | null
+          media_url?: string | null
+          min_followers?: number
+          platform_id?: string
+          reward_per_post?: number
+          spent_vuc?: number
+          start_date?: string | null
+          status?: string
+          target_criteria?: Json | null
+          target_platforms?: string[]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          advertiser_id?: string
+          approved?: boolean
+          budget_vuc?: number
+          completions_count?: number
+          content_text?: string
+          created_at?: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          max_completions?: number | null
+          media_url?: string | null
+          min_followers?: number
+          platform_id?: string
+          reward_per_post?: number
+          spent_vuc?: number
+          start_date?: string | null
+          status?: string
+          target_criteria?: Json | null
+          target_platforms?: string[]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "status_campaigns_advertiser_id_fkey"
+            columns: ["advertiser_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_completions: {
+        Row: {
+          confidence_score: number | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          proof_metadata: Json | null
+          proof_screenshot_url: string | null
+          published_at: string | null
+          rejection_reason: string | null
+          status: string
+          task_id: string
+          updated_at: string
+          user_id: string
+          verified_at: string | null
+          verified_by: string | null
+          vuc_earned: number
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          proof_metadata?: Json | null
+          proof_screenshot_url?: string | null
+          published_at?: string | null
+          rejection_reason?: string | null
+          status?: string
+          task_id: string
+          updated_at?: string
+          user_id: string
+          verified_at?: string | null
+          verified_by?: string | null
+          vuc_earned?: number
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          proof_metadata?: Json | null
+          proof_screenshot_url?: string | null
+          published_at?: string | null
+          rejection_reason?: string | null
+          status?: string
+          task_id?: string
+          updated_at?: string
+          user_id?: string
+          verified_at?: string | null
+          verified_by?: string | null
+          vuc_earned?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_completions_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "social_tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_completions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_completions_verified_by_fkey"
+            columns: ["verified_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tasks: {
         Row: {
@@ -1125,36 +1501,54 @@ export type Database = {
       }
       token_rates: {
         Row: {
+          advertiser_rate_vuc_to_xof: number
+          advertiser_spread: number
           created_at: string | null
+          daily_limit_vuc: number
           id: string
+          min_withdrawal_vuc: number
           source: string | null
           updated_at: string | null
           vuc_to_usdt: number | null
           vuc_to_xof: number
+          withdrawal_fee_pct: number
         }
         Insert: {
+          advertiser_rate_vuc_to_xof?: number
+          advertiser_spread?: number
           created_at?: string | null
+          daily_limit_vuc?: number
           id?: string
+          min_withdrawal_vuc?: number
           source?: string | null
           updated_at?: string | null
           vuc_to_usdt?: number | null
           vuc_to_xof?: number
+          withdrawal_fee_pct?: number
         }
         Update: {
+          advertiser_rate_vuc_to_xof?: number
+          advertiser_spread?: number
           created_at?: string | null
+          daily_limit_vuc?: number
           id?: string
+          min_withdrawal_vuc?: number
           source?: string | null
           updated_at?: string | null
           vuc_to_usdt?: number | null
           vuc_to_xof?: number
+          withdrawal_fee_pct?: number
         }
         Relationships: []
       }
       transactions: {
         Row: {
           amount: number
+          amount_vuc: number | null
+          amount_xof: number | null
           created_at: string | null
           description: string | null
+          from_wallet: string | null
           id: string
           payment_details: Json | null
           payment_method: string | null
@@ -1163,14 +1557,18 @@ export type Database = {
           processed_at: string | null
           reference_id: string | null
           status: string | null
+          to_wallet: string | null
           type: string
           updated_at: string | null
           user_id: string
         }
         Insert: {
           amount: number
+          amount_vuc?: number | null
+          amount_xof?: number | null
           created_at?: string | null
           description?: string | null
+          from_wallet?: string | null
           id?: string
           payment_details?: Json | null
           payment_method?: string | null
@@ -1179,14 +1577,18 @@ export type Database = {
           processed_at?: string | null
           reference_id?: string | null
           status?: string | null
+          to_wallet?: string | null
           type: string
           updated_at?: string | null
           user_id: string
         }
         Update: {
           amount?: number
+          amount_vuc?: number | null
+          amount_xof?: number | null
           created_at?: string | null
           description?: string | null
+          from_wallet?: string | null
           id?: string
           payment_details?: Json | null
           payment_method?: string | null
@@ -1195,11 +1597,26 @@ export type Database = {
           processed_at?: string | null
           reference_id?: string | null
           status?: string | null
+          to_wallet?: string | null
           type?: string
           updated_at?: string | null
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "transactions_from_wallet_fkey"
+            columns: ["from_wallet"]
+            isOneToOne: false
+            referencedRelation: "wallets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_to_wallet_fkey"
+            columns: ["to_wallet"]
+            isOneToOne: false
+            referencedRelation: "wallets"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "transactions_user_id_fkey"
             columns: ["user_id"]
@@ -1672,6 +2089,19 @@ export type Database = {
           id?: string | null
           last_name?: string | null
           username?: string | null
+        }
+        Relationships: []
+      }
+      socialpay_kpis: {
+        Row: {
+          active_campaigns: number | null
+          completions_24h: number | null
+          linked_accounts: number | null
+          pending_verifications: number | null
+          total_campaigns: number | null
+          total_completions: number | null
+          total_vuc_distributed: number | null
+          verified_completions: number | null
         }
         Relationships: []
       }
