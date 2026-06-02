@@ -25,6 +25,10 @@ class ErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
+    Sentry.withScope((scope) => {
+      scope.setExtras({ componentStack: errorInfo.componentStack });
+      Sentry.captureException(error);
+    });
   }
 
   private handleReload = () => {
