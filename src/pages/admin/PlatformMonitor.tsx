@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 import { useRole } from '@/hooks/useRole';
-import { Navigate } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ArrowLeft, Activity } from 'lucide-react';
+import Navbar from '@/components/navbar';
 
 const PLATFORMS = [
   { id: 'lavuepayee', label: 'LAVUEPAYEE' },
