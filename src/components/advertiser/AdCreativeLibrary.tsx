@@ -339,11 +339,58 @@ const AdCreativeLibrary: React.FC = () => {
         </TabsContent>
         
         <TabsContent value="templates" className="space-y-6">
-          <div className="text-center p-8 border rounded-lg bg-secondary/10">
-            <p className="font-medium">Modèles à venir</p>
-            <p className="text-sm text-muted-foreground mb-4">
-              Cette fonctionnalité sera disponible bientôt.
-            </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              {
+                name: 'Bannière promo',
+                type: 'Image',
+                dimensions: '1200×628',
+                description: 'Idéal pour un lancement produit ou une offre limitée.',
+                icon: Image,
+              },
+              {
+                name: 'Vidéo courte',
+                type: 'Vidéo',
+                dimensions: '1080×1080 · 15s',
+                description: 'Format carré optimisé pour le feed mobile et les stories.',
+                icon: Film,
+              },
+              {
+                name: 'Annonce native',
+                type: 'Native',
+                dimensions: 'Responsive',
+                description: 'S\'intègre au design des plateformes partenaires.',
+                icon: Image,
+              },
+            ].map((tpl) => {
+              const Icon = tpl.icon;
+              return (
+                <Card key={tpl.name} className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-5">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <Icon className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-medium">{tpl.name}</p>
+                        <p className="text-xs text-muted-foreground">{tpl.type} · {tpl.dimensions}</p>
+                      </div>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-4">{tpl.description}</p>
+                    <Button
+                      size="sm"
+                      className="w-full"
+                      onClick={() =>
+                        toast({ title: 'Modèle sélectionné', description: `Utilisation du modèle « ${tpl.name} »` })
+                      }
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Utiliser ce modèle
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </TabsContent>
       </Tabs>
