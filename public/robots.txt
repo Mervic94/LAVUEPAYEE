@@ -1,0 +1,23 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /wallet
+Disallow: /profile
+Disallow: /settings
+Disallow: /tasks
+Disallow: /messages
+Disallow: /notifications
+Disallow: /analytics
+Disallow: /kyc
+Disallow: /onboarding
+Disallow: /exchange
+Disallow: /admin
+Disallow: /admin/
+Disallow: /verify-email
+Disallow: /verify-phone
+Disallow: /reset-password
+Disallow: /test-auth
+Disallow: /unauthorized
+Disallow: /view-ad/
+
+Sitemap: https://lavuepayee.lovable.app/sitemap.xml

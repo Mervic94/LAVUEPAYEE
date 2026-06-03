@@ -3,8 +3,10 @@ import { useLocation, Link } from "react-router-dom";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Home, ArrowLeft } from "lucide-react";
+import { useNoIndex } from "@/hooks/useNoIndex";
 
 const NotFound = () => {
+  useNoIndex();
   const location = useLocation();
 
   useEffect(() => {
