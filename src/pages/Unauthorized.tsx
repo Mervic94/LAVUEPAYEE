@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { ShieldX, ArrowLeft, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useNoIndex } from '@/hooks/useNoIndex';
 
 const Unauthorized = () => {
+  useNoIndex();
   const navigate = useNavigate();
 
   return (
