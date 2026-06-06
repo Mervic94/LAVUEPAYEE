@@ -432,6 +432,145 @@ export type Database = {
           },
         ]
       }
+      delivery_orders: {
+        Row: {
+          client_id: string
+          created_at: string
+          delivery_address: string | null
+          delivery_fee_xof: number
+          delivery_lat: number | null
+          delivery_lng: number | null
+          driver_id: string | null
+          estimated_min: number | null
+          id: string
+          items: Json
+          note: string | null
+          partner_id: string
+          payment_method: string
+          platform_id: string
+          status: string
+          subtotal_xof: number
+          total_vuc: number
+          total_xof: number
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          delivery_address?: string | null
+          delivery_fee_xof?: number
+          delivery_lat?: number | null
+          delivery_lng?: number | null
+          driver_id?: string | null
+          estimated_min?: number | null
+          id?: string
+          items?: Json
+          note?: string | null
+          partner_id: string
+          payment_method?: string
+          platform_id?: string
+          status?: string
+          subtotal_xof?: number
+          total_vuc?: number
+          total_xof?: number
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          delivery_address?: string | null
+          delivery_fee_xof?: number
+          delivery_lat?: number | null
+          delivery_lng?: number | null
+          driver_id?: string | null
+          estimated_min?: number | null
+          id?: string
+          items?: Json
+          note?: string | null
+          partner_id?: string
+          payment_method?: string
+          platform_id?: string
+          status?: string
+          subtotal_xof?: number
+          total_vuc?: number
+          total_xof?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delivery_orders_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "delivery_orders_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "delivery_orders_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "zempro_partners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      delivery_tracking: {
+        Row: {
+          driver_id: string
+          heading: number | null
+          id: string
+          lat: number
+          lng: number
+          ride_id: string
+          speed_kmh: number | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          driver_id: string
+          heading?: number | null
+          id?: string
+          lat: number
+          lng: number
+          ride_id: string
+          speed_kmh?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          driver_id?: string
+          heading?: number | null
+          id?: string
+          lat?: number
+          lng?: number
+          ride_id?: string
+          speed_kmh?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delivery_tracking_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "delivery_tracking_ride_id_fkey"
+            columns: ["ride_id"]
+            isOneToOne: false
+            referencedRelation: "rides"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       device_fingerprints: {
         Row: {
           created_at: string | null
@@ -464,6 +603,234 @@ export type Database = {
           {
             foreignKeyName: "device_fingerprints_user_id_fkey"
             columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      driver_milestones: {
+        Row: {
+          achieved_at: string
+          bonus_vuc: number
+          credited: boolean
+          credited_at: string | null
+          driver_id: string
+          id: string
+          milestone: number
+        }
+        Insert: {
+          achieved_at?: string
+          bonus_vuc: number
+          credited?: boolean
+          credited_at?: string | null
+          driver_id: string
+          id?: string
+          milestone: number
+        }
+        Update: {
+          achieved_at?: string
+          bonus_vuc?: number
+          credited?: boolean
+          credited_at?: string | null
+          driver_id?: string
+          id?: string
+          milestone?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "driver_milestones_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      driver_zones: {
+        Row: {
+          active: boolean
+          center_lat: number | null
+          center_lng: number | null
+          city: string
+          country: string
+          created_at: string
+          id: string
+          name: string
+          radius_km: number | null
+        }
+        Insert: {
+          active?: boolean
+          center_lat?: number | null
+          center_lng?: number | null
+          city?: string
+          country?: string
+          created_at?: string
+          id?: string
+          name: string
+          radius_km?: number | null
+        }
+        Update: {
+          active?: boolean
+          center_lat?: number | null
+          center_lng?: number | null
+          city?: string
+          country?: string
+          created_at?: string
+          id?: string
+          name?: string
+          radius_km?: number | null
+        }
+        Relationships: []
+      }
+      drivers: {
+        Row: {
+          city: string
+          created_at: string
+          current_lat: number | null
+          current_lng: number | null
+          id: string
+          is_available: boolean
+          is_online: boolean
+          kyc_docs_url: string[] | null
+          last_location_at: string | null
+          license_number: string | null
+          plate_number: string | null
+          platform_id: string
+          rating: number
+          status: string
+          total_earnings_vuc: number
+          total_earnings_xof: number
+          total_rides: number
+          updated_at: string
+          user_id: string
+          vehicle_brand: string | null
+          vehicle_color: string | null
+          vehicle_type: string
+          verified: boolean
+          verified_at: string | null
+          zone: string
+        }
+        Insert: {
+          city?: string
+          created_at?: string
+          current_lat?: number | null
+          current_lng?: number | null
+          id?: string
+          is_available?: boolean
+          is_online?: boolean
+          kyc_docs_url?: string[] | null
+          last_location_at?: string | null
+          license_number?: string | null
+          plate_number?: string | null
+          platform_id?: string
+          rating?: number
+          status?: string
+          total_earnings_vuc?: number
+          total_earnings_xof?: number
+          total_rides?: number
+          updated_at?: string
+          user_id: string
+          vehicle_brand?: string | null
+          vehicle_color?: string | null
+          vehicle_type?: string
+          verified?: boolean
+          verified_at?: string | null
+          zone?: string
+        }
+        Update: {
+          city?: string
+          created_at?: string
+          current_lat?: number | null
+          current_lng?: number | null
+          id?: string
+          is_available?: boolean
+          is_online?: boolean
+          kyc_docs_url?: string[] | null
+          last_location_at?: string | null
+          license_number?: string | null
+          plate_number?: string | null
+          platform_id?: string
+          rating?: number
+          status?: string
+          total_earnings_vuc?: number
+          total_earnings_xof?: number
+          total_rides?: number
+          updated_at?: string
+          user_id?: string
+          vehicle_brand?: string | null
+          vehicle_color?: string | null
+          vehicle_type?: string
+          verified?: boolean
+          verified_at?: string | null
+          zone?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "drivers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_tickets: {
+        Row: {
+          active: boolean
+          city: string
+          created_at: string
+          description: string | null
+          event_date: string
+          event_name: string
+          id: string
+          image_url: string | null
+          organizer_id: string | null
+          platform_id: string
+          price_vuc: number
+          price_xof: number
+          sold_seats: number
+          total_seats: number | null
+          venue: string | null
+        }
+        Insert: {
+          active?: boolean
+          city?: string
+          created_at?: string
+          description?: string | null
+          event_date: string
+          event_name: string
+          id?: string
+          image_url?: string | null
+          organizer_id?: string | null
+          platform_id?: string
+          price_vuc?: number
+          price_xof?: number
+          sold_seats?: number
+          total_seats?: number | null
+          venue?: string | null
+        }
+        Update: {
+          active?: boolean
+          city?: string
+          created_at?: string
+          description?: string | null
+          event_date?: string
+          event_name?: string
+          id?: string
+          image_url?: string | null
+          organizer_id?: string | null
+          platform_id?: string
+          price_vuc?: number
+          price_xof?: number
+          sold_seats?: number
+          total_seats?: number | null
+          venue?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_tickets_organizer_id_fkey"
+            columns: ["organizer_id"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
@@ -1035,6 +1402,44 @@ export type Database = {
         }
         Relationships: []
       }
+      push_tokens: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          platform: string
+          token: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          platform?: string
+          token: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          platform?: string
+          token?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "push_tokens_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       referrals: {
         Row: {
           created_at: string | null
@@ -1123,6 +1528,307 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ride_insurance: {
+        Row: {
+          client_id: string
+          coverage_xof: number
+          created_at: string
+          expires_at: string
+          id: string
+          premium_vuc: number
+          ride_id: string
+          status: string
+        }
+        Insert: {
+          client_id: string
+          coverage_xof?: number
+          created_at?: string
+          expires_at: string
+          id?: string
+          premium_vuc?: number
+          ride_id: string
+          status?: string
+        }
+        Update: {
+          client_id?: string
+          coverage_xof?: number
+          created_at?: string
+          expires_at?: string
+          id?: string
+          premium_vuc?: number
+          ride_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ride_insurance_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ride_insurance_ride_id_fkey"
+            columns: ["ride_id"]
+            isOneToOne: false
+            referencedRelation: "rides"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ride_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          read_at: string | null
+          ride_id: string
+          sender_id: string
+          type: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          ride_id: string
+          sender_id: string
+          type?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          ride_id?: string
+          sender_id?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ride_messages_ride_id_fkey"
+            columns: ["ride_id"]
+            isOneToOne: false
+            referencedRelation: "rides"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ride_messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ride_requests: {
+        Row: {
+          accepted_at: string | null
+          cancel_reason: string | null
+          cancelled_at: string | null
+          client_id: string
+          client_price_xof: number | null
+          created_at: string
+          distance_km: number | null
+          driver_counter_xof: number | null
+          driver_id: string | null
+          dropoff_address: string | null
+          dropoff_lat: number
+          dropoff_lng: number
+          duration_min: number | null
+          expires_at: string | null
+          id: string
+          negotiation_mode: boolean
+          note_client: string | null
+          payment_method: string
+          pickup_address: string | null
+          pickup_lat: number
+          pickup_lng: number
+          platform_id: string
+          price_vuc: number | null
+          price_xof: number | null
+          scheduled_at: string | null
+          status: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          cancel_reason?: string | null
+          cancelled_at?: string | null
+          client_id: string
+          client_price_xof?: number | null
+          created_at?: string
+          distance_km?: number | null
+          driver_counter_xof?: number | null
+          driver_id?: string | null
+          dropoff_address?: string | null
+          dropoff_lat: number
+          dropoff_lng: number
+          duration_min?: number | null
+          expires_at?: string | null
+          id?: string
+          negotiation_mode?: boolean
+          note_client?: string | null
+          payment_method?: string
+          pickup_address?: string | null
+          pickup_lat: number
+          pickup_lng: number
+          platform_id?: string
+          price_vuc?: number | null
+          price_xof?: number | null
+          scheduled_at?: string | null
+          status?: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          cancel_reason?: string | null
+          cancelled_at?: string | null
+          client_id?: string
+          client_price_xof?: number | null
+          created_at?: string
+          distance_km?: number | null
+          driver_counter_xof?: number | null
+          driver_id?: string | null
+          dropoff_address?: string | null
+          dropoff_lat?: number
+          dropoff_lng?: number
+          duration_min?: number | null
+          expires_at?: string | null
+          id?: string
+          negotiation_mode?: boolean
+          note_client?: string | null
+          payment_method?: string
+          pickup_address?: string | null
+          pickup_lat?: number
+          pickup_lng?: number
+          platform_id?: string
+          price_vuc?: number | null
+          price_xof?: number | null
+          scheduled_at?: string | null
+          status?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ride_requests_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ride_requests_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rides: {
+        Row: {
+          client_id: string
+          comment_client: string | null
+          comment_driver: string | null
+          completed_at: string | null
+          created_at: string
+          distance_km: number | null
+          driver_earnings_vuc: number | null
+          driver_earnings_xof: number | null
+          driver_id: string
+          duration_min: number | null
+          final_price_vuc: number | null
+          final_price_xof: number | null
+          id: string
+          payment_method: string
+          payment_status: string
+          platform_fee_pct: number
+          platform_fee_xof: number | null
+          platform_id: string
+          rating_client: number | null
+          rating_driver: number | null
+          request_id: string
+          started_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          comment_client?: string | null
+          comment_driver?: string | null
+          completed_at?: string | null
+          created_at?: string
+          distance_km?: number | null
+          driver_earnings_vuc?: number | null
+          driver_earnings_xof?: number | null
+          driver_id: string
+          duration_min?: number | null
+          final_price_vuc?: number | null
+          final_price_xof?: number | null
+          id?: string
+          payment_method?: string
+          payment_status?: string
+          platform_fee_pct?: number
+          platform_fee_xof?: number | null
+          platform_id?: string
+          rating_client?: number | null
+          rating_driver?: number | null
+          request_id: string
+          started_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          comment_client?: string | null
+          comment_driver?: string | null
+          completed_at?: string | null
+          created_at?: string
+          distance_km?: number | null
+          driver_earnings_vuc?: number | null
+          driver_earnings_xof?: number | null
+          driver_id?: string
+          duration_min?: number | null
+          final_price_vuc?: number | null
+          final_price_xof?: number | null
+          id?: string
+          payment_method?: string
+          payment_status?: string
+          platform_fee_pct?: number
+          platform_fee_xof?: number | null
+          platform_id?: string
+          rating_client?: number | null
+          rating_driver?: number | null
+          request_id?: string
+          started_at?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rides_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rides_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rides_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "ride_requests"
             referencedColumns: ["id"]
           },
         ]
@@ -1275,6 +1981,70 @@ export type Database = {
           verification_mode?: string
         }
         Relationships: []
+      }
+      sos_alerts: {
+        Row: {
+          created_at: string
+          id: string
+          lat: number | null
+          lng: number | null
+          message: string | null
+          resolved: boolean
+          resolved_at: string | null
+          resolved_by: string | null
+          ride_id: string
+          sender_id: string
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          message?: string | null
+          resolved?: boolean
+          resolved_at?: string | null
+          resolved_by?: string | null
+          ride_id: string
+          sender_id: string
+          type?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lat?: number | null
+          lng?: number | null
+          message?: string | null
+          resolved?: boolean
+          resolved_at?: string | null
+          resolved_by?: string | null
+          ride_id?: string
+          sender_id?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sos_alerts_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sos_alerts_ride_id_fkey"
+            columns: ["ride_id"]
+            isOneToOne: false
+            referencedRelation: "rides"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sos_alerts_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       status_campaigns: {
         Row: {
@@ -1495,6 +2265,60 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ticket_purchases: {
+        Row: {
+          buyer_id: string
+          created_at: string
+          id: string
+          paid_vuc: number
+          paid_xof: number
+          payment_method: string
+          qr_code: string | null
+          quantity: number
+          ticket_id: string
+          used: boolean
+        }
+        Insert: {
+          buyer_id: string
+          created_at?: string
+          id?: string
+          paid_vuc?: number
+          paid_xof?: number
+          payment_method?: string
+          qr_code?: string | null
+          quantity?: number
+          ticket_id: string
+          used?: boolean
+        }
+        Update: {
+          buyer_id?: string
+          created_at?: string
+          id?: string
+          paid_vuc?: number
+          paid_xof?: number
+          payment_method?: string
+          qr_code?: string | null
+          quantity?: number
+          ticket_id?: string
+          used?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_purchases_buyer_id_fkey"
+            columns: ["buyer_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ticket_purchases_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "event_tickets"
             referencedColumns: ["id"]
           },
         ]
@@ -1824,6 +2648,71 @@ export type Database = {
           },
         ]
       }
+      vehicle_financing: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          deduction_pct: number
+          down_payment_xof: number
+          driver_id: string
+          id: string
+          monthly_xof: number
+          next_payment_at: string | null
+          paid_xof: number
+          platform_id: string
+          remaining_xof: number
+          status: string
+          total_months: number
+          updated_at: string
+          vehicle_desc: string
+          vehicle_price_xof: number
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          deduction_pct?: number
+          down_payment_xof?: number
+          driver_id: string
+          id?: string
+          monthly_xof: number
+          next_payment_at?: string | null
+          paid_xof?: number
+          platform_id?: string
+          remaining_xof: number
+          status?: string
+          total_months?: number
+          updated_at?: string
+          vehicle_desc: string
+          vehicle_price_xof: number
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          deduction_pct?: number
+          down_payment_xof?: number
+          driver_id?: string
+          id?: string
+          monthly_xof?: number
+          next_payment_at?: string | null
+          paid_xof?: number
+          platform_id?: string
+          remaining_xof?: number
+          status?: string
+          total_months?: number
+          updated_at?: string
+          vehicle_desc?: string
+          vehicle_price_xof?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "vehicle_financing_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       view_validations: {
         Row: {
           created_at: string | null
@@ -1985,6 +2874,63 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      zempro_partners: {
+        Row: {
+          active: boolean
+          address: string | null
+          avg_prep_min: number
+          category: string
+          city: string
+          created_at: string
+          delivery_fee_xof: number
+          id: string
+          image_url: string | null
+          is_open: boolean
+          lat: number | null
+          lng: number | null
+          min_order_xof: number
+          name: string
+          phone: string | null
+          rating: number
+        }
+        Insert: {
+          active?: boolean
+          address?: string | null
+          avg_prep_min?: number
+          category?: string
+          city?: string
+          created_at?: string
+          delivery_fee_xof?: number
+          id?: string
+          image_url?: string | null
+          is_open?: boolean
+          lat?: number | null
+          lng?: number | null
+          min_order_xof?: number
+          name: string
+          phone?: string | null
+          rating?: number
+        }
+        Update: {
+          active?: boolean
+          address?: string | null
+          avg_prep_min?: number
+          category?: string
+          city?: string
+          created_at?: string
+          delivery_fee_xof?: number
+          id?: string
+          image_url?: string | null
+          is_open?: boolean
+          lat?: number | null
+          lng?: number | null
+          min_order_xof?: number
+          name?: string
+          phone?: string | null
+          rating?: number
+        }
+        Relationships: []
       }
     }
     Views: {
@@ -2156,6 +3102,25 @@ export type Database = {
           },
         ]
       }
+      zempro_kpis: {
+        Row: {
+          active_drivers: number | null
+          active_financing: number | null
+          active_sos: number | null
+          completed_rides: number | null
+          milestones_awarded: number | null
+          online_drivers: number | null
+          pending_deliveries: number | null
+          pending_requests: number | null
+          platform_revenue_xof: number | null
+          requests_24h: number | null
+          revenue_xof: number | null
+          total_drivers: number | null
+          total_requests: number | null
+          verified_drivers: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       admin_approve_ad: { Args: { p_ad_id: string }; Returns: undefined }
@@ -2211,6 +3176,10 @@ export type Database = {
           target_user_id: string
         }
         Returns: string
+      }
+      estimate_ride_price: {
+        Args: { p_distance_km: number; p_type?: string }
+        Returns: Json
       }
       generate_referral_code: { Args: never; Returns: string }
       get_credentials_by_username: {
