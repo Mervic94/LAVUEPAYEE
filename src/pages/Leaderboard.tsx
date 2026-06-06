@@ -214,7 +214,7 @@ const Leaderboard = () => {
                         </AvatarFallback>
                       </Avatar>
                       <h3 className="font-semibold">{user.username}</h3>
-                      <p className="text-lg font-bold text-primary">{user.points.toLocaleString()} pts</p>
+                      <p className="text-lg font-bold text-primary">{user.points.toLocaleString()} LVP</p>
                       {getRankBadge(user.rank)}
                     </div>
                   ))}
@@ -254,7 +254,7 @@ const Leaderboard = () => {
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold">{user.points.toLocaleString()} pts</p>
+                        <p className="font-semibold">{user.points.toLocaleString()} LVP</p>
                         {getRankBadge(user.rank)}
                       </div>
                     </div>

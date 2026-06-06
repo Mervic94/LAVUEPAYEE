@@ -277,7 +277,7 @@ const GameInterface: React.FC = () => {
                     <p className="text-xs text-muted-foreground">{game.difficulty}</p>
                   </div>
                   <div className="ml-auto">
-                    <Badge variant="outline">+{game.reward} pts</Badge>
+                    <Badge variant="outline">+{game.reward} LVP</Badge>
                   </div>
                 </div>
                 
