@@ -778,58 +778,170 @@ export type Database = {
       event_tickets: {
         Row: {
           active: boolean
+          buyer_id: string | null
           city: string
           created_at: string
           description: string | null
           event_date: string
+          event_id: string | null
           event_name: string
           id: string
           image_url: string | null
           organizer_id: string | null
+          payment_method: string | null
           platform_id: string
+          price_paid_vuc: number | null
+          price_paid_xof: number | null
           price_vuc: number
           price_xof: number
+          qr_code: string | null
           sold_seats: number
+          status: string | null
           total_seats: number | null
+          used_at: string | null
           venue: string | null
         }
         Insert: {
           active?: boolean
+          buyer_id?: string | null
           city?: string
           created_at?: string
           description?: string | null
           event_date: string
+          event_id?: string | null
           event_name: string
           id?: string
           image_url?: string | null
           organizer_id?: string | null
+          payment_method?: string | null
           platform_id?: string
+          price_paid_vuc?: number | null
+          price_paid_xof?: number | null
           price_vuc?: number
           price_xof?: number
+          qr_code?: string | null
           sold_seats?: number
+          status?: string | null
           total_seats?: number | null
+          used_at?: string | null
           venue?: string | null
         }
         Update: {
           active?: boolean
+          buyer_id?: string | null
           city?: string
           created_at?: string
           description?: string | null
           event_date?: string
+          event_id?: string | null
           event_name?: string
           id?: string
           image_url?: string | null
           organizer_id?: string | null
+          payment_method?: string | null
           platform_id?: string
+          price_paid_vuc?: number | null
+          price_paid_xof?: number | null
           price_vuc?: number
           price_xof?: number
+          qr_code?: string | null
           sold_seats?: number
+          status?: string | null
           total_seats?: number | null
+          used_at?: string | null
           venue?: string | null
         }
         Relationships: [
           {
+            foreignKeyName: "event_tickets_buyer_id_fkey"
+            columns: ["buyer_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_tickets_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "event_tickets_organizer_id_fkey"
+            columns: ["organizer_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          category: string | null
+          city: string
+          created_at: string
+          description: string | null
+          ends_at: string | null
+          id: string
+          image_url: string | null
+          lat: number | null
+          lng: number | null
+          max_tickets: number | null
+          organizer_id: string | null
+          radio_fm_link: boolean
+          starts_at: string
+          status: string
+          ticket_price_vuc: number | null
+          ticket_price_xof: number
+          tickets_sold: number
+          title: string
+          venue: string | null
+        }
+        Insert: {
+          category?: string | null
+          city?: string
+          created_at?: string
+          description?: string | null
+          ends_at?: string | null
+          id?: string
+          image_url?: string | null
+          lat?: number | null
+          lng?: number | null
+          max_tickets?: number | null
+          organizer_id?: string | null
+          radio_fm_link?: boolean
+          starts_at: string
+          status?: string
+          ticket_price_vuc?: number | null
+          ticket_price_xof?: number
+          tickets_sold?: number
+          title: string
+          venue?: string | null
+        }
+        Update: {
+          category?: string | null
+          city?: string
+          created_at?: string
+          description?: string | null
+          ends_at?: string | null
+          id?: string
+          image_url?: string | null
+          lat?: number | null
+          lng?: number | null
+          max_tickets?: number | null
+          organizer_id?: string | null
+          radio_fm_link?: boolean
+          starts_at?: string
+          status?: string
+          ticket_price_vuc?: number | null
+          ticket_price_xof?: number
+          tickets_sold?: number
+          title?: string
+          venue?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_organizer_id_fkey"
             columns: ["organizer_id"]
             isOneToOne: false
             referencedRelation: "users"
@@ -978,6 +1090,169 @@ export type Database = {
           },
         ]
       }
+      financing_installments: {
+        Row: {
+          amount_xof: number
+          created_at: string
+          financing_id: string
+          id: string
+          paid_at: string | null
+          ride_id: string | null
+          status: string
+        }
+        Insert: {
+          amount_xof: number
+          created_at?: string
+          financing_id: string
+          id?: string
+          paid_at?: string | null
+          ride_id?: string | null
+          status?: string
+        }
+        Update: {
+          amount_xof?: number
+          created_at?: string
+          financing_id?: string
+          id?: string
+          paid_at?: string | null
+          ride_id?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "financing_installments_financing_id_fkey"
+            columns: ["financing_id"]
+            isOneToOne: false
+            referencedRelation: "vehicle_financing"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "financing_installments_ride_id_fkey"
+            columns: ["ride_id"]
+            isOneToOne: false
+            referencedRelation: "rides"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      financing_repayments: {
+        Row: {
+          amount_xof: number
+          created_at: string
+          financing_id: string
+          id: string
+          ride_id: string
+        }
+        Insert: {
+          amount_xof: number
+          created_at?: string
+          financing_id: string
+          id?: string
+          ride_id: string
+        }
+        Update: {
+          amount_xof?: number
+          created_at?: string
+          financing_id?: string
+          id?: string
+          ride_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "financing_repayments_financing_id_fkey"
+            columns: ["financing_id"]
+            isOneToOne: false
+            referencedRelation: "vehicle_financing"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "financing_repayments_ride_id_fkey"
+            columns: ["ride_id"]
+            isOneToOne: false
+            referencedRelation: "rides"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      food_orders: {
+        Row: {
+          client_id: string
+          created_at: string
+          delivered_at: string | null
+          delivery_address: string | null
+          delivery_fee_xof: number
+          delivery_lat: number | null
+          delivery_lng: number | null
+          estimated_at: string | null
+          id: string
+          items: Json
+          payment_method: string
+          restaurant_id: string
+          ride_id: string | null
+          status: string
+          total_xof: number
+          updated_at: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          delivered_at?: string | null
+          delivery_address?: string | null
+          delivery_fee_xof: number
+          delivery_lat?: number | null
+          delivery_lng?: number | null
+          estimated_at?: string | null
+          id?: string
+          items?: Json
+          payment_method?: string
+          restaurant_id: string
+          ride_id?: string | null
+          status?: string
+          total_xof: number
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          delivered_at?: string | null
+          delivery_address?: string | null
+          delivery_fee_xof?: number
+          delivery_lat?: number | null
+          delivery_lng?: number | null
+          estimated_at?: string | null
+          id?: string
+          items?: Json
+          payment_method?: string
+          restaurant_id?: string
+          ride_id?: string | null
+          status?: string
+          total_xof?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "food_orders_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "food_orders_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "food_orders_ride_id_fkey"
+            columns: ["ride_id"]
+            isOneToOne: false
+            referencedRelation: "rides"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       fraud_alerts: {
         Row: {
           alert_type: string
@@ -1029,6 +1304,70 @@ export type Database = {
           },
         ]
       }
+      insurance_claims: {
+        Row: {
+          amount_approved_xof: number | null
+          amount_claimed_xof: number | null
+          claimant_id: string
+          created_at: string
+          description: string
+          evidence_urls: string[] | null
+          id: string
+          insurance_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+        }
+        Insert: {
+          amount_approved_xof?: number | null
+          amount_claimed_xof?: number | null
+          claimant_id: string
+          created_at?: string
+          description: string
+          evidence_urls?: string[] | null
+          id?: string
+          insurance_id: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+        }
+        Update: {
+          amount_approved_xof?: number | null
+          amount_claimed_xof?: number | null
+          claimant_id?: string
+          created_at?: string
+          description?: string
+          evidence_urls?: string[] | null
+          id?: string
+          insurance_id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "insurance_claims_claimant_id_fkey"
+            columns: ["claimant_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "insurance_claims_insurance_id_fkey"
+            columns: ["insurance_id"]
+            isOneToOne: false
+            referencedRelation: "ride_insurance"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "insurance_claims_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ip_registrations: {
         Row: {
           created_at: string
@@ -1054,6 +1393,53 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      menu_items: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          is_available: boolean
+          name: string
+          price_vuc: number | null
+          price_xof: number
+          restaurant_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_available?: boolean
+          name: string
+          price_vuc?: number | null
+          price_xof: number
+          restaurant_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_available?: boolean
+          name?: string
+          price_vuc?: number | null
+          price_xof?: number
+          restaurant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "menu_items_restaurant_id_fkey"
+            columns: ["restaurant_id"]
+            isOneToOne: false
+            referencedRelation: "restaurants"
             referencedColumns: ["id"]
           },
         ]
@@ -1247,6 +1633,66 @@ export type Database = {
           },
         ]
       }
+      platform_credentials: {
+        Row: {
+          created_at: string
+          expires_at: string | null
+          id: string
+          last_refreshed_at: string | null
+          platform: string
+          provider: string
+          scopes: string[] | null
+          social_account_id: string | null
+          status: string
+          token_ref: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          last_refreshed_at?: string | null
+          platform: string
+          provider?: string
+          scopes?: string[] | null
+          social_account_id?: string | null
+          status?: string
+          token_ref: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          last_refreshed_at?: string | null
+          platform?: string
+          provider?: string
+          scopes?: string[] | null
+          social_account_id?: string | null
+          status?: string
+          token_ref?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "platform_credentials_social_account_id_fkey"
+            columns: ["social_account_id"]
+            isOneToOne: false
+            referencedRelation: "social_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "platform_credentials_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       platform_roles: {
         Row: {
           created_at: string | null
@@ -1275,6 +1721,51 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      price_negotiations: {
+        Row: {
+          created_at: string
+          direction: string
+          driver_id: string
+          id: string
+          proposed_price: number
+          request_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          direction: string
+          driver_id: string
+          id?: string
+          proposed_price: number
+          request_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          direction?: string
+          driver_id?: string
+          id?: string
+          proposed_price?: number
+          request_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "price_negotiations_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "price_negotiations_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "ride_requests"
             referencedColumns: ["id"]
           },
         ]
@@ -1407,6 +1898,7 @@ export type Database = {
           active: boolean
           created_at: string
           id: string
+          is_active: boolean
           platform: string
           token: string
           updated_at: string
@@ -1416,6 +1908,7 @@ export type Database = {
           active?: boolean
           created_at?: string
           id?: string
+          is_active?: boolean
           platform?: string
           token: string
           updated_at?: string
@@ -1425,6 +1918,7 @@ export type Database = {
           active?: boolean
           created_at?: string
           id?: string
+          is_active?: boolean
           platform?: string
           token?: string
           updated_at?: string
@@ -1491,6 +1985,77 @@ export type Database = {
           },
         ]
       }
+      restaurants: {
+        Row: {
+          address: string | null
+          avg_prep_min: number
+          city: string
+          created_at: string
+          cuisine_type: string | null
+          delivery_fee_xof: number
+          description: string | null
+          id: string
+          image_url: string | null
+          is_open: boolean
+          lat: number | null
+          lng: number | null
+          min_order_xof: number
+          name: string
+          owner_id: string | null
+          platform_id: string
+          rating: number | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          avg_prep_min?: number
+          city?: string
+          created_at?: string
+          cuisine_type?: string | null
+          delivery_fee_xof?: number
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_open?: boolean
+          lat?: number | null
+          lng?: number | null
+          min_order_xof?: number
+          name: string
+          owner_id?: string | null
+          platform_id?: string
+          rating?: number | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          avg_prep_min?: number
+          city?: string
+          created_at?: string
+          cuisine_type?: string | null
+          delivery_fee_xof?: number
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_open?: boolean
+          lat?: number | null
+          lng?: number | null
+          min_order_xof?: number
+          name?: string
+          owner_id?: string | null
+          platform_id?: string
+          rating?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "restaurants_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reward_logs: {
         Row: {
           action_type: string
@@ -1537,6 +2102,7 @@ export type Database = {
           client_id: string
           coverage_xof: number
           created_at: string
+          driver_id: string | null
           expires_at: string
           id: string
           premium_vuc: number
@@ -1547,6 +2113,7 @@ export type Database = {
           client_id: string
           coverage_xof?: number
           created_at?: string
+          driver_id?: string | null
           expires_at: string
           id?: string
           premium_vuc?: number
@@ -1557,6 +2124,7 @@ export type Database = {
           client_id?: string
           coverage_xof?: number
           created_at?: string
+          driver_id?: string | null
           expires_at?: string
           id?: string
           premium_vuc?: number
@@ -1569,6 +2137,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ride_insurance_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "drivers"
             referencedColumns: ["id"]
           },
           {
@@ -1587,6 +2162,7 @@ export type Database = {
           id: string
           read_at: string | null
           ride_id: string
+          role: string
           sender_id: string
           type: string
         }
@@ -1596,6 +2172,7 @@ export type Database = {
           id?: string
           read_at?: string | null
           ride_id: string
+          role?: string
           sender_id: string
           type?: string
         }
@@ -1605,6 +2182,7 @@ export type Database = {
           id?: string
           read_at?: string | null
           ride_id?: string
+          role?: string
           sender_id?: string
           type?: string
         }
@@ -1632,8 +2210,12 @@ export type Database = {
           cancelled_at: string | null
           client_id: string
           client_price_xof: number | null
+          client_proposed_price: number | null
+          client_proposed_price_xof: number | null
           created_at: string
           distance_km: number | null
+          driver_counter_price: number | null
+          driver_counter_price_xof: number | null
           driver_counter_xof: number | null
           driver_id: string | null
           dropoff_address: string | null
@@ -1642,7 +2224,9 @@ export type Database = {
           duration_min: number | null
           expires_at: string | null
           id: string
+          negotiation_expires_at: string | null
           negotiation_mode: boolean
+          negotiation_status: string | null
           note_client: string | null
           payment_method: string
           pickup_address: string | null
@@ -1653,6 +2237,7 @@ export type Database = {
           price_xof: number | null
           scheduled_at: string | null
           status: string
+          surge_multiplier: number | null
           type: string
           updated_at: string
         }
@@ -1662,8 +2247,12 @@ export type Database = {
           cancelled_at?: string | null
           client_id: string
           client_price_xof?: number | null
+          client_proposed_price?: number | null
+          client_proposed_price_xof?: number | null
           created_at?: string
           distance_km?: number | null
+          driver_counter_price?: number | null
+          driver_counter_price_xof?: number | null
           driver_counter_xof?: number | null
           driver_id?: string | null
           dropoff_address?: string | null
@@ -1672,7 +2261,9 @@ export type Database = {
           duration_min?: number | null
           expires_at?: string | null
           id?: string
+          negotiation_expires_at?: string | null
           negotiation_mode?: boolean
+          negotiation_status?: string | null
           note_client?: string | null
           payment_method?: string
           pickup_address?: string | null
@@ -1683,6 +2274,7 @@ export type Database = {
           price_xof?: number | null
           scheduled_at?: string | null
           status?: string
+          surge_multiplier?: number | null
           type?: string
           updated_at?: string
         }
@@ -1692,8 +2284,12 @@ export type Database = {
           cancelled_at?: string | null
           client_id?: string
           client_price_xof?: number | null
+          client_proposed_price?: number | null
+          client_proposed_price_xof?: number | null
           created_at?: string
           distance_km?: number | null
+          driver_counter_price?: number | null
+          driver_counter_price_xof?: number | null
           driver_counter_xof?: number | null
           driver_id?: string | null
           dropoff_address?: string | null
@@ -1702,7 +2298,9 @@ export type Database = {
           duration_min?: number | null
           expires_at?: string | null
           id?: string
+          negotiation_expires_at?: string | null
           negotiation_mode?: boolean
+          negotiation_status?: string | null
           note_client?: string | null
           payment_method?: string
           pickup_address?: string | null
@@ -1713,6 +2311,7 @@ export type Database = {
           price_xof?: number | null
           scheduled_at?: string | null
           status?: string
+          surge_multiplier?: number | null
           type?: string
           updated_at?: string
         }
@@ -1835,6 +2434,7 @@ export type Database = {
       }
       social_accounts: {
         Row: {
+          account_type: string
           created_at: string
           followers_count: number | null
           handle: string | null
@@ -1842,6 +2442,7 @@ export type Database = {
           is_active: boolean
           linked_at: string
           metadata: Json | null
+          oauth_token_ref: string | null
           platform: string
           profile_url: string | null
           updated_at: string
@@ -1850,6 +2451,7 @@ export type Database = {
           verified_at: string | null
         }
         Insert: {
+          account_type?: string
           created_at?: string
           followers_count?: number | null
           handle?: string | null
@@ -1857,6 +2459,7 @@ export type Database = {
           is_active?: boolean
           linked_at?: string
           metadata?: Json | null
+          oauth_token_ref?: string | null
           platform: string
           profile_url?: string | null
           updated_at?: string
@@ -1865,6 +2468,7 @@ export type Database = {
           verified_at?: string | null
         }
         Update: {
+          account_type?: string
           created_at?: string
           followers_count?: number | null
           handle?: string | null
@@ -1872,6 +2476,7 @@ export type Database = {
           is_active?: boolean
           linked_at?: string
           metadata?: Json | null
+          oauth_token_ref?: string | null
           platform?: string
           profile_url?: string | null
           updated_at?: string
@@ -1909,6 +2514,7 @@ export type Database = {
           network: string
           platform: string | null
           platform_id: string
+          platform_task_config: Json
           reward_vuc: number
           spent_vuc: number
           start_date: string | null
@@ -1919,6 +2525,7 @@ export type Database = {
           total_limit: number | null
           updated_at: string
           verification_mode: string
+          verification_source: string
         }
         Insert: {
           action_type?: string
@@ -1939,6 +2546,7 @@ export type Database = {
           network: string
           platform?: string | null
           platform_id?: string
+          platform_task_config?: Json
           reward_vuc?: number
           spent_vuc?: number
           start_date?: string | null
@@ -1949,6 +2557,7 @@ export type Database = {
           total_limit?: number | null
           updated_at?: string
           verification_mode?: string
+          verification_source?: string
         }
         Update: {
           action_type?: string
@@ -1969,6 +2578,7 @@ export type Database = {
           network?: string
           platform?: string | null
           platform_id?: string
+          platform_task_config?: Json
           reward_vuc?: number
           spent_vuc?: number
           start_date?: string | null
@@ -1979,6 +2589,7 @@ export type Database = {
           total_limit?: number | null
           updated_at?: string
           verification_mode?: string
+          verification_source?: string
         }
         Relationships: []
       }
@@ -1993,8 +2604,11 @@ export type Database = {
           resolved_at: string | null
           resolved_by: string | null
           ride_id: string
+          role: string | null
           sender_id: string
+          status: string | null
           type: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
@@ -2006,8 +2620,11 @@ export type Database = {
           resolved_at?: string | null
           resolved_by?: string | null
           ride_id: string
+          role?: string | null
           sender_id: string
+          status?: string | null
           type?: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
@@ -2019,8 +2636,11 @@ export type Database = {
           resolved_at?: string | null
           resolved_by?: string | null
           ride_id?: string
+          role?: string | null
           sender_id?: string
+          status?: string | null
           type?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -2040,6 +2660,13 @@ export type Database = {
           {
             foreignKeyName: "sos_alerts_sender_id_fkey"
             columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sos_alerts_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
@@ -2128,6 +2755,8 @@ export type Database = {
       }
       task_completions: {
         Row: {
+          api_verification_payload: Json
+          api_verified_at: string | null
           confidence_score: number | null
           created_at: string
           expires_at: string | null
@@ -2145,6 +2774,8 @@ export type Database = {
           vuc_earned: number
         }
         Insert: {
+          api_verification_payload?: Json
+          api_verified_at?: string | null
           confidence_score?: number | null
           created_at?: string
           expires_at?: string | null
@@ -2162,6 +2793,8 @@ export type Database = {
           vuc_earned?: number
         }
         Update: {
+          api_verification_payload?: Json
+          api_verified_at?: string | null
           confidence_score?: number | null
           created_at?: string
           expires_at?: string | null
@@ -2650,12 +3283,16 @@ export type Database = {
       }
       vehicle_financing: {
         Row: {
+          approved_at: string | null
+          approved_by: string | null
           completed_at: string | null
           created_at: string
           deduction_pct: number
           down_payment_xof: number
           driver_id: string
+          duration_months: number
           id: string
+          installments_paid: number
           monthly_xof: number
           next_payment_at: string | null
           paid_xof: number
@@ -2665,15 +3302,20 @@ export type Database = {
           total_months: number
           updated_at: string
           vehicle_desc: string
+          vehicle_description: string
           vehicle_price_xof: number
         }
         Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
           completed_at?: string | null
           created_at?: string
           deduction_pct?: number
           down_payment_xof?: number
           driver_id: string
+          duration_months?: number
           id?: string
+          installments_paid?: number
           monthly_xof: number
           next_payment_at?: string | null
           paid_xof?: number
@@ -2683,15 +3325,20 @@ export type Database = {
           total_months?: number
           updated_at?: string
           vehicle_desc: string
+          vehicle_description?: string
           vehicle_price_xof: number
         }
         Update: {
+          approved_at?: string | null
+          approved_by?: string | null
           completed_at?: string | null
           created_at?: string
           deduction_pct?: number
           down_payment_xof?: number
           driver_id?: string
+          duration_months?: number
           id?: string
+          installments_paid?: number
           monthly_xof?: number
           next_payment_at?: string | null
           paid_xof?: number
@@ -2701,9 +3348,17 @@ export type Database = {
           total_months?: number
           updated_at?: string
           vehicle_desc?: string
+          vehicle_description?: string
           vehicle_price_xof?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "vehicle_financing_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "vehicle_financing_driver_id_fkey"
             columns: ["driver_id"]
@@ -3110,14 +3765,15 @@ export type Database = {
           completed_rides: number | null
           milestones_awarded: number | null
           online_drivers: number | null
-          pending_deliveries: number | null
+          open_restaurants: number | null
           pending_requests: number | null
           platform_revenue_xof: number | null
           requests_24h: number | null
           revenue_xof: number | null
+          tickets_sold: number | null
           total_drivers: number | null
+          total_food_orders: number | null
           total_requests: number | null
-          verified_drivers: number | null
         }
         Relationships: []
       }
@@ -3208,7 +3864,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "consumer" | "advertiser"
+      app_role: "admin" | "consumer" | "advertiser" | "driver" | "viewer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -3336,7 +3992,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "consumer", "advertiser"],
+      app_role: ["admin", "consumer", "advertiser", "driver", "viewer"],
     },
   },
 } as const
