@@ -8,6 +8,7 @@ import Navbar from '@/components/navbar';
 import Hero from '@/components/Hero';
 import TestimonialCarousel from '@/components/testimonials/TestimonialCarousel';
 import Footer from '@/components/Footer';
+import WelcomeOnboarding from '@/components/onboarding/WelcomeOnboarding';
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 40 },
@@ -37,6 +38,7 @@ const itemVariants = {
 const Index = () => {
   return (
     <div className="min-h-screen">
+      <WelcomeOnboarding />
       <Navbar />
       
       {/* Hero Section */}
