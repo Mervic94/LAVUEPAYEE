@@ -38,6 +38,7 @@ const itemVariants = {
 const Index = () => {
   return (
     <div className="min-h-screen">
+      <WelcomeOnboarding />
       <Navbar />
       
       {/* Hero Section */}
