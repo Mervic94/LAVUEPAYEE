@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Loader2, Gift, Wallet } from 'lucide-react';
+import { Loader2, Gift, Wallet, Coins } from 'lucide-react';
+import ConversionSection from '@/components/exchange/ConversionSection';
 import Navbar from '@/components/navbar';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -88,12 +89,17 @@ const Exchange = () => {
             </div>
           </div>
 
-          <Tabs defaultValue="products">
+          <Tabs defaultValue="convert">
             <TabsList>
+              <TabsTrigger value="convert"><Coins className="h-4 w-4 mr-2" />Conversion</TabsTrigger>
               <TabsTrigger value="products"><Gift className="h-4 w-4 mr-2" />Produits</TabsTrigger>
               <TabsTrigger value="fiat"><Wallet className="h-4 w-4 mr-2" />Retrait fiat</TabsTrigger>
               <TabsTrigger value="history">Historique</TabsTrigger>
             </TabsList>
+
+            <TabsContent value="convert">
+              <ConversionSection userPoints={userProfile?.points ?? 0} onDone={load} />
+            </TabsContent>
 
             <TabsContent value="products">
               {loading ? (
