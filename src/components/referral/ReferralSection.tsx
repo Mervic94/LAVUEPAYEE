@@ -44,12 +44,12 @@ const ReferralSection = () => {
         supabase.from('users').select('referral_code').eq('id', user.id).maybeSingle(),
         supabase
           .from('referrals')
-          .select('id, referred_id, status, reward_points, created_at, users:referred_id(username, email)')
+          .select('id, referred_id, status, reward_points, created_at, users:users!referrals_referred_id_fkey(username, email)')
           .eq('referrer_id', user.id)
           .order('created_at', { ascending: false }),
       ]);
       setCode(u?.referral_code ?? user.id.slice(0, 8).toUpperCase());
-      setFilleuls((r ?? []) as Filleul[]);
+      setFilleuls((r ?? []) as unknown as Filleul[]);
       setLoading(false);
     })();
   }, [user]);
