@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Users, Share2, Gift, TrendingUp, Copy, Facebook, Twitter, Mail, MessageCircle } from 'lucide-react';
 import Navbar from '@/components/navbar';
 import { supabase } from '@/integrations/supabase/client';
+import ReferralSection from '@/components/referral/ReferralSection';
 
 const Affiliates = () => {
   const { user } = useAuth();
