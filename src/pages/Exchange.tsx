@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Loader2, Gift, Wallet } from 'lucide-react';
+import { Loader2, Gift, Wallet, Coins } from 'lucide-react';
+import ConversionSection from '@/components/exchange/ConversionSection';
 import Navbar from '@/components/navbar';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
