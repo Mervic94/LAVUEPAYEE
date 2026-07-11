@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Users, Share2, Gift, TrendingUp, Copy, Facebook, Twitter, Mail, MessageCircle } from 'lucide-react';
 import Navbar from '@/components/navbar';
 import { supabase } from '@/integrations/supabase/client';
+import ReferralSection from '@/components/referral/ReferralSection';
 
 const Affiliates = () => {
   const { user } = useAuth();
@@ -208,13 +209,19 @@ const Affiliates = () => {
           </Card>
         </div>
 
-        <Tabs defaultValue="invite" className="w-full">
+        <Tabs defaultValue="overview" className="w-full">
           <TabsList className="mb-6">
+            <TabsTrigger value="overview">Vue d'ensemble</TabsTrigger>
             <TabsTrigger value="invite">Inviter des amis</TabsTrigger>
             <TabsTrigger value="referrals">Mes parrainages</TabsTrigger>
             <TabsTrigger value="levels">Niveaux & Récompenses</TabsTrigger>
             <TabsTrigger value="tools">Outils marketing</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="overview" className="space-y-6">
+            <ReferralSection />
+          </TabsContent>
+
 
           <TabsContent value="invite" className="space-y-6">
             <Card>
