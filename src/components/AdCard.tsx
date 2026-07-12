@@ -103,53 +103,54 @@ const AdCard: React.FC<AdCardProps> = ({
   const handleWatchAd = async () => {
     if (isWatching || isCompleted) return;
 
+    // Désactive immédiatement le bouton pour éviter le spam-click
     setIsWatching(true);
-    
+
     try {
-      // Simulate watching the ad
+      // Simule le visionnage (délai minimal côté UI)
       await new Promise(resolve => setTimeout(resolve, Math.min(duration * 100, 3000)));
-      
-      // Call the process-task edge function
-      const { data, error } = await supabase.functions.invoke('process-task', {
-        body: {
-          ad_id: id,
-          task_type: 'view',
-          proof_url: `watched_${id}_${Date.now()}`
-        }
+
+      // Appel RPC sécurisé (cooldown 30s, anti-duplicata, crédit atomique côté serveur)
+      const { data, error } = await supabase.rpc('claim_video_reward', {
+        video_id: id,
       });
 
       if (error) {
-        console.error('Error processing task:', error);
+        console.error('claim_video_reward error:', error);
+        const msg = error.message || '';
+        const isCooldown = /trop rapide|patientez/i.test(msg);
+        const isDuplicate = /déjà réclamée/i.test(msg);
         toast({
-          title: "Erreur",
-          description: "Impossible de traiter la tâche. Veuillez réessayer.",
-          variant: "destructive"
+          title: isCooldown ? '⏱️ Attendez un instant' : isDuplicate ? 'Déjà validé' : 'Validation refusée',
+          description: msg || 'Impossible de valider la récompense.',
+          variant: 'destructive',
         });
         return;
       }
 
-      if (data?.success) {
-        setIsCompleted(true);
-        onTaskComplete?.(data.points_earned || calculateReward());
-        
-        toast({
-          title: "Félicitations !",
-          description: `Vous avez gagné ${data.points_earned || calculateReward()} LVP !`,
-          variant: "default"
-        });
-      }
+      const earned = Number((data as any)?.points_earned) || calculateReward();
+      setIsCompleted(true);
+      onTaskComplete?.(earned);
 
-    } catch (error) {
-      console.error('Error watching ad:', error);
+      // Rafraîchit le solde affiché
+      await refreshProfile();
+
       toast({
-        title: "Erreur",
-        description: "Une erreur est survenue pendant le visionnage.",
-        variant: "destructive"
+        title: 'Félicitations !',
+        description: `Vous avez gagné ${earned} LVP !`,
+      });
+    } catch (err: any) {
+      console.error('Error watching ad:', err);
+      toast({
+        title: 'Erreur',
+        description: err?.message || 'Une erreur est survenue pendant le visionnage.',
+        variant: 'destructive',
       });
     } finally {
       setIsWatching(false);
     }
   };
+
 
   return (
     <div className="group relative rounded-xl overflow-hidden card-hover bg-white">
