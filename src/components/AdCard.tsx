@@ -36,6 +36,8 @@ const AdCard: React.FC<AdCardProps> = ({
   const [isWatching, setIsWatching] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const { toast } = useToast();
+  const { refreshProfile } = useAuth();
+
   // Format duration as MM:SS
   const formatDuration = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
