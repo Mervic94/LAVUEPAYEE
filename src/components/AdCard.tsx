@@ -1,12 +1,14 @@
 
 import React, { useState } from 'react';
-import { Play, Clock, Tag, Gift, Eye } from 'lucide-react';
+import { Play, Clock, Tag, Gift, Eye, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthProvider';
 import PointsIndicator from './PointsIndicator';
+
 
 interface AdCardProps {
   id: string;
