@@ -28,6 +28,8 @@ const ViewAd = () => {
   const [verificationCode, setVerificationCode] = useState('');
   const [userInputCode, setUserInputCode] = useState('');
   const [verificationAttempts, setVerificationAttempts] = useState(0);
+  const [isClaiming, setIsClaiming] = useState(false);
+
   
   // Mock ad data - In a real app, this would be fetched based on the ID
   const mockAds = [
