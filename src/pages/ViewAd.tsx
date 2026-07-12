@@ -371,9 +371,18 @@ const ViewAd = () => {
                     </div>
                     
                     <div className="flex gap-3">
-                      <Button type="submit" className="flex-grow bg-green-600 hover:bg-green-700">
-                        Valider
+                      <Button
+                        type="submit"
+                        disabled={isClaiming}
+                        className="flex-grow bg-green-600 hover:bg-green-700"
+                      >
+                        {isClaiming ? (
+                          <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Validation…</>
+                        ) : (
+                          'Valider'
+                        )}
                       </Button>
+
                       <Button variant="outline" type="button" onClick={returnToDashboard} className="bg-transparent border-white/30 text-white hover:bg-white/10">
                         Annuler
                       </Button>
