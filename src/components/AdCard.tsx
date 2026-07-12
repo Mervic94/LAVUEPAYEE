@@ -221,8 +221,11 @@ const AdCard: React.FC<AdCardProps> = ({
             size="sm"
             className="font-medium"
           >
-            {isWatching ? "En cours..." : isCompleted ? "Terminé" : "Regarder"}
+            {isWatching ? (
+              <><Loader2 className="h-3 w-3 mr-1 animate-spin" /> Validation...</>
+            ) : isCompleted ? "Terminé" : "Regarder"}
           </Button>
+
         </div>
       </div>
     </div>
