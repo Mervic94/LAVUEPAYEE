@@ -3807,6 +3807,7 @@ export type Database = {
         Args: { check_username: string }
         Returns: boolean
       }
+      claim_video_reward: { Args: { video_id: string }; Returns: Json }
       cleanup_expired_sessions: {
         Args: { expiry_days?: number }
         Returns: number

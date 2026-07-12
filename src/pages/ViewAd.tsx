@@ -1,17 +1,21 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Play, Pause, Clock, Eye, X, CheckCircle, Shield, Facebook, Instagram, Youtube, BadgeDollarSign } from 'lucide-react';
+import { Play, Pause, Clock, Eye, X, CheckCircle, Shield, Facebook, Instagram, Youtube, BadgeDollarSign, Loader2 } from 'lucide-react';
 import Navbar from '@/components/navbar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthProvider';
 
 const ViewAd = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
+  const { refreshProfile } = useAuth();
+
   
   // States
   const [isPlaying, setIsPlaying] = useState(false);
@@ -24,6 +28,8 @@ const ViewAd = () => {
   const [verificationCode, setVerificationCode] = useState('');
   const [userInputCode, setUserInputCode] = useState('');
   const [verificationAttempts, setVerificationAttempts] = useState(0);
+  const [isClaiming, setIsClaiming] = useState(false);
+
   
   // Mock ad data - In a real app, this would be fetched based on the ID
   const mockAds = [
@@ -178,22 +184,13 @@ const ViewAd = () => {
     });
   };
   
-  // Handle verification submit
-  const handleVerificationSubmit = (e: React.FormEvent) => {
+  // Handle verification submit — calls the secured RPC to credit the reward
+  const handleVerificationSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (userInputCode === verificationCode) {
-      const calculatedReward = calculateReward();
-      setAdWatched(true);
-      setShowVerification(false);
-      setPoints(calculatedReward);
-      toast({
-        title: "Félicitations!",
-        description: `Vous avez gagné ${calculatedReward} LVP!`,
-      });
-    } else {
+    if (isClaiming) return; // anti double-clic
+
+    if (userInputCode !== verificationCode) {
       setVerificationAttempts(prev => prev + 1);
-      
       if (verificationAttempts >= 2) {
         toast({
           title: "Trop de tentatives incorrectes",
@@ -207,12 +204,61 @@ const ViewAd = () => {
           description: "Veuillez réessayer.",
           variant: "destructive",
         });
-        // Generate a new code after failed attempt
         generateVerificationCode();
         setUserInputCode('');
       }
+      return;
+    }
+
+    setIsClaiming(true);
+    try {
+      const { data, error } = await supabase.rpc('claim_video_reward', {
+        video_id: id ?? '',
+      });
+
+      if (error) {
+        const msg = error.message || '';
+        const isCooldown = /trop rapide|patientez/i.test(msg);
+        const isDuplicate = /déjà réclamée/i.test(msg);
+        const isAuth = /authentifi/i.test(msg);
+        toast({
+          title: isCooldown
+            ? "⏱️ Trop rapide"
+            : isDuplicate
+              ? "Récompense déjà obtenue"
+              : isAuth
+                ? "Connexion requise"
+                : "Validation refusée",
+          description: msg || "Impossible de créditer la récompense.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const earned = Number((data as any)?.points_earned) || calculateReward();
+      setPoints(earned);
+      setAdWatched(true);
+      setShowVerification(false);
+
+      // Rafraîchit le solde affiché (navbar / profil)
+      await refreshProfile();
+
+      toast({
+        title: "Félicitations !",
+        description: `Vous avez gagné ${earned} LVP !`,
+      });
+    } catch (err: any) {
+      console.error('claim_video_reward failed:', err);
+      toast({
+        title: "Erreur",
+        description: err?.message || "Une erreur inattendue est survenue.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsClaiming(false);
     }
   };
+
   
   // Return to dashboard
   const returnToDashboard = () => {
@@ -325,9 +371,18 @@ const ViewAd = () => {
                     </div>
                     
                     <div className="flex gap-3">
-                      <Button type="submit" className="flex-grow bg-green-600 hover:bg-green-700">
-                        Valider
+                      <Button
+                        type="submit"
+                        disabled={isClaiming}
+                        className="flex-grow bg-green-600 hover:bg-green-700"
+                      >
+                        {isClaiming ? (
+                          <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Validation…</>
+                        ) : (
+                          'Valider'
+                        )}
                       </Button>
+
                       <Button variant="outline" type="button" onClick={returnToDashboard} className="bg-transparent border-white/30 text-white hover:bg-white/10">
                         Annuler
                       </Button>
