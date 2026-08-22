@@ -11,11 +11,12 @@ interface SitemapEntry {
   priority?: string;
 }
 
-const today = new Date().toISOString().slice(0, 10);
-
+// Routes volontairement exclues (noindex / privées, bloquées dans robots.txt) :
+// /login, /reset-password, /verify-email, /verify-phone, /test-auth, /view-ad/:id,
+// /dashboard, /wallet, /profile, /settings, /tasks, /messages, /notifications,
+// /analytics, /kyc, /onboarding, /exchange, /affiliates, /courses, /admin/*, /unauthorized
 const entries: SitemapEntry[] = [
-  { path: "/", changefreq: "weekly", priority: "1.0", lastmod: today },
-  { path: "/login", changefreq: "monthly", priority: "0.5" },
+  { path: "/", changefreq: "weekly", priority: "1.0" },
   { path: "/register", changefreq: "monthly", priority: "0.7" },
   { path: "/marketplace", changefreq: "weekly", priority: "0.8" },
   { path: "/leaderboard", changefreq: "daily", priority: "0.6" },

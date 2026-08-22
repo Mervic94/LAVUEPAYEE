@@ -1,3 +1,4 @@
+import Seo from '@/components/Seo';
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthProvider';
@@ -133,6 +134,7 @@ const Leaderboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Seo title="Classement des utilisateurs - LAVUEPAYEE" description="Consultez le classement des utilisateurs LAVUEPAYEE ayant gagné le plus de points LVP." path="/leaderboard" />
       <Navbar />
       
       <main className="container px-4 md:px-6 mx-auto max-w-6xl pt-24 pb-12">

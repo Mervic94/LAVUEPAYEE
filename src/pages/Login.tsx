@@ -1,3 +1,4 @@
+import Seo from '@/components/Seo';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -34,6 +35,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-secondary/5 p-4 relative overflow-hidden">
+      <Seo title="Connexion à LAVUEPAYEE" description="Connectez-vous à votre compte LAVUEPAYEE pour suivre vos points LVP, vos tâches et vos retraits." path="/login" />
       {/* Decorative blobs */}
       <div className="absolute -top-32 -left-32 w-72 h-72 bg-primary/10 rounded-full blur-3xl" />
       <div className="absolute -bottom-32 -right-32 w-72 h-72 bg-secondary/10 rounded-full blur-3xl" />
@@ -58,7 +60,7 @@ const Login = () => {
               className="h-16 mx-auto mb-4"
             />
           </Link>
-          <h1 className="text-3xl font-bold text-foreground">Bon retour !</h1>
+          <h1 className="text-3xl font-bold text-foreground">Connexion à LAVUEPAYEE</h1>
           <p className="text-muted-foreground mt-1">Connectez-vous à votre compte</p>
         </motion.div>
 

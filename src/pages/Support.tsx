@@ -1,3 +1,4 @@
+import Seo from '@/components/Seo';
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -108,6 +109,7 @@ const Support = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Seo title="Support LAVUEPAYEE - Nous contacter" description="Contactez l'équipe support LAVUEPAYEE pour toute question sur votre compte, vos points ou vos retraits." path="/support" />
       <Navbar />
       
       <main className="container px-4 md:px-6 mx-auto max-w-6xl pt-24 pb-12">

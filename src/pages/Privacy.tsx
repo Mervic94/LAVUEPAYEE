@@ -1,3 +1,4 @@
+import Seo from '@/components/Seo';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/navbar';
@@ -8,6 +9,7 @@ import { Shield, ArrowRight } from 'lucide-react';
 const Privacy = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <Seo title="Politique de confidentialité - LAVUEPAYEE" description="Comment LAVUEPAYEE collecte, utilise et protège vos données personnelles." path="/privacy" />
       <Navbar />
       
       <main className="container mx-auto px-4 py-24 max-w-4xl flex-1">
