@@ -135,31 +135,26 @@ export class ApiService {
     return data;
   }
 
-  // Gestion des retraits
+  // Gestion des retraits — passe obligatoirement par l'edge function sécurisée
+  // (vérification du solde VUC, commission officielle, verrouillage des fonds)
   static async createWithdrawal(withdrawalData: {
-    user_id: string;
-    amount: number;
+    amount_vuc: number;
     method: string;
     payment_details: any;
   }) {
-    // Calculer les frais (exemple : 2% de frais)
-    const fee = withdrawalData.amount * 0.02;
-    const net_amount = withdrawalData.amount - fee;
+    const { data, error } = await supabase.functions.invoke('process-withdrawal', {
+      body: {
+        amount_vuc: withdrawalData.amount_vuc,
+        method: withdrawalData.method,
+        paymentDetails: withdrawalData.payment_details,
+      },
+    });
 
-    const { data, error } = await supabase
-      .from('withdrawals')
-      .insert({
-        ...withdrawalData,
-        fee,
-        net_amount,
-        status: 'pending'
-      })
-      .select()
-      .single();
-    
     if (error) throw error;
+    if ((data as any)?.error) throw new Error((data as any).error);
     return data;
   }
+
 
   // Gestion des erreurs centralisée
   static handleError(error: any) {

@@ -14,6 +14,40 @@ serve(async (req) => {
   }
 
   try {
+    // Auth obligatoire : seuls les admins peuvent envoyer des notifications
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const userClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const { data: { user } } = await userClient.auth.getUser();
+    if (!user) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const { data: isAdmin } = await userClient.rpc('has_role', {
+      _user_id: user.id,
+      _role: 'admin',
+    });
+    if (!isAdmin) {
+      return new Response(JSON.stringify({ error: 'Forbidden' }), {
+        status: 403,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     const { user_id, title, message, type = 'info' } = await req.json();
 
     if (!user_id || !title || !message) {
@@ -25,6 +59,7 @@ serve(async (req) => {
         }
       );
     }
+
 
     // Create service client for database operations
     const supabaseService = createClient(
