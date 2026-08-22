@@ -1,0 +1,21 @@
+# LAVUEPAYEE
+
+> Plateforme publicitaire rémunérée : gagnez des points LVP en regardant des publicités, convertissez-les en Vuecoins, échangez-les contre des produits ou retirez-les en mobile money.
+
+LAVUEPAYEE récompense le temps de visionnage des publicités. Les utilisateurs cumulent des LVP, les convertissent en Vuecoins (700 LVP = 1 Vc) puis les dépensent sur la marketplace ou les retirent via MTN Bénin, Moov Africa, FedaPay ou KikiaPay. Un programme d'affiliation sur 5 niveaux complète les revenus.
+
+## Pages
+
+- [Accueil](/): Présentation de la plateforme, fonctionnement et programme d'affiliation.
+- [Marketplace](/marketplace): Produits échangeables contre des Vuecoins.
+- [Classement](/leaderboard): Meilleurs utilisateurs par LVP gagnés.
+- [FAQ](/faq): Réponses sur les points LVP, les Vuecoins, les retraits et la sécurité.
+- [Centre d'aide](/help): Guides d'utilisation de la plateforme.
+- [Support](/support): Contacter l'équipe LAVUEPAYEE.
+- [Créer un compte](/register): Inscription gratuite.
+
+## Optional
+
+- [Conditions d'utilisation](/terms): Règles d'usage de la plateforme.
+- [Politique de confidentialité](/privacy): Traitement des données personnelles.
+- [Politique de cookies](/cookies): Utilisation des cookies.
