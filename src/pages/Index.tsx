@@ -9,6 +9,7 @@ import Hero from '@/components/Hero';
 import TestimonialCarousel from '@/components/testimonials/TestimonialCarousel';
 import Footer from '@/components/Footer';
 import WelcomeOnboarding from '@/components/onboarding/WelcomeOnboarding';
+import Seo from '@/components/Seo';
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 40 },
@@ -38,6 +39,7 @@ const itemVariants = {
 const Index = () => {
   return (
     <div className="min-h-screen">
+      <Seo title="LAVUEPAYEE - Gagnez en regardant des publicités" description="Transformez votre temps de visionnage en revenus : gagnez des points LVP, convertissez-les en Vuecoins et retirez-les en mobile money." path="/" />
       <WelcomeOnboarding />
       <Navbar />
       

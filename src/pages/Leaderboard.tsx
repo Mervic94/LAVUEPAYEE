@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Trophy, Medal, Award, Star, TrendingUp, Calendar, Users, Target } from 'lucide-react';
 import Navbar from '@/components/navbar';
 import { supabase } from '@/integrations/supabase/client';
+import Seo from '@/components/Seo';
 
 interface LeaderboardUser {
   id: string;
@@ -133,6 +134,7 @@ const Leaderboard = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Seo title="Classement des utilisateurs - LAVUEPAYEE" description="Consultez le classement des utilisateurs LAVUEPAYEE ayant gagné le plus de points LVP." path="/leaderboard" />
       <Navbar />
       
       <main className="container px-4 md:px-6 mx-auto max-w-6xl pt-24 pb-12">

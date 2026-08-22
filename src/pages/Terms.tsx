@@ -4,10 +4,12 @@ import Navbar from '@/components/navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { FileText, ArrowRight } from 'lucide-react';
+import Seo from '@/components/Seo';
 
 const Terms = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <Seo title="Conditions d'utilisation - LAVUEPAYEE" description="Consultez les conditions générales d'utilisation de la plateforme LAVUEPAYEE." path="/terms" />
       <Navbar />
       
       <main className="container mx-auto px-4 py-24 max-w-4xl flex-1">

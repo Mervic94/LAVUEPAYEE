@@ -11,6 +11,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { useToast } from "@/hooks/use-toast";
 import { MessageCircle, Phone, Mail, Clock, Search, Send, HelpCircle, Book, Video } from 'lucide-react';
 import Navbar from '@/components/navbar';
+import Seo from '@/components/Seo';
 
 const Support = () => {
   const { toast } = useToast();
@@ -108,6 +109,7 @@ const Support = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Seo title="Support LAVUEPAYEE - Nous contacter" description="Contactez l'équipe support LAVUEPAYEE pour toute question sur votre compte, vos points ou vos retraits." path="/support" />
       <Navbar />
       
       <main className="container px-4 md:px-6 mx-auto max-w-6xl pt-24 pb-12">

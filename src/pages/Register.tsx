@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import EmailRegisterForm from "@/components/register/EmailRegisterForm";
 import PhoneRegisterForm from "@/components/register/PhoneRegisterForm";
 import SocialAuth from "@/components/register/SocialAuth";
+import Seo from '@/components/Seo';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -133,6 +134,7 @@ const RegisterPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-primary/5 via-background to-secondary/5 p-4 relative overflow-hidden">
+      <Seo title="Créer un compte LAVUEPAYEE" description="Inscrivez-vous gratuitement sur LAVUEPAYEE et commencez à gagner des points LVP en regardant des publicités." path="/register" />
       {/* Decorative blobs */}
       <div className="absolute -top-32 -right-32 w-72 h-72 bg-primary/10 rounded-full blur-3xl" />
       <div className="absolute -bottom-32 -left-32 w-72 h-72 bg-secondary/10 rounded-full blur-3xl" />

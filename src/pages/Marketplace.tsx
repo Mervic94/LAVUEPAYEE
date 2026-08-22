@@ -4,6 +4,7 @@ import { Search, Filter, ArrowUpRight } from 'lucide-react';
 import Navbar from '@/components/navbar';
 import ProductCard from '@/components/ProductCard';
 import PointsIndicator from '@/components/PointsIndicator';
+import Seo from '@/components/Seo';
 
 // Mock data for products
 const mockProducts = [
@@ -88,6 +89,7 @@ const Marketplace = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <Seo title="Marketplace LAVUEPAYEE - Échangez vos Vuecoins" description="Découvrez les produits disponibles sur la marketplace LAVUEPAYEE et échangez-les contre vos Vuecoins." path="/marketplace" />
       <Navbar />
       
       <main className="container px-6 mx-auto max-w-7xl pt-24 pb-12">

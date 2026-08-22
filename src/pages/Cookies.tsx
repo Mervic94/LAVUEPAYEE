@@ -4,10 +4,12 @@ import Navbar from '@/components/navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Cookie, ArrowRight } from 'lucide-react';
+import Seo from '@/components/Seo';
 
 const Cookies = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <Seo title="Politique de cookies - LAVUEPAYEE" description="Informations sur l'utilisation des cookies sur la plateforme LAVUEPAYEE." path="/cookies" />
       <Navbar />
       
       <main className="container mx-auto px-4 py-24 max-w-4xl flex-1">

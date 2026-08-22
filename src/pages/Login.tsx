@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Loader2, Eye, EyeOff, Mail, Lock, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthProvider';
 import { useNoIndex } from '@/hooks/useNoIndex';
+import Seo from '@/components/Seo';
 
 const Login = () => {
   useNoIndex();
@@ -34,6 +35,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-secondary/5 p-4 relative overflow-hidden">
+      <Seo title="Connexion à LAVUEPAYEE" description="Connectez-vous à votre compte LAVUEPAYEE pour suivre vos points LVP, vos tâches et vos retraits." path="/login" />
       {/* Decorative blobs */}
       <div className="absolute -top-32 -left-32 w-72 h-72 bg-primary/10 rounded-full blur-3xl" />
       <div className="absolute -bottom-32 -right-32 w-72 h-72 bg-secondary/10 rounded-full blur-3xl" />

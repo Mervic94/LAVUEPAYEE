@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Navbar from '@/components/navbar';
 import Footer from '@/components/Footer';
+import Seo from '@/components/Seo';
 
 const Help = () => {
   const supportChannels = [
@@ -54,6 +55,7 @@ const Help = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <Seo title="Centre d'aide LAVUEPAYEE" description="Guides et explications pour utiliser LAVUEPAYEE : points LVP, Vuecoins, tâches, affiliation et retraits." path="/help" />
       <Navbar />
       
       <main className="container px-4 md:px-6 mx-auto max-w-6xl pt-24 pb-12 flex-1">
