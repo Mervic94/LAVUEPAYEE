@@ -166,7 +166,7 @@ const Marketplace = () => {
                 <div className="h-4 w-4 rounded-full flex items-center justify-center overflow-hidden">
                   <img 
                     src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
-                    alt="LVP" 
+                    alt="Jeton de points LVP" 
                     className="w-full h-full object-contain"
                   />
                 </div>
@@ -215,7 +215,7 @@ const Marketplace = () => {
                       <div className="h-5 w-5 rounded-full flex items-center justify-center overflow-hidden">
                         <img 
                           src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
-                          alt="LVP" 
+                          alt="Jeton de points LVP" 
                           className="w-full h-full object-contain"
                         />
                       </div>
@@ -245,7 +245,7 @@ const Marketplace = () => {
                       <div className="h-5 w-5 rounded-full flex items-center justify-center overflow-hidden mr-1">
                         <img 
                           src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" 
-                          alt="Vc" 
+                          alt="Jeton Vuecoin" 
                           className="w-full h-full object-contain"
                         />
                       </div>

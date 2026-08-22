@@ -60,7 +60,7 @@ const Login = () => {
               className="h-16 mx-auto mb-4"
             />
           </Link>
-          <h1 className="text-3xl font-bold text-foreground">Bon retour !</h1>
+          <h1 className="text-3xl font-bold text-foreground">Connexion à LAVUEPAYEE</h1>
           <p className="text-muted-foreground mt-1">Connectez-vous à votre compte</p>
         </motion.div>
 

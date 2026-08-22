@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { HelpCircle, MessageCircle, ArrowRight } from 'lucide-react';
 import { 
+import Seo from '@/components/Seo';
   Accordion,
   AccordionContent,
   AccordionItem,
@@ -76,8 +77,26 @@ const FAQ = () => {
     }
   ];
 
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqSections.flatMap((section) =>
+      section.items.map((item) => ({
+        '@type': 'Question',
+        name: item.question,
+        acceptedAnswer: { '@type': 'Answer', text: item.answer },
+      })),
+    ),
+  };
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <Seo
+        title="FAQ - LAVUEPAYEE"
+        description="Réponses aux questions fréquentes sur LAVUEPAYEE : points LVP, Vuecoins, retraits mobile money, affiliation et sécurité."
+        path="/faq"
+        jsonLd={faqJsonLd}
+      />
       <Navbar />
       
       <main className="container mx-auto px-4 py-24 max-w-4xl flex-1">

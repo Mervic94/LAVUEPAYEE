@@ -106,7 +106,7 @@ const Index = () => {
               {
                 icon: (
                   <div className="h-8 w-8 lvp-icon-container">
-                    <img src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" alt="Points" className="h-8 w-8" />
+                    <img src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" alt="Jeton de points LVP" className="h-8 w-8" />
                   </div>
                 ),
                 step: 2,
@@ -253,7 +253,7 @@ const Index = () => {
                         </div>
                         <div className="flex items-center gap-1 font-semibold text-lg">
                           <div className="h-5 w-5 lvp-icon-container">
-                            <img src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" alt="LVP" className="h-5 w-5" />
+                            <img src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" alt="Jeton de points LVP" className="h-5 w-5" />
                           </div>
                           <span>{row.value}</span>
                         </div>
@@ -266,7 +266,7 @@ const Index = () => {
                       </div>
                       <div className="flex items-center gap-1 font-bold text-lg text-primary">
                         <div className="h-5 w-5 lvp-icon-container">
-                          <img src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" alt="LVP" className="h-5 w-5" />
+                          <img src="/lovable-uploads/04282974-27aa-4e80-9818-043448844ed9.png" alt="Jeton de points LVP" className="h-5 w-5" />
                         </div>
                         <span>10,500 lvp</span>
                       </div>

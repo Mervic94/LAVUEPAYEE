@@ -156,7 +156,7 @@ const Hero = () => {
                 <div className="flex items-center justify-center w-full h-80">
                   <img 
                     src="/lovable-uploads/d82c55d8-0c83-4a02-82c0-67e854a84332.png"
-                    alt="LAVUEPAYEE Logo"
+                    alt="LAVUEPAYEE, plateforme de publicités rémunérées"
                     className="max-w-full max-h-full object-contain"
                   />
                 </div>
