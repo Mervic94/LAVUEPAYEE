@@ -1,3 +1,4 @@
+import Seo from '@/components/Seo';
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthProvider';
@@ -10,7 +11,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Trophy, Medal, Award, Star, TrendingUp, Calendar, Users, Target } from 'lucide-react';
 import Navbar from '@/components/navbar';
 import { supabase } from '@/integrations/supabase/client';
-import Seo from '@/components/Seo';
 
 interface LeaderboardUser {
   id: string;

@@ -1,3 +1,4 @@
+import Seo from '@/components/Seo';
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,7 +12,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { useToast } from "@/hooks/use-toast";
 import { MessageCircle, Phone, Mail, Clock, Search, Send, HelpCircle, Book, Video } from 'lucide-react';
 import Navbar from '@/components/navbar';
-import Seo from '@/components/Seo';
 
 const Support = () => {
   const { toast } = useToast();

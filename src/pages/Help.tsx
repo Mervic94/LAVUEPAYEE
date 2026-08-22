@@ -1,3 +1,4 @@
+import Seo from '@/components/Seo';
 import React from "react";
 import { Link } from "react-router-dom";
 import { MessageCircle, Book, PhoneCall, Mail, Clock, HelpCircle, ArrowRight } from "lucide-react";
@@ -5,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Navbar from '@/components/navbar';
 import Footer from '@/components/Footer';
-import Seo from '@/components/Seo';
 
 const Help = () => {
   const supportChannels = [

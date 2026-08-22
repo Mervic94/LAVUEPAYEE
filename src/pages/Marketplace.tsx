@@ -1,10 +1,10 @@
+import Seo from '@/components/Seo';
 
 import React, { useState } from 'react';
 import { Search, Filter, ArrowUpRight } from 'lucide-react';
 import Navbar from '@/components/navbar';
 import ProductCard from '@/components/ProductCard';
 import PointsIndicator from '@/components/PointsIndicator';
-import Seo from '@/components/Seo';
 
 // Mock data for products
 const mockProducts = [

@@ -1,3 +1,4 @@
+import Seo from '@/components/Seo';
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -15,7 +16,6 @@ import { supabase } from "@/integrations/supabase/client";
 import EmailRegisterForm from "@/components/register/EmailRegisterForm";
 import PhoneRegisterForm from "@/components/register/PhoneRegisterForm";
 import SocialAuth from "@/components/register/SocialAuth";
-import Seo from '@/components/Seo';
 
 const RegisterPage = () => {
   const navigate = useNavigate();

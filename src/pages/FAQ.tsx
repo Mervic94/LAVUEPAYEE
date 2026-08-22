@@ -1,3 +1,4 @@
+import Seo from '@/components/Seo';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/navbar';
@@ -6,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { HelpCircle, MessageCircle, ArrowRight } from 'lucide-react';
 import { 
-import Seo from '@/components/Seo';
   Accordion,
   AccordionContent,
   AccordionItem,

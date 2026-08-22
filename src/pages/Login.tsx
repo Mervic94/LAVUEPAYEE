@@ -1,3 +1,4 @@
+import Seo from '@/components/Seo';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -8,7 +9,6 @@ import { Label } from '@/components/ui/label';
 import { Loader2, Eye, EyeOff, Mail, Lock, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthProvider';
 import { useNoIndex } from '@/hooks/useNoIndex';
-import Seo from '@/components/Seo';
 
 const Login = () => {
   useNoIndex();

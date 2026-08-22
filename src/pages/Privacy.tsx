@@ -1,10 +1,10 @@
+import Seo from '@/components/Seo';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Shield, ArrowRight } from 'lucide-react';
-import Seo from '@/components/Seo';
 
 const Privacy = () => {
   return (

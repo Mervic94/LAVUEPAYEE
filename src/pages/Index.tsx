@@ -1,3 +1,4 @@
+import Seo from '@/components/Seo';
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Users, ShoppingBag, PlayCircle } from 'lucide-react';
@@ -9,7 +10,6 @@ import Hero from '@/components/Hero';
 import TestimonialCarousel from '@/components/testimonials/TestimonialCarousel';
 import Footer from '@/components/Footer';
 import WelcomeOnboarding from '@/components/onboarding/WelcomeOnboarding';
-import Seo from '@/components/Seo';
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 40 },
