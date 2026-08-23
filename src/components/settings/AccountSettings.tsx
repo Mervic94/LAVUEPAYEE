@@ -139,6 +139,10 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ user }) => {
         </CardContent>
       </Card>
 
+      <div className="flex justify-end">
+        <Button onClick={handleSave}>Enregistrer les modifications</Button>
+      </div>
+
       <Card className="border-destructive/20">
         <CardHeader>
           <CardTitle className="text-destructive">Zone de danger</CardTitle>
@@ -156,10 +160,6 @@ const AccountSettings: React.FC<AccountSettingsProps> = ({ user }) => {
           </Button>
         </CardContent>
       </Card>
-
-      <div className="flex justify-end">
-        <Button onClick={handleSave}>Enregistrer les modifications</Button>
-      </div>
     </div>
   );
 };
