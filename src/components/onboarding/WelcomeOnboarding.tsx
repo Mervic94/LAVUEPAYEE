@@ -169,7 +169,6 @@ const WelcomeOnboarding: React.FC = () => {
                 {step === STEPS.length - 1 ? "C'est parti !" : 'Suivant'}
                 <ArrowRight className="w-4 h-4 ml-1" />
               </Button>
-            </div>
           </div>
         </div>
       </DialogContent>
