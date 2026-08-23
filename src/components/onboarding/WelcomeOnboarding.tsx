@@ -145,8 +145,9 @@ const WelcomeOnboarding: React.FC = () => {
               </div>
             </motion.div>
           </AnimatePresence>
+        </div>
 
-          <div className="flex items-center justify-between border-t border-border pt-5 mt-6">
+        <div className="flex items-center justify-between gap-2 border-t border-border p-4 sm:px-8 sm:py-5 shrink-0 bg-background/60 backdrop-blur">
             <Button
               type="button"
               variant="ghost"
