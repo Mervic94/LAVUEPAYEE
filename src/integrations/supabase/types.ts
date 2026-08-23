@@ -75,6 +75,27 @@ export type Database = {
           },
         ]
       }
+      admin_accreditations: {
+        Row: {
+          accreditation: Database["public"]["Enums"]["admin_accreditation"]
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          accreditation: Database["public"]["Enums"]["admin_accreditation"]
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          accreditation?: Database["public"]["Enums"]["admin_accreditation"]
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       ads: {
         Row: {
           approved: boolean | null
@@ -3846,6 +3867,13 @@ export type Database = {
           phone: string
         }[]
       }
+      has_accreditation: {
+        Args: {
+          _acc: Database["public"]["Enums"]["admin_accreditation"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -3865,6 +3893,12 @@ export type Database = {
       }
     }
     Enums: {
+      admin_accreditation:
+        | "general"
+        | "proofs"
+        | "finance"
+        | "moderation"
+        | "support"
       app_role: "admin" | "consumer" | "advertiser" | "driver" | "viewer"
     }
     CompositeTypes: {
@@ -3993,6 +4027,13 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      admin_accreditation: [
+        "general",
+        "proofs",
+        "finance",
+        "moderation",
+        "support",
+      ],
       app_role: ["admin", "consumer", "advertiser", "driver", "viewer"],
     },
   },
