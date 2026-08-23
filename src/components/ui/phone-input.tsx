@@ -12,7 +12,7 @@ export interface PhoneInputProps extends Omit<React.InputHTMLAttributes<HTMLInpu
 }
 
 const PhoneNumberInput = forwardRef<HTMLInputElement, PhoneInputProps>(
-  ({ className, onChange, value, defaultCountry = 'ci', ...props }, ref) => {
+  ({ className, onChange, value, defaultCountry = 'bj', ...props }, ref) => {
     return (
       <div className={cn("phone-input-container relative", className)}>
         <PhoneInput

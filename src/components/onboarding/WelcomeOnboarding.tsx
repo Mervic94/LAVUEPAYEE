@@ -89,10 +89,10 @@ const WelcomeOnboarding: React.FC = () => {
 
   return (
     <Dialog open={open} onOpenChange={(o) => (o ? setOpen(true) : complete())}>
-      <DialogContent className="sm:max-w-lg glass-card border-border p-0 overflow-hidden">
-        <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary via-primary/70 to-primary/40" />
+      <DialogContent className="w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] sm:max-w-lg glass-card border-border p-0 gap-0 overflow-hidden max-h-[calc(100dvh-2rem)] flex flex-col">
+        <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary via-primary/70 to-primary/40 z-10" />
 
-        <div className="p-6 sm:p-8 pt-10">
+        <div className="p-4 sm:p-8 pt-8 sm:pt-10 overflow-y-auto flex-1 min-h-0">
           {/* Tracker */}
           <div className="flex items-center justify-between mb-6">
             <span className="text-[10px] uppercase tracking-widest font-bold text-primary flex items-center gap-1.5 bg-primary/10 border border-primary/20 px-2.5 py-1 rounded-full">
