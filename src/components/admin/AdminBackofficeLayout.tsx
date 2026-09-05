@@ -46,7 +46,12 @@ const AdminBackofficeLayout: React.FC<Props> = ({ accreditation, title, descript
 
   return (
     <div className="min-h-screen bg-background">
-      <Seo title={`${title} | Backoffice LAVUEPAYEE`} description={description} noIndex />
+      <Seo
+        title={`${title} | Backoffice LAVUEPAYEE`}
+        description={description}
+        path="/admin"
+        noindex
+      />
       <Navbar />
       <main className="container px-4 md:px-6 mx-auto max-w-6xl pt-24 pb-12">
         <div className="mb-8">
