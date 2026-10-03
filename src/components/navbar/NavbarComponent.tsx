@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthProvider';
+import { Button } from '@/components/ui/button';
 
 // Import components
 import Logo from './Logo';
@@ -15,8 +16,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -50,43 +50,43 @@ const Navbar = () => {
     };
   }, [isOpen]);
 
-  const handleLogout = async () => {
-    await signOut();
-    navigate('/');
-  };
-
   return (
     <nav 
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 py-3 ${
-        scrolled ? 'bg-background/80 backdrop-blur-md shadow-sm border-b border-border/50' : 'bg-transparent'
+      className={`fixed left-0 right-0 top-0 z-50 px-3 py-2 transition-all duration-300 sm:px-5 xl:px-6 ${
+        scrolled || isOpen ? 'bg-background/90 backdrop-blur-md shadow-sm border-b border-border/50' : 'bg-background/70 backdrop-blur-sm'
       }`}
     >
-      <div className="max-w-7xl mx-auto flex justify-between items-center">
+      <div className="mx-auto flex min-h-12 max-w-[1536px] items-center justify-between gap-3">
         <Logo />
 
         {/* Desktop Navigation */}
         <DesktopNav user={user} />
 
-        <div className="hidden md:flex items-center gap-4">
-          <SocialLinks size="sm" />
+        <div className="hidden shrink-0 items-center gap-2 xl:flex">
+          <div className="hidden 2xl:block">
+            <SocialLinks size="sm" />
+          </div>
           <UserControls />
         </div>
 
         {/* Mobile Menu Button */}
-        <button 
-          className="md:hidden flex items-center"
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="relative z-50 shrink-0 xl:hidden"
           onClick={() => setIsOpen(!isOpen)}
           aria-label={isOpen ? "Fermer le menu" : "Ouvrir le menu"}
+          aria-expanded={isOpen}
         >
           {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
+        </Button>
       </div>
 
       {/* Mobile Menu */}
       <MobileNav 
         isOpen={isOpen} 
         user={user} 
-        onLogout={handleLogout} 
         onItemClick={closeMenu} 
       />
     </nav>

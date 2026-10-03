@@ -11,7 +11,7 @@ const DesktopNav: React.FC<DesktopNavProps> = ({ user }) => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="hidden md:flex items-center gap-6">
+    <div className="hidden xl:flex min-w-0 flex-1 items-center justify-center gap-2 2xl:gap-4">
       <Link to="/" className={`nav-link ${isActive('/') ? 'text-primary after:scale-x-100' : ''}`}>
         Accueil
       </Link>
@@ -26,6 +26,9 @@ const DesktopNav: React.FC<DesktopNavProps> = ({ user }) => {
           <Link to="/tasks" className={`nav-link ${isActive('/tasks') ? 'text-primary after:scale-x-100' : ''}`}>
             Tâches
           </Link>
+          <Link to="/wallet" className={`nav-link ${isActive('/wallet') ? 'text-primary after:scale-x-100' : ''}`}>
+            Portefeuille
+          </Link>
           <Link to="/affiliates" className={`nav-link ${isActive('/affiliates') ? 'text-primary after:scale-x-100' : ''}`}>
             Parrainage
           </Link>
@@ -35,11 +38,17 @@ const DesktopNav: React.FC<DesktopNavProps> = ({ user }) => {
           <Link to="/courses" className={`nav-link ${isActive('/courses') ? 'text-primary after:scale-x-100' : ''}`}>
             Formation
           </Link>
+          <Link to="/analytics" className={`nav-link ${isActive('/analytics') ? 'text-primary after:scale-x-100' : ''}`}>
+            Analytiques
+          </Link>
+          <Link to="/messages" className={`nav-link ${isActive('/messages') ? 'text-primary after:scale-x-100' : ''}`}>
+            Messages
+          </Link>
         </>
       ) : (
         <>
-          <a href="#how-it-works" className={`nav-link`}>
-            Comment ça marche
+          <a href="#how-it-works" className="nav-link">
+            Fonctionnement
           </a>
           <Link to="/marketplace" className={`nav-link ${isActive('/marketplace') ? 'text-primary after:scale-x-100' : ''}`}>
             Marketplace

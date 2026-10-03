@@ -78,6 +78,19 @@
     position: relative;
     overflow-x: hidden;
   }
+
+  html {
+    min-width: 320px;
+    overflow-x: hidden;
+    text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  img,
+  video,
+  iframe {
+    max-width: 100%;
+  }
   
   /* Background animations for light and dark themes */
   body:before {
