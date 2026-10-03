@@ -9,30 +9,30 @@ import UserPoints from './UserPoints';
 interface MobileNavProps {
   isOpen: boolean;
   user: any;
-  onLogout: () => void;
   onItemClick: () => void;
 }
 
-const MobileNav: React.FC<MobileNavProps> = ({ isOpen, user, onLogout, onItemClick }) => {
+const MobileNav: React.FC<MobileNavProps> = ({ isOpen, user, onItemClick }) => {
   return (
     <div 
-      className={`fixed inset-0 bg-background/95 backdrop-blur-md flex flex-col z-40 pt-20 px-6 transition-all duration-300 ease-in-out transform ${
-        isOpen ? 'translate-y-0' : '-translate-y-full'
-      } md:hidden overflow-y-auto`}
+      className={`fixed inset-0 z-40 flex flex-col overflow-y-auto bg-background/95 px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-20 backdrop-blur-md transition-all duration-300 ease-in-out xl:hidden sm:px-8 ${
+        isOpen ? 'visible translate-y-0 opacity-100' : 'invisible -translate-y-full opacity-0 pointer-events-none'
+      }`}
+      aria-hidden={!isOpen}
     >
-      <div className="flex flex-col gap-6 items-center">
+      <div className="mx-auto flex w-full max-w-3xl flex-col items-center gap-5 py-4">
         {user && <UserPoints />}
         
         <MobileNavLinks user={user} onItemClick={onItemClick} />
         
-        <div className="w-full px-4 py-3 border-t border-border">
+        <div className="w-full border-t border-border px-4 py-3">
           <p className="text-muted-foreground text-sm mb-3 text-center">Suivez-nous</p>
           <div className="flex justify-center">
             <SocialLinks size="md" />
           </div>
         </div>
         
-        <div className="w-full px-4 py-3 border-t border-border">
+        <div className="w-full border-t border-border px-4 py-3">
           <p className="text-muted-foreground text-sm mb-3 text-center">Contact</p>
           <div className="flex items-center justify-center">
             <a href="tel:+2290190069561" className="flex items-center gap-2 text-foreground hover:text-primary">

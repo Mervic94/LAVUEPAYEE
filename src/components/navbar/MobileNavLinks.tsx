@@ -14,7 +14,7 @@ const MobileNavLinks: React.FC<MobileNavLinksProps> = ({ user, onItemClick }) =>
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="flex flex-col gap-1 w-full px-4">
+    <nav className="grid w-full grid-cols-1 gap-1 sm:grid-cols-2 sm:gap-2">
       <Link
         to="/"
         className={`py-3 px-4 rounded-lg text-center transition-colors ${
@@ -131,6 +131,13 @@ const MobileNavLinks: React.FC<MobileNavLinksProps> = ({ user, onItemClick }) =>
         </>
       ) : (
         <>
+          <a
+            href="/#how-it-works"
+            className="py-3 px-4 rounded-lg text-center text-foreground transition-colors hover:bg-accent"
+            onClick={onItemClick}
+          >
+            Comment ça marche
+          </a>
           <Link
             to="/register"
             className={`py-3 px-4 rounded-lg text-center transition-colors ${

@@ -32,12 +32,12 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary/5 via-background to-secondary/5">
-      <div className="container mx-auto px-6 py-20 relative z-10">
+    <section className="relative flex min-h-[100svh] items-center justify-center overflow-hidden bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+      <div className="container relative z-10 mx-auto px-4 pb-12 pt-24 sm:px-6 sm:pb-16 sm:pt-28 lg:py-24">
         <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
             {/* Left Content */}
-            <div className="space-y-8">
+            <div className="space-y-6 sm:space-y-8">
               <div className="space-y-4">
                 <motion.div
                   variants={fadeUp}
@@ -53,7 +53,7 @@ const Hero = () => {
                   initial="hidden"
                   animate="visible"
                   custom={1}
-                  className="text-4xl md:text-6xl font-bold text-foreground leading-tight"
+                  className="text-3xl font-bold leading-tight text-foreground sm:text-4xl md:text-5xl lg:text-6xl"
                 >
                   Gagnez de l'argent en 
                   <span className="text-primary"> regardant </span>
@@ -64,7 +64,7 @@ const Hero = () => {
                   initial="hidden"
                   animate="visible"
                   custom={2}
-                  className="text-xl text-muted-foreground max-w-lg"
+                  className="max-w-lg text-base text-muted-foreground sm:text-lg lg:text-xl"
                 >
                   LAVUEPAYEE vous récompense pour votre attention. Regardez, cliquez, partagez et gagnez de l'argent réel.
                 </motion.p>
@@ -76,28 +76,28 @@ const Hero = () => {
                 initial="hidden"
                 animate="visible"
                 custom={3}
-                className="grid grid-cols-3 gap-6"
+                className="grid grid-cols-3 gap-2 sm:gap-6"
               >
                 <div className="text-center">
                   <div className="flex items-center justify-center mb-2">
                     <Users className="h-5 w-5 text-primary mr-1" />
-                    <span className="text-2xl font-bold">50K+</span>
+                    <span className="text-lg font-bold sm:text-2xl">50K+</span>
                   </div>
-                  <p className="text-sm text-muted-foreground">Utilisateurs actifs</p>
+                  <p className="text-xs text-muted-foreground sm:text-sm">Utilisateurs actifs</p>
                 </div>
                 <div className="text-center">
                   <div className="flex items-center justify-center mb-2">
                     <TrendingUp className="h-5 w-5 text-primary mr-1" />
-                    <span className="text-2xl font-bold">€100K+</span>
+                    <span className="text-lg font-bold sm:text-2xl">€100K+</span>
                   </div>
-                  <p className="text-sm text-muted-foreground">Distribués</p>
+                  <p className="text-xs text-muted-foreground sm:text-sm">Distribués</p>
                 </div>
                 <div className="text-center">
                   <div className="flex items-center justify-center mb-2">
                     <Star className="h-5 w-5 text-primary mr-1" />
-                    <span className="text-2xl font-bold">4.8/5</span>
+                    <span className="text-lg font-bold sm:text-2xl">4.8/5</span>
                   </div>
-                  <p className="text-sm text-muted-foreground">Satisfaction</p>
+                  <p className="text-xs text-muted-foreground sm:text-sm">Satisfaction</p>
                 </div>
               </motion.div>
 
@@ -109,7 +109,7 @@ const Hero = () => {
                 custom={4}
                 className="flex flex-col sm:flex-row gap-4"
               >
-                <Button size="lg" className="text-lg px-8 py-6" asChild>
+                <Button size="lg" className="w-full px-6 py-6 text-base sm:w-auto sm:px-8 sm:text-lg" asChild>
                   <Link to="/register">
                     Commencer maintenant
                     <ArrowRight className="ml-2 h-5 w-5" />
@@ -118,7 +118,7 @@ const Hero = () => {
                 <Button 
                   size="lg" 
                   variant="outline" 
-                  className="text-lg px-8 py-6"
+                  className="w-full px-6 py-6 text-base sm:w-auto sm:px-8 sm:text-lg"
                   onClick={scrollToHowItWorks}
                 >
                   <Play className="mr-2 h-5 w-5" />
@@ -132,7 +132,7 @@ const Hero = () => {
                 initial="hidden"
                 animate="visible"
                 custom={5}
-                className="flex items-center gap-4 pt-4"
+                className="flex flex-wrap items-center gap-3 pt-2 sm:gap-4 sm:pt-4"
               >
                 <div className="flex items-center gap-1">
                   {[...Array(5)].map((_, i) => (
@@ -150,10 +150,10 @@ const Hero = () => {
               variants={scaleIn}
               initial="hidden"
               animate="visible"
-              className="relative"
+              className="relative mx-auto w-full max-w-md lg:max-w-none"
             >
-              <div className="relative bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl p-8 backdrop-blur-sm">
-                <div className="flex items-center justify-center w-full h-80">
+              <div className="relative rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 p-4 backdrop-blur-sm sm:p-8">
+                <div className="flex h-44 w-full items-center justify-center sm:h-64 lg:h-80">
                   <img 
                     src="/lovable-uploads/d82c55d8-0c83-4a02-82c0-67e854a84332.png"
                     alt="LAVUEPAYEE, plateforme de publicités rémunérées"
@@ -164,7 +164,7 @@ const Hero = () => {
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.8, duration: 0.5 }}
-                  className="absolute -top-4 -right-4 bg-primary text-primary-foreground px-4 py-2 rounded-full text-sm font-medium"
+                  className="absolute right-2 top-2 rounded-full bg-primary px-3 py-2 text-xs font-medium text-primary-foreground sm:-right-4 sm:-top-4 sm:px-4 sm:text-sm"
                 >
                   En ligne maintenant
                 </motion.div>
