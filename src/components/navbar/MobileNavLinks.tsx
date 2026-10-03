@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useRole } from '@/hooks/useRole';
 
 interface MobileNavLinksProps {
   user: any;
@@ -9,6 +10,7 @@ interface MobileNavLinksProps {
 
 const MobileNavLinks: React.FC<MobileNavLinksProps> = ({ user, onItemClick }) => {
   const location = useLocation();
+  const { isAdmin } = useRole();
   const isActive = (path: string) => location.pathname === path;
 
   return (
@@ -115,6 +117,17 @@ const MobileNavLinks: React.FC<MobileNavLinksProps> = ({ user, onItemClick }) =>
           >
             Paramètres
           </Link>
+          {isAdmin && (
+            <Link
+              to="/admin"
+              className={`py-3 px-4 rounded-lg text-center transition-colors ${
+                location.pathname.startsWith('/admin') ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-accent'
+              }`}
+              onClick={onItemClick}
+            >
+              Backoffice
+            </Link>
+          )}
         </>
       ) : (
         <>
