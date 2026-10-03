@@ -41,6 +41,11 @@ import Exchange from '@/pages/Exchange';
 import AdminUsers from '@/pages/admin/Users';
 import AdminExchanges from '@/pages/admin/Exchanges';
 import AdminPlatformMonitor from '@/pages/admin/PlatformMonitor';
+import BackofficeHub from '@/pages/admin/BackofficeHub';
+import AdminProofs from '@/pages/admin/Proofs';
+import AdminFinance from '@/pages/admin/Finance';
+import AdminModeration from '@/pages/admin/Moderation';
+import AdminSupport from '@/pages/admin/Support';
 
 import './App.css';
 
@@ -190,7 +195,7 @@ function App() {
 
                 {/* Routes admin */}
                 <Route path="/admin" element={
-                  <ProtectedRoute><AdminUsers /></ProtectedRoute>
+                  <ProtectedRoute><BackofficeHub /></ProtectedRoute>
                 } />
                 <Route path="/admin/users" element={
                   <ProtectedRoute><AdminUsers /></ProtectedRoute>
@@ -200,6 +205,18 @@ function App() {
                 } />
                 <Route path="/admin/platforms" element={
                   <ProtectedRoute><AdminPlatformMonitor /></ProtectedRoute>
+                } />
+                <Route path="/admin/proofs" element={
+                  <ProtectedRoute><AdminProofs /></ProtectedRoute>
+                } />
+                <Route path="/admin/finance" element={
+                  <ProtectedRoute><AdminFinance /></ProtectedRoute>
+                } />
+                <Route path="/admin/moderation" element={
+                  <ProtectedRoute><AdminModeration /></ProtectedRoute>
+                } />
+                <Route path="/admin/support" element={
+                  <ProtectedRoute><AdminSupport /></ProtectedRoute>
                 } />
 
                 {/* Page d'erreur non autorisé */}
