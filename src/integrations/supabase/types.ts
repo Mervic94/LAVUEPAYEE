@@ -1418,6 +1418,379 @@ export type Database = {
           },
         ]
       }
+      job_applications: {
+        Row: {
+          candidate_id: string
+          cover_letter: string | null
+          created_at: string
+          cv_path: string | null
+          id: string
+          offer_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          candidate_id: string
+          cover_letter?: string | null
+          created_at?: string
+          cv_path?: string | null
+          id?: string
+          offer_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          candidate_id?: string
+          cover_letter?: string | null
+          created_at?: string
+          cv_path?: string | null
+          id?: string
+          offer_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_applications_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "job_candidates"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "job_applications_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "job_offers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      job_candidates: {
+        Row: {
+          bio: string | null
+          city: string | null
+          country: string
+          created_at: string
+          cv_path: string | null
+          education_level: string | null
+          experience_years: number | null
+          full_name: string
+          headline: string | null
+          is_visible: boolean
+          phone: string | null
+          skills: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bio?: string | null
+          city?: string | null
+          country?: string
+          created_at?: string
+          cv_path?: string | null
+          education_level?: string | null
+          experience_years?: number | null
+          full_name: string
+          headline?: string | null
+          is_visible?: boolean
+          phone?: string | null
+          skills?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bio?: string | null
+          city?: string | null
+          country?: string
+          created_at?: string
+          cv_path?: string | null
+          education_level?: string | null
+          experience_years?: number | null
+          full_name?: string
+          headline?: string | null
+          is_visible?: boolean
+          phone?: string | null
+          skills?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      job_companies: {
+        Row: {
+          city: string | null
+          country: string
+          created_at: string
+          description: string | null
+          id: string
+          logo_path: string | null
+          name: string
+          owner_id: string
+          sector: string | null
+          updated_at: string
+          verified: boolean
+          website: string | null
+        }
+        Insert: {
+          city?: string | null
+          country?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          logo_path?: string | null
+          name: string
+          owner_id: string
+          sector?: string | null
+          updated_at?: string
+          verified?: boolean
+          website?: string | null
+        }
+        Update: {
+          city?: string | null
+          country?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          logo_path?: string | null
+          name?: string
+          owner_id?: string
+          sector?: string | null
+          updated_at?: string
+          verified?: boolean
+          website?: string | null
+        }
+        Relationships: []
+      }
+      job_offers: {
+        Row: {
+          category: string | null
+          city: string | null
+          company_id: string
+          contract_type: string
+          country: string
+          created_at: string
+          currency: string
+          description: string
+          expires_at: string | null
+          id: string
+          published_at: string | null
+          rejection_reason: string | null
+          salary_max: number | null
+          salary_min: number | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          city?: string | null
+          company_id: string
+          contract_type?: string
+          country?: string
+          created_at?: string
+          currency?: string
+          description: string
+          expires_at?: string | null
+          id?: string
+          published_at?: string | null
+          rejection_reason?: string | null
+          salary_max?: number | null
+          salary_min?: number | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          city?: string | null
+          company_id?: string
+          contract_type?: string
+          country?: string
+          created_at?: string
+          currency?: string
+          description?: string
+          expires_at?: string | null
+          id?: string
+          published_at?: string | null
+          rejection_reason?: string | null
+          salary_max?: number | null
+          salary_min?: number | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_offers_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "job_companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      job_payments: {
+        Row: {
+          amount_xof: number
+          company_id: string
+          created_at: string
+          id: string
+          paid_at: string | null
+          plan_code: string
+          provider: string
+          provider_transaction_id: string | null
+          status: string
+        }
+        Insert: {
+          amount_xof: number
+          company_id: string
+          created_at?: string
+          id?: string
+          paid_at?: string | null
+          plan_code: string
+          provider?: string
+          provider_transaction_id?: string | null
+          status?: string
+        }
+        Update: {
+          amount_xof?: number
+          company_id?: string
+          created_at?: string
+          id?: string
+          paid_at?: string | null
+          plan_code?: string
+          provider?: string
+          provider_transaction_id?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_payments_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "job_companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_payments_plan_code_fkey"
+            columns: ["plan_code"]
+            isOneToOne: false
+            referencedRelation: "job_plans"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      job_plans: {
+        Row: {
+          code: string
+          description: string | null
+          duration_days: number
+          is_active: boolean
+          max_active_offers: number
+          name: string
+          offer_duration_days: number
+          price_xof: number
+          sort_order: number
+        }
+        Insert: {
+          code: string
+          description?: string | null
+          duration_days: number
+          is_active?: boolean
+          max_active_offers: number
+          name: string
+          offer_duration_days?: number
+          price_xof: number
+          sort_order?: number
+        }
+        Update: {
+          code?: string
+          description?: string | null
+          duration_days?: number
+          is_active?: boolean
+          max_active_offers?: number
+          name?: string
+          offer_duration_days?: number
+          price_xof?: number
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      job_saved_offers: {
+        Row: {
+          created_at: string
+          offer_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          offer_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          offer_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_saved_offers_offer_id_fkey"
+            columns: ["offer_id"]
+            isOneToOne: false
+            referencedRelation: "job_offers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      job_subscriptions: {
+        Row: {
+          company_id: string
+          created_at: string
+          ends_at: string | null
+          id: string
+          payment_ref: string | null
+          plan: string
+          starts_at: string
+          status: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          payment_ref?: string | null
+          plan?: string
+          starts_at?: string
+          status?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          ends_at?: string | null
+          id?: string
+          payment_ref?: string | null
+          plan?: string
+          starts_at?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_subscriptions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "job_companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "job_subscriptions_plan_fk"
+            columns: ["plan"]
+            isOneToOne: false
+            referencedRelation: "job_plans"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
       menu_items: {
         Row: {
           category: string | null
