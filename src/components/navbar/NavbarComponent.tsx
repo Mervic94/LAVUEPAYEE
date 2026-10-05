@@ -51,6 +51,7 @@ const Navbar = () => {
   }, [isOpen]);
 
   return (
+    <>
     <nav 
       className={`fixed left-0 right-0 top-0 z-50 px-3 py-2 transition-all duration-300 sm:px-5 xl:px-6 ${
         scrolled || isOpen ? 'bg-background/90 backdrop-blur-md shadow-sm border-b border-border/50' : 'bg-background/70 backdrop-blur-sm'
@@ -82,14 +83,15 @@ const Navbar = () => {
           {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </Button>
       </div>
+    </nav>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu (outside nav so it covers the full screen) */}
       <MobileNav 
         isOpen={isOpen} 
         user={user} 
         onItemClick={closeMenu} 
       />
-    </nav>
+    </>
   );
 };
 
