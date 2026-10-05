@@ -32,6 +32,8 @@ import Notifications from '@/pages/Notifications';
 import Terms from '@/pages/Terms';
 import Privacy from '@/pages/Privacy';
 import Cookies from '@/pages/Cookies';
+import LegalNotice from '@/pages/LegalNotice';
+import CookieConsent from '@/components/CookieConsent';
 import KYC from '@/pages/KYC';
 import Messages from '@/pages/Messages';
 import ViewAd from '@/pages/ViewAd';
@@ -106,6 +108,7 @@ function App() {
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/cookies" element={<Cookies />} />
+                <Route path="/mentions-legales" element={<LegalNotice />} />
                 <Route path="/view-ad/:id" element={<ViewAd />} />
                 <Route path="/test-auth" element={<TestAuth />} />
 
@@ -225,6 +228,7 @@ function App() {
                 {/* Route 404 */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
+              <CookieConsent />
             </div>
           </Router>
           <Toaster />
