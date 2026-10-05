@@ -94,20 +94,68 @@ const Privacy = () => {
           </section>
           
           <section>
+            <h2 className="text-2xl font-semibold mb-4">Cadre légal (Bénin)</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              Les traitements sont réalisés conformément au Livre V de la loi n°2017-20 du 20 avril 2018 portant Code du numérique
+              en République du Bénin, sous le contrôle de l'Autorité de Protection des Données à caractère Personnel
+              (<a href="https://apdp.bj" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">APDP</a>).
+              Responsable du traitement : LAVUEPAYEE, Cotonou, Bénin. Délégué à la protection des données :{' '}
+              <a href="mailto:dpo@lavuepayee.com" className="text-primary hover:underline">dpo@lavuepayee.com</a>.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">Bases légales</h2>
+            <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+              <li>Exécution du contrat (compte, points, retraits)</li>
+              <li>Consentement (cookies publicitaires, notifications marketing)</li>
+              <li>Obligation légale (vérification KYC, lutte contre la fraude et le blanchiment)</li>
+              <li>Intérêt légitime (sécurité de la plateforme)</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">Durées de conservation</h2>
+            <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+              <li>Données de compte : durée d'utilisation du compte, puis 1 an après sa suppression</li>
+              <li>Transactions et retraits : 10 ans (obligations comptables)</li>
+              <li>Documents KYC : 5 ans après la fin de la relation</li>
+              <li>Cookies : 13 mois maximum</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">Transferts hors du Bénin</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              Certaines données sont hébergées par des prestataires situés hors du Bénin (hébergement cloud, suivi des erreurs).
+              Ces transferts sont encadrés conformément au Code du numérique et soumis, le cas échéant, à l'autorisation de l'APDP,
+              avec des garanties de sécurité appropriées.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">Mineurs</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              La plateforme est réservée aux personnes âgées d'au moins 18 ans. Nous ne collectons pas sciemment de données de mineurs.
+            </p>
+          </section>
+
+          <section>
             <h2 className="text-2xl font-semibold mb-4">Vos droits</h2>
             <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
-              <li>Droit d'accès et de rectification de vos informations</li>
-              <li>Droit à l'effacement (droit à l'oubli)</li>
-              <li>Droit à la limitation du traitement</li>
-              <li>Droit à la portabilité des données</li>
-              <li>Droit d'opposition</li>
+              <li>Droit d'information et d'accès à vos données</li>
+              <li>Droit de rectification et d'effacement</li>
+              <li>Droit d'opposition, notamment à la prospection commerciale</li>
+              <li>Droit à la limitation et à la portabilité</li>
               <li>Droit de retirer votre consentement à tout moment</li>
             </ul>
             <p className="text-muted-foreground mt-3">
-              Pour exercer ces droits : <a href="mailto:contact@lavuepayee.com" className="text-primary hover:underline">contact@lavuepayee.com</a>
+              Pour exercer ces droits, écrivez à <a href="mailto:dpo@lavuepayee.com" className="text-primary hover:underline">dpo@lavuepayee.com</a> avec
+              une pièce d'identité. Réponse sous 30 jours. En cas de désaccord, vous pouvez saisir l'APDP sur{' '}
+              <a href="https://apdp.bj" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">apdp.bj</a>.
             </p>
           </section>
-          
+
           <section>
             <h2 className="text-2xl font-semibold mb-4">Contact</h2>
             <p className="text-muted-foreground leading-relaxed">

@@ -104,9 +104,9 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                  Blog
-                </a>
+                <Link to="/mentions-legales" className="text-muted-foreground hover:text-primary transition-colors">
+                  Mentions légales
+                </Link>
               </li>
             </ul>
           </div>
@@ -144,9 +144,8 @@ const Footer = () => {
               <li className="flex items-start">
                 <MapPin className="h-4 w-4 mr-2 mt-1 text-primary" />
                 <span className="text-muted-foreground">
-                  LAVUEPAYEE SAS<br />
-                  123 Avenue des Champs-Élysées<br />
-                  75008 Paris, France
+                  LAVUEPAYEE<br />
+                  Cotonou, République du Bénin
                 </span>
               </li>
             </ul>
